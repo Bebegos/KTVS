@@ -135,18 +135,12 @@ export function endTurn(state: BattleState): BattleState {
     currentChar.currentHp = Math.max(0, currentChar.currentHp - GAME_CONFIG.EFFECT_DAMAGE.poison)
   }
 
-  // Efektlerin sürelerini azalt ve kaldır
+  // Efektlerin sürelerini azalt ve kaldır (yalnizca sirasi biten oyuncu icin)
   currentChar.effects = currentChar.effects
     .map(e => ({ ...e, duration: e.duration - 1 }))
     .filter(e => e.duration > 0)
 
-  // Sırası gelen oyuncu değişse, o oyuncunun sırası başında efekt sürelerini azalt
-  const otherChar = newState[newState.currentTurn === 'p1' ? 'p2' : 'p1']
-  otherChar.effects = otherChar.effects
-    .map(e => ({ ...e, duration: e.duration - 1 }))
-    .filter(e => e.duration > 0)
-
-  // Sırayı değiştir
+  // Sirayi degistir
   newState.currentTurn = newState.currentTurn === 'p1' ? 'p2' : 'p1'
   newState.round += 1
 

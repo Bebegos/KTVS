@@ -57,8 +57,12 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
   function handleEndTurn() {
     if (diceRolling) return
 
-    const newState = endTurn(battleState)
+    const newState = checkBattleEnd(endTurn(battleState))
     setBattleState(newState)
+
+    if (newState.finished) {
+      handleBattleEnd(newState)
+    }
   }
 
   async function handleBattleEnd(finalState: BattleState) {
