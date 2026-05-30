@@ -11,6 +11,27 @@ CREATE TABLE IF NOT EXISTS profiles (
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "profiles_access" ON profiles FOR ALL USING (true) WITH CHECK (true);
 
+-- Trigger: Yeni auth user'ı profile'a ekle (dashboard'da auth ayarları → hooks → database)
+-- NOT: Bunun yerine, aşağıdaki custom SQL'i Supabase dashboard'da şu yolla çalıştır:
+-- 1. Authentication → Hooks & Triggers
+-- 2. New Trigger → Event: "User signed up" → Run hook
+-- Veya doğrudan bunu çalıştır:
+
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO profiles (id, username)
+  VALUES (new.id, COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)))
+  ON CONFLICT (id) DO NOTHING;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE handle_new_user();
+
 -- 1. DINOS tablosu (karakter yönetimi)
 CREATE TABLE IF NOT EXISTS dinos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

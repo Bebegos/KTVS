@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuth } from '../lib/auth-context'
 import { Dino, DinoAbility } from '../game/types'
 import { createDino, getDinos } from '../lib/supabase'
 
@@ -16,6 +17,7 @@ const DEFAULT_ABILITIES: DinoAbility[] = [
 ]
 
 export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
+  const { user } = useAuth()
   const [form, setForm] = useState({
     name: '',
     element: 'Yeşil',
@@ -50,9 +52,10 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
         level: 1,
         xp: 0,
         abilities: form.abilities,
+        owner_id: user?.id,
       })
 
-      const updated = await getDinos()
+      const updated = await getDinos(user?.id)
       onRefresh(updated as Dino[])
       onBack()
     } catch (err) {

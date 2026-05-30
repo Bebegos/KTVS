@@ -70,17 +70,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username,
+        },
+      },
     })
 
     if (authError) throw authError
     if (!authData.user) throw new Error('Kullanıcı oluşturulamadı')
 
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: authData.user.id,
-      username,
-    })
-
-    if (profileError) throw profileError
+    // Profile trigger otomatik oluşturacak, ama fallback olarak manuel insert
+    try {
+      await supabase.from('profiles').insert({
+        id: authData.user.id,
+        username,
+      })
+    } catch (err) {
+      // Trigger zaten oluşturmuş olabilir, hata yoksay
+      console.log('Profile oluşturma (trigger yapacak):', err)
+    }
   }
 
   async function signIn(email: string, password: string) {

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuth } from '../lib/auth-context'
 import { Dino } from '../game/types'
 import { deleteDino, getDinos } from '../lib/supabase'
 
@@ -9,6 +10,7 @@ interface DinoListProps {
 }
 
 export default function DinoList({ dinos, onBack, onRefresh }: DinoListProps) {
+  const { user } = useAuth()
   const [deleting, setDeleting] = useState<string | null>(null)
 
   async function handleDelete(id: string) {
@@ -16,7 +18,7 @@ export default function DinoList({ dinos, onBack, onRefresh }: DinoListProps) {
 
     try {
       await deleteDino(id)
-      const updated = await getDinos()
+      const updated = await getDinos(user?.id)
       onRefresh(updated as Dino[])
     } catch (err) {
       console.error('Silme hatası:', err)

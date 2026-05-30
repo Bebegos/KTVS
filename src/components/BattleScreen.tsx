@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '../lib/auth-context'
 import { Dino, BattleState } from '../game/types'
 import { initializeBattle, rollDice, applyAbility, endTurn, checkBattleEnd, addXpToDino, calculateXpReward } from '../game/engine'
 import { updateDino, createMatch, getDinos } from '../lib/supabase'
@@ -15,6 +16,7 @@ interface BattleScreenProps {
 type Screen = 'battle' | 'level-up' | 'result'
 
 export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: BattleScreenProps) {
+  const { user } = useAuth()
   const [battleState, setBattleState] = useState<BattleState>(() => initializeBattle(dino1, dino2))
   const [screen, setScreen] = useState<Screen>('battle')
   const [selectedAbility, setSelectedAbility] = useState<number | null>(null)
@@ -90,7 +92,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
           level: updatedWinner.level,
           xp: updatedWinner.xp,
         })
-        const updated = await getDinos()
+        const updated = await getDinos(user?.id)
         onRefresh(updated as Dino[])
       } catch (err) {
         console.error('Kayıt hatası:', err)
@@ -129,7 +131,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
         def: updated.def,
         spd: updated.spd,
       })
-      const updatedDinos = await getDinos()
+      const updatedDinos = await getDinos(user?.id)
       onRefresh(updatedDinos as Dino[])
       setScreen('result')
       setLevelUpDino(null)
