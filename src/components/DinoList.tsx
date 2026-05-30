@@ -29,91 +29,99 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
   }
 
   return (
-    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
-      <button
-        onClick={onBack}
-        className="self-start px-4 py-2 bg-gray-500 text-white rounded font-bold"
-      >
-        ← Geri
-      </button>
+    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative">
+      {/* Arka plan efekti */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+      </div>
 
-      <h1 className="text-3xl font-bold text-dino-700 text-center">🦖 Dinozorlarım</h1>
+      <div className="relative z-10">
+        <button
+          onClick={onBack}
+          className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+        >
+          ← Geri
+        </button>
 
-      {dinos.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-center">
-          <p className="text-2xl text-dino-600">Henüz dinozor yok. Yeni bir tane oluştur!</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
-          {dinos.map(dino => (
-            <div
-              key={dino.id}
-              className="bg-white border-4 border-dino-300 rounded-lg p-4 shadow-lg"
-            >
-              <div className="text-4xl mb-2">🦖</div>
-              <h2 className="text-2xl font-bold text-dino-700 mb-1">{dino.name}</h2>
-              <p className="text-sm text-dino-500 mb-3">
-                {dino.element && `${dino.element} • `}
-                Seviye {dino.level}
-              </p>
+        <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">🦖 Dinozorlarım</h1>
 
-              <div className="grid grid-cols-2 gap-2 mb-4 text-sm font-bold">
-                <div className="bg-red-100 p-2 rounded">❤️ {dino.maxHp} HP</div>
-                <div className="bg-orange-100 p-2 rounded">⚔️ {dino.atk} ATK</div>
-                <div className="bg-blue-100 p-2 rounded">🛡️ {dino.def} DEF</div>
-                <div className="bg-yellow-100 p-2 rounded">⚡ {dino.spd} SPD</div>
-              </div>
-
-              <div className="mb-3">
-                <p className="text-xs font-bold text-dino-600 mb-1">XP:</p>
-                <div className="w-full bg-dino-200 rounded-full h-4 overflow-hidden">
-                  <div
-                    className="bg-dino-500 h-full"
-                    style={{ width: `${(dino.xp / 100) * 100}%` }}
-                  />
-                </div>
-                <p className="text-xs text-dino-600 text-center mt-1">
-                  {dino.xp}/100
+        {dinos.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center text-center mt-8">
+            <p className="text-2xl text-neon-cyan">Henüz dinozor yok. Yeni bir tane oluştur!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4 mt-6">
+            {dinos.map(dino => (
+              <div
+                key={dino.id}
+                className="glass-dark neon-border-cyan rounded-xl p-4"
+              >
+                <div className="text-4xl mb-2">🦖</div>
+                <h2 className="text-2xl font-bold text-neon-cyan mb-1">{dino.name}</h2>
+                <p className="text-sm text-neon-cyan/70 mb-3">
+                  {dino.element && `${dino.element} • `}
+                  Seviye {dino.level}
                 </p>
-              </div>
 
-              {dino.abilities.length > 0 && (
-                <div className="mb-3 text-xs">
-                  <p className="font-bold text-dino-600 mb-1">Yetenekler:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {dino.abilities.map((a, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-dino-200 text-dino-700 px-2 py-1 rounded text-xs font-bold"
-                      >
-                        {a.name}
-                      </span>
-                    ))}
-                  </div>
+                <div className="grid grid-cols-2 gap-2 mb-4 text-sm font-bold">
+                  <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp}</div>
+                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk}</div>
+                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def}</div>
+                  <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400">⚡ {dino.spd}</div>
                 </div>
-              )}
 
-              <div className="flex gap-2">
-                {onEdit && (
-                  <button
-                    onClick={() => onEdit(dino)}
-                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded font-bold hover:bg-blue-600 active:scale-95 transition"
-                  >
-                    ✏️ Düzenle
-                  </button>
+                <div className="mb-3">
+                  <p className="text-xs font-bold text-neon-cyan/70 mb-1">XP:</p>
+                  <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden border border-neon-cyan/20">
+                    <div
+                      className="bg-gradient-to-r from-neon-cyan to-neon-purple h-full"
+                      style={{ width: `${(dino.xp / 100) * 100}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-neon-cyan/70 text-center mt-1">
+                    {dino.xp}/100
+                  </p>
+                </div>
+
+                {dino.abilities.length > 0 && (
+                  <div className="mb-3 text-xs">
+                    <p className="font-bold text-neon-cyan/70 mb-1">Yetenekler:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {dino.abilities.map((a, idx) => (
+                        <span
+                          key={idx}
+                          className="glass border border-neon-purple/30 text-neon-purple px-2 py-1 rounded text-xs font-bold"
+                        >
+                          {a.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                <button
-                  onClick={() => handleDelete(dino.id)}
-                  disabled={deleting === dino.id}
-                  className="flex-1 px-4 py-2 bg-red-500 text-white rounded font-bold hover:bg-red-600 disabled:bg-gray-400"
-                >
-                  {deleting === dino.id ? '⏳' : '🗑️'} Sil
-                </button>
+
+                <div className="flex gap-2">
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(dino)}
+                      className="flex-1 px-4 py-2 glass-dark neon-border-purple rounded font-bold text-neon-purple hover:shadow-neon-purple active:scale-95 transition"
+                    >
+                      ✏️ Düzenle
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDelete(dino.id)}
+                    disabled={deleting === dino.id}
+                    className="flex-1 px-4 py-2 glass-dark border border-red-500/30 rounded font-bold text-red-400 hover:shadow-red-500/50 disabled:opacity-50 active:scale-95 transition"
+                  >
+                    {deleting === dino.id ? '⏳' : '🗑️'} Sil
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
