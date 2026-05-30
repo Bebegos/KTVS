@@ -113,7 +113,7 @@ export default function BattleTable({ onBack, onRefresh }: BattleTableProps) {
   }
 
   // Dinozor Seçim Ekranı
-  if (!selectedDino && mode !== 'select-mode') {
+  if (!selectedDino && (mode === 'offline' || mode === 'duello-vs')) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 gap-4 relative overflow-hidden">
         {/* Arka plan blur */}

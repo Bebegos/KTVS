@@ -1,24 +1,40 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import QRCode from 'qrcode.react'
+import { QRCodeSVG } from 'qrcode.react'
 import jsQR from 'jsqr'
 import { Dino } from '../game/types'
+import { createDuelloSession, getDuelloSession, joinDuelloSession, subscribeToDuelloSession } from '../lib/supabase'
+import { useAuth } from '../lib/auth-context'
 
 interface DuelloVsModeProps {
   selectedDino: Dino
   onBack: () => void
 }
 
-type DuelloScreen = 'options' | 'host' | 'join'
+type DuelloScreen = 'options' | 'host' | 'join' | 'confirmation' | 'battle'
+
+interface SessionData {
+  session_id: string
+  host_dino_id: string
+  host_player_id: string
+  guest_dino_id: string | null
+  guest_player_id: string | null
+  status: string
+}
 
 export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps) {
+  const { user } = useAuth()
   const [screen, setScreen] = useState<DuelloScreen>('options')
   const [sessionId] = useState(generateSessionId())
   const [joinCode, setJoinCode] = useState('')
   const [scannerActive, setScannerActive] = useState(false)
+  const [sessionData, setSessionData] = useState<SessionData | null>(null)
+  const [opponentDino, setOpponentDino] = useState<Dino | null>(null)
+  const [isHost, setIsHost] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const scanIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const scanIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const subscriptionRef = useRef<any>(null)
 
   const inviteUrl = `${window.location.origin}?duello=${sessionId}`
 
@@ -87,8 +103,69 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   useEffect(() => {
     return () => {
       stopScanner()
+      if (subscriptionRef.current) {
+        subscriptionRef.current.unsubscribe()
+      }
     }
   }, [])
+
+  async function startHosting() {
+    try {
+      if (!user?.id) {
+        alert('Kullanıcı kimliği bulunamadı')
+        return
+      }
+
+      const session = await createDuelloSession(sessionId, selectedDino.id, user.id)
+      setSessionData(session)
+      setIsHost(true)
+
+      // Subscribe to session updates
+      subscriptionRef.current = await subscribeToDuelloSession(sessionId, (newSession: SessionData) => {
+        setSessionData(newSession)
+        if (newSession.status === 'ready' && newSession.guest_dino_id) {
+          setScreen('confirmation')
+        }
+      })
+
+      setScreen('host')
+    } catch (err) {
+      alert('Oturum oluşturulamadı: ' + (err as Error).message)
+      console.error('Host error:', err)
+    }
+  }
+
+  async function joinSession() {
+    try {
+      if (!user?.id) {
+        alert('Kullanıcı kimliği bulunamadı')
+        return
+      }
+
+      const session = await getDuelloSession(joinCode)
+      if (!session) {
+        alert('Oturum bulunamadı!')
+        return
+      }
+
+      const updatedSession = await joinDuelloSession(joinCode, selectedDino.id, user.id)
+      setSessionData(updatedSession)
+      setIsHost(false)
+
+      // Subscribe to session updates
+      subscriptionRef.current = await subscribeToDuelloSession(joinCode, (newSession: SessionData) => {
+        setSessionData(newSession)
+        if (newSession.status === 'ready') {
+          setScreen('confirmation')
+        }
+      })
+
+      setScreen('confirmation')
+    } catch (err) {
+      alert('Oturuma katılınamadı: ' + (err as Error).message)
+      console.error('Join error:', err)
+    }
+  }
 
   // Options Screen
   if (screen === 'options') {
@@ -120,7 +197,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setScreen('host')}
+            onClick={startHosting}
             className="flex-1 p-8 glass-dark neon-border-cyan rounded-2xl text-center hover:shadow-neon-cyan transition"
           >
             <div className="text-5xl mb-4">📧</div>
@@ -172,7 +249,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
           {/* QR Code */}
           <div className="glass-dark neon-border-purple rounded-xl p-6 bg-white">
-            <QRCode value={inviteUrl} size={256} />
+            <QRCodeSVG value={inviteUrl} size={256} />
           </div>
 
           {/* URL Display */}
@@ -291,6 +368,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
           {/* Join Button */}
           <button
+            onClick={joinSession}
             disabled={joinCode.length !== 9}
             className={`w-full px-6 py-4 glass-dark rounded-lg font-bold text-lg transition ${
               joinCode.length === 9
@@ -299,6 +377,125 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
             }`}
           >
             ✅ KATIL
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Battle Screen (Düello)
+  if (screen === 'battle' && sessionData) {
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        {/* Arka plan */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        </div>
+
+        <button
+          onClick={() => {
+            setScreen('options')
+            if (subscriptionRef.current) {
+              subscriptionRef.current.unsubscribe()
+            }
+          }}
+          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+        >
+          ← Geri
+        </button>
+
+        <div className="text-center relative z-10">
+          <h1 className="text-4xl font-black text-neon-purple mb-6">⚔️ Düello Başladı</h1>
+          <p className="text-neon-cyan text-xl mb-8">Multiplayer savaş sistemi geliştiriliyor...</p>
+          <div className="text-lg text-neon-cyan/80 space-y-2">
+            <p>• Tur tabanlı savaş</p>
+            <p>• Hız bazlı sıra belirleme</p>
+            <p>• Pasif yetenekler devre dışı</p>
+            <p>• Gerçek zamanlı senkronizasyon</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Confirmation Screen (Onay)
+  if (screen === 'confirmation' && sessionData) {
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        {/* Arka plan */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="flex flex-col items-center gap-8 relative z-10 w-full max-w-2xl">
+          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple text-center">
+            ⚔️ Düello Başlamak Üzere
+          </h1>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+            {/* Host Dino */}
+            <div className="glass-dark neon-border-cyan rounded-xl p-6 text-center">
+              <p className="text-xs font-bold text-neon-cyan mb-2">DAVET EDEN</p>
+              <div className="text-5xl mb-3">🦖</div>
+              <h2 className="text-2xl font-black text-neon-cyan mb-1">{selectedDino.name}</h2>
+              <p className="text-sm text-neon-cyan/80 mb-4">Lvl {selectedDino.level}</p>
+              <div className="grid grid-cols-3 gap-2 text-xs font-bold">
+                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {selectedDino.maxHp}</div>
+                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {selectedDino.atk}</div>
+                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {selectedDino.def}</div>
+              </div>
+              {isHost && (
+                <p className="text-xs text-neon-cyan/60 mt-3">✓ Hazır</p>
+              )}
+            </div>
+
+            {/* Guest Dino */}
+            <div className="glass-dark neon-border-purple rounded-xl p-6 text-center">
+              <p className="text-xs font-bold text-neon-purple mb-2">KATILAN</p>
+              <div className="text-5xl mb-3">🦖</div>
+              {sessionData.guest_dino_id ? (
+                <>
+                  <h2 className="text-2xl font-black text-neon-purple mb-1">Dinozor</h2>
+                  <p className="text-sm text-neon-purple/80 mb-4">Lvl ?</p>
+                  <div className="grid grid-cols-3 gap-2 text-xs font-bold">
+                    <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ ?</div>
+                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ ?</div>
+                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ ?</div>
+                  </div>
+                  {!isHost && (
+                    <p className="text-xs text-neon-purple/60 mt-3">✓ Hazır</p>
+                  )}
+                </>
+              ) : (
+                <p className="text-neon-purple/70 text-lg">Bekleniyor...</p>
+              )}
+            </div>
+          </div>
+
+          {/* VS */}
+          <div className="text-4xl font-black text-neon-cyan">VS</div>
+
+          {sessionData.status === 'ready' && sessionData.guest_dino_id && (
+            <button
+              onClick={() => setScreen('battle')}
+              className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-lg font-bold text-lg text-neon-cyan hover:shadow-neon-cyan transition"
+            >
+              ⚔️ DÜELLOYA BAŞLA
+            </button>
+          )}
+
+          <button
+            onClick={() => {
+              setScreen('options')
+              if (subscriptionRef.current) {
+                subscriptionRef.current.unsubscribe()
+              }
+            }}
+            className="w-full px-6 py-2 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple transition"
+          >
+            ← Geri
           </button>
         </div>
       </div>

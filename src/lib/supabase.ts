@@ -112,3 +112,70 @@ export async function createMatch(match: any) {
   if (error) throw error
   return data
 }
+
+// Duello Vs Session Management
+export async function createDuelloSession(sessionId: string, hostDinoId: string, hostPlayerId: string) {
+  const { data, error } = await supabase
+    .from('duello_sessions')
+    .insert([{
+      session_id: sessionId,
+      host_dino_id: hostDinoId,
+      host_player_id: hostPlayerId,
+      guest_dino_id: null,
+      guest_player_id: null,
+      status: 'waiting', // waiting, ready, in_progress, completed
+      created_at: new Date().toISOString()
+    }])
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function getDuelloSession(sessionId: string) {
+  const { data, error } = await supabase
+    .from('duello_sessions')
+    .select('*')
+    .eq('session_id', sessionId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function joinDuelloSession(sessionId: string, guestDinoId: string, guestPlayerId: string) {
+  const { data, error } = await supabase
+    .from('duello_sessions')
+    .update({
+      guest_dino_id: guestDinoId,
+      guest_player_id: guestPlayerId,
+      status: 'ready'
+    })
+    .eq('session_id', sessionId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function subscribeToDuelloSession(sessionId: string, callback: (session: any) => void) {
+  const subscription = supabase
+    .channel(`duello_session:${sessionId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'duello_sessions',
+        filter: `session_id=eq.${sessionId}`
+      },
+      (payload) => {
+        callback(payload.new)
+      }
+    )
+    .subscribe()
+
+  return subscription
+}
