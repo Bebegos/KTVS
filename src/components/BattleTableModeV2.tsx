@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice } from '../game/engine'
+import AbilityIcon from './AbilityIcon'
 
 interface BattleTableModeV2Props {
   dino: Dino
@@ -90,19 +91,24 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
 
   function addEffect(effectType: string) {
     const newEffects = [...character.effects]
-    const existing = newEffects.find(e => e.type === effectType)
+    const existing = newEffects.findIndex(e => e.type === effectType)
 
-    if (existing) {
-      existing.duration = 2
+    if (existing !== -1) {
+      // Efekt zaten var, süresi resetle
+      newEffects[existing].duration = 2
+      setBattleLog(prev => [`${getEffectName(effectType)} yenilendi!`, ...prev.slice(0, 5)])
     } else if (newEffects.length < 2) {
+      // Slot boş, direkt ekle
       newEffects.push({ type: effectType as any, duration: 2 })
+      setBattleLog(prev => [`${getEffectName(effectType)} eklendi!`, ...prev.slice(0, 5)])
     } else {
-      alert('Maksimum 2 efekt aynı anda!')
-      return
+      // 2 efekt zaten var, en eskisini çıkar
+      newEffects.shift() // En eski olanı sil
+      newEffects.push({ type: effectType as any, duration: 2 })
+      setBattleLog(prev => [`${getEffectName(effectType)} eklendi! (Eski efekt çıkarıldı)`, ...prev.slice(0, 5)])
     }
 
     setCharacter(c => ({ ...c, effects: newEffects }))
-    setBattleLog(prev => [`${getEffectName(effectType)} eklendi!`, ...prev.slice(0, 5)])
   }
 
   function removeEffect(idx: number) {
@@ -424,20 +430,36 @@ function AbilityButton({
       disabled={disabled}
       whileHover={{ scale: disabled ? 1 : 1.05 }}
       whileTap={{ scale: disabled ? 1 : 0.95 }}
-      className={`relative w-full p-3 rounded-lg font-bold border-2 transition flex items-center justify-between ${
+      className={`relative w-full p-4 rounded-lg font-bold transition flex items-start gap-3 ${
         isUlti
           ? 'glass-dark neon-border-purple border-2'
           : 'glass-dark neon-border-cyan border-2'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}`}
     >
-      <div className="text-left">
-        <p className={`text-sm font-black ${isUlti ? 'text-neon-purple' : 'text-neon-cyan'}`}>{ability.name}</p>
-        {ability.cd > 0 && <p className="text-xs font-bold text-red-400">CD: {ability.cd}</p>}
+      {/* Icon */}
+      <div className="flex-shrink-0 pt-1">
+        <AbilityIcon iconId={ability.icon} size="md" />
       </div>
 
+      {/* Details */}
+      <div className="text-left flex-1">
+        <p className={`text-sm font-black ${isUlti ? 'text-neon-purple' : 'text-neon-cyan'}`}>{ability.name}</p>
+        <div className="text-xs space-y-1 mt-1">
+          <p className={ability.kind === 'buff' ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+            {ability.kind === 'buff' ? '⬆️ BUFF' : '⬇️ DEBUFF'} • ×{ability.multiplier || 1}
+          </p>
+          {ability.effect !== 'none' && (
+            <p className="text-neon-purple/70">Efekt: {ability.effect}</p>
+          )}
+          {ability.cd > 0 && <p className="text-red-400 font-bold">CD: {ability.cd} tur</p>}
+        </div>
+      </div>
+
+      {/* Damage display */}
       {damage !== null && (
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-black text-neon-pink ml-2">
-          💥 {Math.round(damage)}
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex-shrink-0 text-right">
+          <p className="text-2xl font-black text-neon-pink">💥</p>
+          <p className="text-xs font-black text-neon-pink">{Math.round(damage)}</p>
         </motion.div>
       )}
     </motion.button>

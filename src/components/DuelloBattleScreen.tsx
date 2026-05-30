@@ -221,10 +221,24 @@ export default function DuelloBattleScreen({
       }))
 
       if (ability.effect !== 'none') {
-        setOpponentChar(c => ({
-          ...c,
-          effects: [...c.effects, { type: ability.effect as any, duration: 2 }],
-        }))
+        setOpponentChar(c => {
+          const newEffects = [...c.effects]
+          const existing = newEffects.findIndex(e => e.type === ability.effect)
+
+          if (existing !== -1) {
+            // Efekt zaten var, süresi resetle
+            newEffects[existing].duration = 2
+          } else if (newEffects.length < 2) {
+            // Slot boş
+            newEffects.push({ type: ability.effect as any, duration: 2 })
+          } else {
+            // Max 2 efekt, en eskisini çıkar (FIFO)
+            newEffects.shift()
+            newEffects.push({ type: ability.effect as any, duration: 2 })
+          }
+
+          return { ...c, effects: newEffects }
+        })
       }
 
       // Update ability cooldown
@@ -286,10 +300,24 @@ export default function DuelloBattleScreen({
       }))
 
       if (ability.effect !== 'none') {
-        setPlayerChar(c => ({
-          ...c,
-          effects: [...c.effects, { type: ability.effect as any, duration: 2 }],
-        }))
+        setPlayerChar(c => {
+          const newEffects = [...c.effects]
+          const existing = newEffects.findIndex(e => e.type === ability.effect)
+
+          if (existing !== -1) {
+            // Efekt zaten var, süresi resetle
+            newEffects[existing].duration = 2
+          } else if (newEffects.length < 2) {
+            // Slot boş
+            newEffects.push({ type: ability.effect as any, duration: 2 })
+          } else {
+            // Max 2 efekt, en eskisini çıkar (FIFO)
+            newEffects.shift()
+            newEffects.push({ type: ability.effect as any, duration: 2 })
+          }
+
+          return { ...c, effects: newEffects }
+        })
       }
 
       // Update ability cooldown
@@ -369,30 +397,65 @@ export default function DuelloBattleScreen({
         </div>
       </div>
 
-      {/* Ability buttons */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        {playerChar.abilities.map((ability, idx) => (
-          <motion.button
-            key={idx}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => selectAbility(idx)}
-            disabled={playerSelectedAbility !== null || ability.cd > 0 || roundInProgress}
-            className={`p-4 rounded-lg font-bold transition flex flex-col items-center gap-2 ${
-              playerSelectedAbility === idx
-                ? 'neon-border-cyan glass-dark text-neon-cyan'
-                : ability.cd > 0
-                ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
-                : 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
-            }`}
-          >
-            <AbilityIcon iconId={ability.icon} size="md" />
-            <div className="text-sm text-center">
-              <p className="font-black">{ability.name}</p>
-              {ability.cd > 0 && <p className="text-xs">CD: {ability.cd}</p>}
-            </div>
-          </motion.button>
-        ))}
+      {/* Ability buttons - Grid layout with full details */}
+      <div className="mb-6">
+        <p className="text-xs font-bold text-neon-cyan mb-2">⚔️ YETENEKLERİ SEÇ (Her turda 1)</p>
+        <div className="grid grid-cols-2 gap-3">
+          {playerChar.abilities.map((ability, idx) => (
+            <motion.button
+              key={idx}
+              whileHover={{ scale: playerSelectedAbility === null && ability.cd === 0 ? 1.05 : 1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => selectAbility(idx)}
+              disabled={playerSelectedAbility !== null || ability.cd > 0 || roundInProgress}
+              className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[140px] ${
+                playerSelectedAbility === idx
+                  ? 'neon-border-cyan glass-dark text-neon-cyan border-2 scale-105'
+                  : ability.cd > 0
+                  ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
+                  : 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
+              }`}
+            >
+              {/* Icon and Name */}
+              <div className="flex items-center gap-3 w-full">
+                <AbilityIcon iconId={ability.icon} size="lg" />
+                <div className="flex-1 text-left">
+                  <p className="font-black text-sm leading-tight">{ability.name}</p>
+                  <p className={`text-xs font-bold ${ability.kind === 'buff' ? 'text-green-400' : 'text-red-400'}`}>
+                    {ability.kind === 'buff' ? '⬆️ BUFF' : '⬇️ DEBUFF'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="w-full text-left text-xs space-y-1">
+                <div className="flex justify-between">
+                  <span>Hasar Çarpanı:</span>
+                  <span className="font-black">×{ability.multiplier || 1}</span>
+                </div>
+                {ability.effect !== 'none' && (
+                  <div className="flex justify-between">
+                    <span>Efekt:</span>
+                    <span className="font-black">{ability.effect}</span>
+                  </div>
+                )}
+                {ability.cd > 0 && (
+                  <div className="flex justify-between text-red-400">
+                    <span>Hazır olmaya:</span>
+                    <span className="font-black">{ability.cd} tur</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Selected indicator */}
+              {playerSelectedAbility === idx && (
+                <div className="w-full text-center mt-auto">
+                  <p className="text-xs font-black text-neon-cyan">✓ SEÇİLDİ</p>
+                </div>
+              )}
+            </motion.button>
+          ))}
+        </div>
       </div>
 
       {/* Status */}
