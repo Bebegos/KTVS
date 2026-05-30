@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../lib/auth-context'
 import { Dino, DinoAbility } from '../game/types'
 import { createDino, getDinos } from '../lib/supabase'
-import AttackIconPicker from './AttackIconPicker'
+import AttackIconPickerModal from './AttackIconPickerModal'
 
 interface DinoFormProps {
   onBack: () => void
@@ -232,7 +232,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
 
                       <div className="mb-2">
                         <label className="block text-xs font-bold text-neon-cyan mb-1">Saldırı İkonu</label>
-                        <AttackIconPicker
+                        <AttackIconPickerModal
                           selectedId={(ability as any).icon}
                           onSelect={icon => updateAbility(idx, 'icon', icon)}
                         />
