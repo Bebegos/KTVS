@@ -73,188 +73,196 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
-      <button
-        onClick={onBack}
-        className="self-start px-4 py-2 bg-gray-500 text-white rounded font-bold"
-      >
-        ← Geri
-      </button>
+    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative">
+      {/* Arka plan efekti */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+      </div>
 
-      <h1 className="text-3xl font-bold text-dino-700 text-center">✨ Yeni Dinozor</h1>
+      <div className="relative z-10">
+        <button
+          onClick={onBack}
+          className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+        >
+          ← Geri
+        </button>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto w-full flex flex-col gap-4">
-        {/* Temel Bilgiler */}
-        <div className="bg-white border-2 border-dino-300 rounded-lg p-4">
-          <h2 className="text-xl font-bold text-dino-700 mb-3">Temel Bilgiler</h2>
+        <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink">✨ Yeni Dinozor</h1>
 
-          <div className="mb-3">
-            <label className="block font-bold text-dino-700 mb-1">Ad *</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-dino-300 rounded text-lg font-bold"
-              placeholder="Dinozor adı"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto w-full flex flex-col gap-4 mt-6">
+          {/* Temel Bilgiler */}
+          <div className="glass-dark neon-border-cyan rounded-lg p-4">
+            <h2 className="text-xl font-bold text-neon-cyan mb-3">Temel Bilgiler</h2>
 
-          <div className="flex gap-3 mb-3">
-            <div className="flex-1">
-              <label className="block font-bold text-dino-700 mb-1">Element</label>
-              <select
-                value={form.element}
-                onChange={e => setForm({ ...form, element: e.target.value })}
-                className="w-full px-3 py-2 border-2 border-dino-300 rounded font-bold"
-              >
-                <option>Yeşil</option>
-                <option>Kırmızı</option>
-                <option>Mavi</option>
-                <option>Sarı</option>
-              </select>
+            <div className="mb-3">
+              <label className="block font-bold text-neon-cyan mb-1">Ad *</label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-800 border border-neon-cyan/30 rounded text-lg font-bold text-neon-cyan placeholder-neon-cyan/40"
+                placeholder="Dinozor adı"
+              />
+            </div>
+
+            <div className="flex gap-3 mb-3">
+              <div className="flex-1">
+                <label className="block font-bold text-neon-cyan mb-1">Element</label>
+                <select
+                  value={form.element}
+                  onChange={e => setForm({ ...form, element: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-800 border border-neon-cyan/30 rounded font-bold text-neon-cyan"
+                >
+                  <option>Yeşil</option>
+                  <option>Kırmızı</option>
+                  <option>Mavi</option>
+                  <option>Sarı</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="block font-bold text-neon-cyan mb-1">Pasif Yetenek (İsteğe bağlı)</label>
+              <input
+                type="text"
+                value={form.passive}
+                onChange={e => setForm({ ...form, passive: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan placeholder-neon-cyan/40"
+                placeholder="Örn: Her tur sonu can kazanır"
+              />
             </div>
           </div>
 
-          <div className="mb-3">
-            <label className="block font-bold text-dino-700 mb-1">Pasif Yetenek (İsteğe bağlı)</label>
-            <input
-              type="text"
-              value={form.passive}
-              onChange={e => setForm({ ...form, passive: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-dino-300 rounded text-sm"
-              placeholder="Örn: Her tur sonu can kazanır"
-            />
+          {/* İstatistikler */}
+          <div className="glass-dark neon-border-purple rounded-lg p-4">
+            <h2 className="text-xl font-bold text-neon-purple mb-3">İstatistikler</h2>
+
+            <div className="grid grid-cols-2 gap-3">
+              {(['maxHp', 'atk', 'def', 'spd'] as const).map(stat => (
+                <div key={stat}>
+                  <label className="block font-bold text-neon-purple mb-1">
+                    {stat === 'maxHp' ? '❤️ HP' : stat === 'atk' ? '⚔️ ATK' : stat === 'def' ? '🛡️ DEF' : '⚡ SPD'}
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={form[stat]}
+                    onChange={e => setForm({ ...form, [stat]: parseInt(e.target.value) })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-neon-purple/30 rounded font-bold text-lg text-neon-purple"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* İstatistikler */}
-        <div className="bg-white border-2 border-dino-300 rounded-lg p-4">
-          <h2 className="text-xl font-bold text-dino-700 mb-3">İstatistikler</h2>
+          {/* Yetenekler */}
+          <div className="glass-dark neon-border-cyan rounded-lg p-4">
+            <h2 className="text-xl font-bold text-neon-cyan mb-3">Yetenekler (maksimum 5)</h2>
 
-          <div className="grid grid-cols-2 gap-3">
-            {(['maxHp', 'atk', 'def', 'spd'] as const).map(stat => (
-              <div key={stat}>
-                <label className="block font-bold text-dino-700 mb-1">
-                  {stat === 'maxHp' ? '❤️ HP' : stat === 'atk' ? '⚔️ ATK' : stat === 'def' ? '🛡️ DEF' : '⚡ SPD'}
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={form[stat]}
-                  onChange={e => setForm({ ...form, [stat]: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border-2 border-dino-300 rounded font-bold text-lg"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Yetenekler */}
-        <div className="bg-white border-2 border-dino-300 rounded-lg p-4">
-          <h2 className="text-xl font-bold text-dino-700 mb-3">Yetenekler (maksimum 5)</h2>
-
-          <div className="flex flex-col gap-3">
-            {form.abilities.map((ability, idx) => (
-              <div key={idx} className="border-2 border-dino-200 rounded p-3">
-                {editingAbility === idx ? (
-                  <>
-                    <div className="mb-2">
-                      <label className="block text-sm font-bold text-dino-700 mb-1">Ad</label>
-                      <input
-                        type="text"
-                        value={ability.name}
-                        onChange={e => updateAbility(idx, 'name', e.target.value)}
-                        className="w-full px-2 py-1 border border-dino-300 rounded text-sm"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 mb-2">
-                      <div>
-                        <label className="block text-xs font-bold text-dino-700 mb-1">CD</label>
+            <div className="flex flex-col gap-3">
+              {form.abilities.map((ability, idx) => (
+                <div key={idx} className="glass border border-neon-cyan/30 rounded p-3">
+                  {editingAbility === idx ? (
+                    <>
+                      <div className="mb-2">
+                        <label className="block text-sm font-bold text-neon-cyan mb-1">Ad</label>
                         <input
-                          type="number"
-                          min="0"
-                          value={ability.cd}
-                          onChange={e => updateAbility(idx, 'cd', parseInt(e.target.value))}
-                          className="w-full px-2 py-1 border border-dino-300 rounded text-sm"
+                          type="text"
+                          value={ability.name}
+                          onChange={e => updateAbility(idx, 'name', e.target.value)}
+                          className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan placeholder-neon-cyan/40"
                         />
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-bold text-dino-700 mb-1">Tür</label>
-                        <select
-                          value={ability.kind}
-                          onChange={e => updateAbility(idx, 'kind', e.target.value)}
-                          className="w-full px-2 py-1 border border-dino-300 rounded text-sm"
-                        >
-                          <option value="buff">Buff</option>
-                          <option value="debuff">Debuff</option>
-                        </select>
+                      <div className="grid grid-cols-3 gap-2 mb-2">
+                        <div>
+                          <label className="block text-xs font-bold text-neon-cyan mb-1">CD</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={ability.cd}
+                            onChange={e => updateAbility(idx, 'cd', parseInt(e.target.value))}
+                            className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-neon-cyan mb-1">Tür</label>
+                          <select
+                            value={ability.kind}
+                            onChange={e => updateAbility(idx, 'kind', e.target.value)}
+                            className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan"
+                          >
+                            <option value="buff">Buff</option>
+                            <option value="debuff">Debuff</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-neon-cyan mb-1">Efekt</label>
+                          <select
+                            value={ability.effect}
+                            onChange={e => updateAbility(idx, 'effect', e.target.value)}
+                            className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan"
+                          >
+                            <option value="none">Yok</option>
+                            <option value="poison">Zehir</option>
+                            <option value="stun">Sersem</option>
+                            <option value="stop">Dur</option>
+                            <option value="power">Güç+</option>
+                            <option value="speed">Hız+</option>
+                            <option value="shield">Kalkan+</option>
+                          </select>
+                        </div>
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-bold text-dino-700 mb-1">Efekt</label>
-                        <select
-                          value={ability.effect}
-                          onChange={e => updateAbility(idx, 'effect', e.target.value)}
-                          className="w-full px-2 py-1 border border-dino-300 rounded text-sm"
-                        >
-                          <option value="none">Yok</option>
-                          <option value="poison">Zehir</option>
-                          <option value="stun">Sersem</option>
-                          <option value="stop">Dur</option>
-                          <option value="power">Güç+</option>
-                          <option value="speed">Hız+</option>
-                          <option value="shield">Kalkan+</option>
-                        </select>
+                      <div className="mb-2">
+                        <label className="block text-xs font-bold text-neon-purple mb-1">Hasar Çarpanı (×)</label>
+                        <input
+                          type="number"
+                          min="0.5"
+                          step="0.5"
+                          value={ability.multiplier || 1}
+                          onChange={e => updateAbility(idx, 'multiplier', parseFloat(e.target.value))}
+                          className="w-full px-2 py-1 bg-slate-800 border border-neon-purple/30 rounded text-sm text-neon-purple"
+                        />
                       </div>
-                    </div>
 
-                    <div className="mb-2">
-                      <label className="block text-xs font-bold text-dino-700 mb-1">Hasar Çarpanı (×)</label>
-                      <input
-                        type="number"
-                        min="0.5"
-                        step="0.5"
-                        value={ability.multiplier || 1}
-                        onChange={e => updateAbility(idx, 'multiplier', parseFloat(e.target.value))}
-                        className="w-full px-2 py-1 border border-dino-300 rounded text-sm"
-                      />
-                    </div>
-
+                      <button
+                        type="button"
+                        onClick={() => setEditingAbility(null)}
+                        className="w-full px-2 py-1 glass-dark neon-border-purple rounded text-sm font-bold text-neon-purple hover:shadow-neon-purple transition"
+                      >
+                        Tamam
+                      </button>
+                    </>
+                  ) : (
                     <button
                       type="button"
-                      onClick={() => setEditingAbility(null)}
-                      className="w-full px-2 py-1 bg-dino-500 text-white rounded text-sm font-bold"
+                      onClick={() => setEditingAbility(idx)}
+                      className="w-full text-left p-2 hover:bg-slate-700/50 rounded transition"
                     >
-                      Tamam
+                      <p className="font-bold text-neon-cyan">{ability.name}</p>
+                      <p className="text-xs text-neon-cyan/70">
+                        CD: {ability.cd} • {ability.kind} • {ability.effect} • ×{ability.multiplier || 1}
+                      </p>
                     </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setEditingAbility(idx)}
-                    className="w-full text-left p-2 hover:bg-dino-50 rounded"
-                  >
-                    <p className="font-bold text-dino-700">{ability.name}</p>
-                    <p className="text-xs text-dino-600">
-                      CD: {ability.cd} • {ability.kind} • {ability.effect} • ×{ability.multiplier || 1}
-                    </p>
-                  </button>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading || !form.name}
-          className="w-full px-6 py-4 bg-purple-500 text-white rounded-lg font-bold text-lg hover:bg-purple-600 disabled:bg-gray-400"
-        >
-          {loading ? '⏳ Kaydediliyor...' : '✨ Dinozoru Kaydet'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading || !form.name}
+            className="w-full px-6 py-4 glass-dark neon-border-purple rounded-lg font-bold text-lg text-neon-purple hover:shadow-neon-purple disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition"
+          >
+            {loading ? '⏳ Kaydediliyor...' : '✨ Dinozoru Kaydet'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }
