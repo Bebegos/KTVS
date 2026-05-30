@@ -65,10 +65,10 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                 </p>
 
                 <div className="grid grid-cols-2 gap-2 mb-4 text-sm font-bold">
-                  <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp}</div>
-                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk}</div>
-                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def}</div>
-                  <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400">⚡ {dino.spd}</div>
+                  <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp ?? 30}</div>
+                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk ?? 5}</div>
+                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def ?? 5}</div>
+                  <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400">⚡ {dino.spd ?? 5}</div>
                 </div>
 
                 <div className="mb-3">

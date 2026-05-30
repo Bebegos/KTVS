@@ -177,6 +177,17 @@ export default function Home() {
   }
 
   if (page === 'duello-vs-select') {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center w-full h-screen relative">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 left-20 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+          </div>
+          <p className="text-xl font-bold text-neon-purple relative z-10">Dinozorlar yükleniyor...</p>
+        </div>
+      )
+    }
+
     return (
       <DuelloVsSelectDino
         dinos={dinos}
@@ -295,11 +306,11 @@ function DuelloVsSelectDino({
             >
               <div className="text-5xl mb-3">🦖</div>
               <h2 className="text-2xl font-black text-neon-purple mb-1">{dino.name}</h2>
-              <p className="text-sm text-neon-purple/80 font-bold mb-4">Lvl {dino.level}</p>
+              <p className="text-sm text-neon-purple/80 font-bold mb-4">Lvl {dino.level ?? 1}</p>
               <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp}</div>
-                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk}</div>
-                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def}</div>
+                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp ?? 30}</div>
+                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk ?? 5}</div>
+                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def ?? 5}</div>
               </div>
             </motion.button>
           ))}
@@ -363,11 +374,11 @@ function OfflineSelectDino({
             >
               <div className="text-5xl mb-3">🦖</div>
               <h2 className="text-2xl font-black text-neon-cyan mb-1">{dino.name}</h2>
-              <p className="text-sm text-neon-cyan/80 font-bold mb-4">Lvl {dino.level}</p>
+              <p className="text-sm text-neon-cyan/80 font-bold mb-4">Lvl {dino.level ?? 1}</p>
               <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp}</div>
-                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk}</div>
-                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def}</div>
+                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp ?? 30}</div>
+                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk ?? 5}</div>
+                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def ?? 5}</div>
               </div>
             </motion.button>
           ))}
