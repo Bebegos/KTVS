@@ -5,19 +5,16 @@ import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
 import DinoList from '../components/DinoList'
 import DinoForm from '../components/DinoForm'
-import BattleScreenNew from '../components/BattleScreenNew'
 import BattleTable from '../components/BattleTable'
 import BattleTableModeV2 from '../components/BattleTableModeV2'
 import MatchLog from '../components/MatchLog'
 
-type PageName = 'home' | 'dino-list' | 'battle' | 'battle-table' | 'match-log' | 'dino-form' | 'battle-select' | 'offline-select' | 'offline-battle' | 'duello-vs'
+type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs'
 
 export default function Home() {
   const { user, signOut } = useAuth()
   const [page, setPage] = useState<PageName>('home')
   const [dinos, setDinos] = useState<Dino[]>([])
-  const [selectedDino1, setSelectedDino1] = useState<Dino | undefined>()
-  const [selectedDino2, setSelectedDino2] = useState<Dino | undefined>()
   const [selectedOfflineDino, setSelectedOfflineDino] = useState<Dino | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -132,13 +129,6 @@ export default function Home() {
           </button>
 
           <button
-            onClick={() => setPage('battle-select')}
-            className="w-full px-6 py-4 glass-dark neon-border-pink rounded-xl font-bold text-lg text-pink-400 hover:shadow-neon-pink active:scale-95 transition duration-300"
-          >
-            ⚔️ Savaş (2 vs 2)
-          </button>
-
-          <button
             onClick={() => setPage('match-log')}
             className="w-full px-6 py-4 glass-dark border border-blue-500/30 rounded-xl font-bold text-lg text-blue-400 hover:shadow-blue-500/50 active:scale-95 transition duration-300"
           >
@@ -228,46 +218,6 @@ export default function Home() {
     )
   }
 
-  if (page === 'battle-table') {
-    return (
-      <BattleTable
-        onBack={() => setPage('home')}
-        onRefresh={(newDinos) => {
-          setDinos(newDinos)
-          setPage('home')
-        }}
-      />
-    )
-  }
-
-  if (page === 'battle-select') {
-    return (
-      <BattleSelect
-        dinos={dinos}
-        onSelectBattle={(d1, d2) => {
-          setSelectedDino1(d1)
-          setSelectedDino2(d2)
-          setPage('battle')
-        }}
-        onBack={() => setPage('home')}
-      />
-    )
-  }
-
-  if (page === 'battle' && selectedDino1 && selectedDino2) {
-    return (
-      <BattleScreenNew
-        dino1={selectedDino1}
-        dino2={selectedDino2}
-        onBack={() => setPage('home')}
-        onRefresh={(newDinos) => {
-          setDinos(newDinos)
-          setPage('home')
-        }}
-      />
-    )
-  }
-
   return null
 }
 
@@ -339,95 +289,3 @@ function OfflineSelectDino({
   )
 }
 
-function BattleSelect({
-  dinos,
-  onSelectBattle,
-  onBack,
-}: {
-  dinos: Dino[]
-  onSelectBattle: (d1: Dino, d2: Dino) => void
-  onBack: () => void
-}) {
-  const [selected1, setSelected1] = useState<Dino | null>(null)
-  const [selected2, setSelected2] = useState<Dino | null>(null)
-
-  function handleStart() {
-    if (selected1 && selected2 && selected1.id !== selected2.id) {
-      onSelectBattle(selected1, selected2)
-    }
-  }
-
-  return (
-    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative">
-      {/* Arka plan efekti */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-96 h-96 bg-neon-pink opacity-5 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="relative z-10">
-        <button
-          onClick={onBack}
-          className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
-        >
-          ← Geri
-        </button>
-
-        <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-purple">⚔️ Savaş Seç</h1>
-
-        {dinos.length < 2 ? (
-          <div className="flex-1 flex items-center justify-center mt-8">
-            <p className="text-xl text-neon-cyan">Savaş için en az 2 dinozor gerek!</p>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col lg:flex-row gap-4 mt-6">
-            <div className="flex-1 flex flex-col gap-3">
-              <p className="font-bold text-lg text-neon-cyan">1. Dinozor:</p>
-              <div className="flex flex-col gap-2">
-                {dinos.map(d => (
-                  <button
-                    key={d.id}
-                    onClick={() => setSelected1(d)}
-                    className={`p-3 rounded-lg text-left font-bold transition ${
-                      selected1?.id === d.id
-                        ? 'glass-dark neon-border-cyan text-neon-cyan scale-105'
-                        : 'glass-dark border border-cyan-500/20 text-neon-cyan hover:border-cyan-500/50'
-                    }`}
-                  >
-                    🦖 {d.name} Lvl {d.level}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-col gap-3">
-              <p className="font-bold text-lg text-neon-pink">2. Dinozor:</p>
-              <div className="flex flex-col gap-2">
-                {dinos.map(d => (
-                  <button
-                    key={d.id}
-                    onClick={() => setSelected2(d)}
-                    className={`p-3 rounded-lg text-left font-bold transition ${
-                      selected2?.id === d.id
-                        ? 'glass-dark neon-border-pink text-neon-pink scale-105'
-                        : 'glass-dark border border-pink-500/20 text-neon-pink hover:border-pink-500/50'
-                    }`}
-                  >
-                    🦖 {d.name} Lvl {d.level}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={handleStart}
-          disabled={!selected1 || !selected2 || selected1.id === selected2.id}
-          className="w-full mt-6 px-6 py-4 glass-dark neon-border-pink rounded-lg font-bold text-lg text-neon-pink hover:shadow-neon-pink disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition"
-        >
-          ⚔️ Savaşı Başlat
-        </button>
-      </div>
-    </div>
-  )
-}
