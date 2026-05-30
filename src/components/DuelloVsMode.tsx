@@ -50,17 +50,25 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
   async function startScanner() {
     try {
+      setScannerActive(true)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       })
       if (videoRef.current) {
         videoRef.current.srcObject = stream
-        setScannerActive(true)
-        scanQRCode()
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(e => console.error('Play error:', e))
+          scanQRCode()
+        }
       }
     } catch (err) {
-      alert('Kamerayı açmak için izin gerekli!')
+      setScannerActive(false)
       console.error('Camera error:', err)
+      alert('Kamera erişimi reddedildi. Tarayıcı izinlerini kontrol et.')
     }
   }
 
@@ -172,7 +180,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
       setSessionData(updatedSession)
       setIsHost(false)
 
-      // Subscribe to session updates
+      // Subscribe to session updates - use actual sessionId from DB
       subscriptionRef.current = await subscribeToDuelloSession(joinCode, (newSession: SessionData) => {
         setSessionData(newSession)
         if (newSession.status === 'ready') {
@@ -366,13 +374,12 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           ) : (
             <>
               {/* Camera View */}
-              <div className="w-full bg-black rounded-xl overflow-hidden border-2 border-neon-purple">
+              <div className="w-full bg-black rounded-xl overflow-hidden border-2 border-neon-purple relative">
                 <video
                   ref={videoRef}
-                  autoPlay
                   playsInline
                   muted
-                  className="w-full h-64 object-cover bg-black"
+                  style={{ display: 'block', width: '100%', height: 'auto', minHeight: '256px', backgroundColor: 'black' }}
                 />
               </div>
               <canvas ref={canvasRef} className="hidden" />
@@ -410,7 +417,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
       <DuelloBattleScreen
         playerDino={selectedDino}
         opponentDino={opponentDino}
-        sessionId={sessionId}
+        sessionId={sessionData.session_id}
         isHost={isHost}
         playerId={user.id}
         opponentId={isHost ? (sessionData.guest_player_id || '') : (sessionData.host_player_id || '')}
