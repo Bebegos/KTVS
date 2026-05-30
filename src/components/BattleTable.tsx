@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../lib/auth-context'
 import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
-import BattleTableMode from './BattleTableMode'
+import BattleTableModeV2 from './BattleTableModeV2'
 
 interface BattleTableProps {
   onBack: () => void
@@ -93,7 +93,7 @@ export default function BattleTable({ onBack, onRefresh }: BattleTableProps) {
 
   // Savaş Ekranı
   return (
-    <BattleTableMode
+    <BattleTableModeV2
       dino={selectedDino}
       onBack={() => {
         setSelectedDino(null)
