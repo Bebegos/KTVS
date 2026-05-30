@@ -124,9 +124,18 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       duration: e.duration - 1,
     })).filter(e => e.duration > 0)
 
+    // Apply effect damages
     if (character.effects.some(e => e.type === 'poison')) {
       updateHp(-3)
       setBattleLog(prev => ['☠️ Zehir hasarı: -3', ...prev.slice(0, 5)])
+    }
+
+    if (character.effects.some(e => e.type === 'stun')) {
+      setBattleLog(prev => ['🌀 Sersem durumdan işlem yapılamıyor!', ...prev.slice(0, 5)])
+    }
+
+    if (character.effects.some(e => e.type === 'stop')) {
+      setBattleLog(prev => ['🛑 Durdurulmuş durumdan işlem yapılamıyor!', ...prev.slice(0, 5)])
     }
 
     setCharacter(c => ({
@@ -341,7 +350,10 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                     <div className="grid grid-cols-3 gap-2">
                       {[
                         { type: 'poison', emoji: '☠️', name: 'Zehir', isBuff: false },
+                        { type: 'stun', emoji: '🌀', name: 'Sersem', isBuff: false },
+                        { type: 'stop', emoji: '🛑', name: 'Dur', isBuff: false },
                         { type: 'power', emoji: '⚔️', name: 'Güç+', isBuff: true },
+                        { type: 'speed', emoji: '⚡', name: 'Hız+', isBuff: true },
                         { type: 'shield', emoji: '🛡️', name: 'Kalkan+', isBuff: true },
                       ].map(e => (
                         <button
