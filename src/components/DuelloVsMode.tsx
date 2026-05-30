@@ -3,8 +3,9 @@ import { motion } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import jsQR from 'jsqr'
 import { Dino } from '../game/types'
-import { createDuelloSession, getDuelloSession, joinDuelloSession, subscribeToDuelloSession } from '../lib/supabase'
+import { createDuelloSession, getDuelloSession, joinDuelloSession, subscribeToDuelloSession, getDino } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
+import DuelloBattleScreen from './DuelloBattleScreen'
 
 interface DuelloVsModeProps {
   selectedDino: Dino
@@ -108,6 +109,25 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (screen === 'confirmation' && sessionData && sessionData.guest_dino_id && !opponentDino) {
+      loadOpponentDino(sessionData.guest_dino_id)
+    } else if (screen === 'confirmation' && sessionData && sessionData.host_dino_id && !opponentDino && !isHost) {
+      loadOpponentDino(sessionData.host_dino_id)
+    }
+  }, [screen, sessionData, isHost, opponentDino])
+
+  async function loadOpponentDino(dinoId: string) {
+    try {
+      const dino = await getDino(dinoId)
+      if (dino) {
+        setOpponentDino(dino)
+      }
+    } catch (err) {
+      console.error('Rakip dinozor yüklemesi hatası:', err)
+    }
+  }
 
   async function startHosting() {
     try {
@@ -384,38 +404,27 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   }
 
   // Battle Screen (Düello)
-  if (screen === 'battle' && sessionData) {
+  if (screen === 'battle' && sessionData && opponentDino) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        {/* Arka plan */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-        </div>
-
-        <button
-          onClick={() => {
-            setScreen('options')
-            if (subscriptionRef.current) {
-              subscriptionRef.current.unsubscribe()
-            }
-          }}
-          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
-        >
-          ← Geri
-        </button>
-
-        <div className="text-center relative z-10">
-          <h1 className="text-4xl font-black text-neon-purple mb-6">⚔️ Düello Başladı</h1>
-          <p className="text-neon-cyan text-xl mb-8">Multiplayer savaş sistemi geliştiriliyor...</p>
-          <div className="text-lg text-neon-cyan/80 space-y-2">
-            <p>• Tur tabanlı savaş</p>
-            <p>• Hız bazlı sıra belirleme</p>
-            <p>• Pasif yetenekler devre dışı</p>
-            <p>• Gerçek zamanlı senkronizasyon</p>
-          </div>
-        </div>
-      </div>
+      <DuelloBattleScreen
+        playerDino={selectedDino}
+        opponentDino={opponentDino}
+        sessionId={sessionId}
+        isHost={isHost}
+        onBattleEnd={(winner) => {
+          // Handle battle end
+          setScreen('options')
+          if (subscriptionRef.current) {
+            subscriptionRef.current.unsubscribe()
+          }
+        }}
+        onBack={() => {
+          setScreen('options')
+          if (subscriptionRef.current) {
+            subscriptionRef.current.unsubscribe()
+          }
+        }}
+      />
     )
   }
 
@@ -453,23 +462,23 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
             {/* Guest Dino */}
             <div className="glass-dark neon-border-purple rounded-xl p-6 text-center">
-              <p className="text-xs font-bold text-neon-purple mb-2">KATILAN</p>
+              <p className="text-xs font-bold text-neon-purple mb-2">{isHost ? 'KATILAN' : 'DAVET EDEN'}</p>
               <div className="text-5xl mb-3">🦖</div>
-              {sessionData.guest_dino_id ? (
+              {opponentDino ? (
                 <>
-                  <h2 className="text-2xl font-black text-neon-purple mb-1">Dinozor</h2>
-                  <p className="text-sm text-neon-purple/80 mb-4">Lvl ?</p>
+                  <h2 className="text-2xl font-black text-neon-purple mb-1">{opponentDino.name}</h2>
+                  <p className="text-sm text-neon-purple/80 mb-4">Lvl {opponentDino.level}</p>
                   <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                    <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ ?</div>
-                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ ?</div>
-                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ ?</div>
+                    <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {opponentDino.maxHp}</div>
+                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {opponentDino.atk}</div>
+                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {opponentDino.def}</div>
                   </div>
-                  {!isHost && (
+                  {sessionData.status === 'ready' && (
                     <p className="text-xs text-neon-purple/60 mt-3">✓ Hazır</p>
                   )}
                 </>
               ) : (
-                <p className="text-neon-purple/70 text-lg">Bekleniyor...</p>
+                <p className="text-neon-purple/70 text-lg">Yükleniyor...</p>
               )}
             </div>
           </div>
