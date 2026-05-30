@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice } from '../game/engine'
 import AbilityIcon from './AbilityIcon'
+import BattleEffectVisuals from './BattleEffectVisuals'
 
 interface BattleTableModeV2Props {
   dino: Dino
@@ -40,6 +41,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   const [lastDiceResult, setLastDiceResult] = useState<number | null>(null)
   const [lastDamageAbility, setLastDamageAbility] = useState<{ abilityIdx: number; damage: number } | null>(null)
   const [battleLog, setBattleLog] = useState<string[]>([])
+  const [currentEffectVisual, setCurrentEffectVisual] = useState<'buff' | 'debuff' | 'damage' | null>(null)
+  const [showEffectVisual, setShowEffectVisual] = useState(false)
 
   function rollDiceForAttack(abilityIdx: number) {
     if (diceRolling || character.abilities[abilityIdx].cd > 0) return
@@ -61,6 +64,11 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       }
 
       setLastDamageAbility({ abilityIdx, damage })
+
+      // Show damage effect visual
+      setCurrentEffectVisual('damage')
+      setShowEffectVisual(true)
+      setTimeout(() => setShowEffectVisual(false), 1500)
 
       // Log
       const logMsg = `${ability.name} [Zar: ${diceResult.value}] → ${Math.round(damage)} hasar${
@@ -90,6 +98,13 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   }
 
   function addEffect(effectType: string) {
+    const isBuff = ['power', 'speed', 'shield'].includes(effectType)
+
+    // Show effect visual
+    setCurrentEffectVisual(isBuff ? 'buff' : 'debuff')
+    setShowEffectVisual(true)
+    setTimeout(() => setShowEffectVisual(false), 1500)
+
     const newEffects = [...character.effects]
     const existing = newEffects.findIndex(e => e.type === effectType)
 
@@ -158,6 +173,9 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
 
   return (
     <div className="w-screen h-screen flex flex-col relative overflow-hidden">
+      {/* Battle effect visuals */}
+      <BattleEffectVisuals effectType={currentEffectVisual} isVisible={showEffectVisual} />
+
       {/* Arka plan blur efektleri */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-20 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>

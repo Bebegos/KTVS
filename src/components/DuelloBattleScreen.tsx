@@ -4,6 +4,7 @@ import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice, calculateDamage, hasEffect, applyEffect } from '../game/engine'
 import { supabase } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
+import BattleEffectVisuals from './BattleEffectVisuals'
 
 interface DuelloBattleScreenProps {
   playerDino: Dino
@@ -81,6 +82,8 @@ export default function DuelloBattleScreen({
   const [playerSelectedAbility, setPlayerSelectedAbility] = useState<number | null>(null)
   const [opponentSelectedAbility, setOpponentSelectedAbility] = useState<number | null>(null)
   const [roundInProgress, setRoundInProgress] = useState(false)
+  const [currentEffectVisual, setCurrentEffectVisual] = useState<'buff' | 'debuff' | 'damage' | null>(null)
+  const [showEffectVisual, setShowEffectVisual] = useState(false)
 
   const playerHpPercent = (playerChar.currentHp / playerChar.dino.maxHp) * 100
   const opponentHpPercent = (opponentChar.currentHp / opponentChar.dino.maxHp) * 100
@@ -215,12 +218,23 @@ export default function DuelloBattleScreen({
       const logMsg = `${ability.name} [Zar: ${diceValue}] → ${Math.round(finalDamage)} hasar`
       setBattleLog(prev => [logMsg, ...prev.slice(0, 9)])
 
+      // Show damage effect visual
+      setCurrentEffectVisual('damage')
+      setShowEffectVisual(true)
+      setTimeout(() => setShowEffectVisual(false), 1500)
+
       setOpponentChar(c => ({
         ...c,
         currentHp: Math.max(0, c.currentHp - finalDamage),
       }))
 
       if (ability.effect !== 'none') {
+        // Show buff/debuff effect visual
+        const isBuff = ability.kind === 'buff'
+        setCurrentEffectVisual(isBuff ? 'buff' : 'debuff')
+        setShowEffectVisual(true)
+        setTimeout(() => setShowEffectVisual(false), 1500)
+
         setOpponentChar(c => {
           const newEffects = [...c.effects]
           const existing = newEffects.findIndex(e => e.type === ability.effect)
@@ -368,6 +382,9 @@ export default function DuelloBattleScreen({
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 p-4 overflow-y-auto relative">
+      {/* Battle effect visuals */}
+      <BattleEffectVisuals effectType={currentEffectVisual} isVisible={showEffectVisual} />
+
       {/* Header with stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Player */}
