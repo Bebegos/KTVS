@@ -7,9 +7,10 @@ interface DinoListProps {
   dinos: Dino[]
   onBack: () => void
   onRefresh: (dinos: Dino[]) => void
+  onEdit?: (dino: Dino) => void
 }
 
-export default function DinoList({ dinos, onBack, onRefresh }: DinoListProps) {
+export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListProps) {
   const { user } = useAuth()
   const [deleting, setDeleting] = useState<string | null>(null)
 
@@ -92,13 +93,23 @@ export default function DinoList({ dinos, onBack, onRefresh }: DinoListProps) {
                 </div>
               )}
 
-              <button
-                onClick={() => handleDelete(dino.id)}
-                disabled={deleting === dino.id}
-                className="w-full px-4 py-2 bg-red-500 text-white rounded font-bold hover:bg-red-600 disabled:bg-gray-400"
-              >
-                {deleting === dino.id ? '⏳' : '🗑️'} Sil
-              </button>
+              <div className="flex gap-2">
+                {onEdit && (
+                  <button
+                    onClick={() => onEdit(dino)}
+                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded font-bold hover:bg-blue-600 active:scale-95 transition"
+                  >
+                    ✏️ Düzenle
+                  </button>
+                )}
+                <button
+                  onClick={() => handleDelete(dino.id)}
+                  disabled={deleting === dino.id}
+                  className="flex-1 px-4 py-2 bg-red-500 text-white rounded font-bold hover:bg-red-600 disabled:bg-gray-400"
+                >
+                  {deleting === dino.id ? '⏳' : '🗑️'} Sil
+                </button>
+              </div>
             </div>
           ))}
         </div>

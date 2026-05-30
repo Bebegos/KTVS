@@ -64,60 +64,72 @@ export default function Home() {
   // Ana Menü
   if (page === 'home') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 gap-4 bg-gradient-to-br from-dino-100 via-purple-100 to-blue-100">
+      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 gap-6 relative overflow-hidden">
+        {/* Arka plan efekti */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-72 h-72 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        </div>
+
         {/* Üst Bar */}
-        <div className="absolute top-4 right-4 flex gap-2 items-center">
-          <p className="text-sm font-bold text-dino-700">👤 {user?.username || user?.email}</p>
+        <div className="absolute top-4 right-4 flex gap-3 items-center z-10">
+          <div className="glass px-4 py-2 rounded-lg">
+            <p className="text-sm font-bold text-neon-cyan">👤 {user?.username || user?.email}</p>
+          </div>
           <button
             onClick={handleSignOut}
-            className="px-3 py-2 bg-red-500 text-white rounded font-bold text-sm hover:bg-red-600"
+            className="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg font-bold text-sm backdrop-blur-md border border-red-500/30 transition"
           >
             🚪 Çıkış
           </button>
         </div>
 
         {/* Başlık */}
-        <div className="text-center mb-8">
-          <div className="text-8xl mb-2">🦖</div>
-          <h1 className="text-4xl font-bold text-dino-700">Dino-RP</h1>
-          <p className="text-lg text-dino-600 mt-2">Dinozor Savaş ve Gelişim Oyunu</p>
+        <div className="text-center mb-8 z-10">
+          <div className="text-8xl mb-4 float-animation">🦖</div>
+          <h1 className="text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink mb-2">
+            Dino-RP
+          </h1>
+          <p className="text-lg text-neon-cyan opacity-80">Dinozor Savaş ve Gelişim Oyunu</p>
         </div>
 
         {/* Butonlar */}
-        <button
-          onClick={() => setPage('dino-list')}
-          className="w-full max-w-sm px-6 py-4 bg-gradient-to-br from-dino-400 to-dino-600 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition shadow-md"
-        >
-          🦖 Dinozorlarım
-        </button>
+        <div className="w-full max-w-sm flex flex-col gap-4 z-10">
+          <button
+            onClick={() => setPage('dino-list')}
+            className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-xl font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition duration-300"
+          >
+            🦖 Dinozorlarım
+          </button>
 
-        <button
-          onClick={() => setPage('battle-select')}
-          className="w-full max-w-sm px-6 py-4 bg-gradient-to-br from-red-400 to-red-600 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition shadow-md"
-        >
-          ⚔️ Savaş (2 vs 2)
-        </button>
+          <button
+            onClick={() => setPage('battle-select')}
+            className="w-full px-6 py-4 glass-dark neon-border-pink rounded-xl font-bold text-lg text-pink-400 hover:shadow-neon-pink active:scale-95 transition duration-300"
+          >
+            ⚔️ Savaş (2 vs 2)
+          </button>
 
-        <button
-          onClick={() => setPage('battle-table')}
-          className="w-full max-w-sm px-6 py-4 bg-gradient-to-br from-yellow-400 to-orange-600 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition shadow-md"
-        >
-          🎲 Masada Oyna
-        </button>
+          <button
+            onClick={() => setPage('battle-table')}
+            className="w-full px-6 py-4 glass-dark neon-border-purple rounded-xl font-bold text-lg text-neon-purple hover:shadow-neon-purple active:scale-95 transition duration-300"
+          >
+            🎲 Masada Oyna
+          </button>
 
-        <button
-          onClick={() => setPage('match-log')}
-          className="w-full max-w-sm px-6 py-4 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition shadow-md"
-        >
-          📋 Maç Günlüğü
-        </button>
+          <button
+            onClick={() => setPage('match-log')}
+            className="w-full px-6 py-4 glass-dark border border-blue-500/30 rounded-xl font-bold text-lg text-blue-400 hover:shadow-blue-500/50 active:scale-95 transition duration-300"
+          >
+            📋 Maç Günlüğü
+          </button>
 
-        <button
-          onClick={() => setPage('dino-form')}
-          className="w-full max-w-sm px-6 py-4 bg-gradient-to-br from-purple-400 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition shadow-md"
-        >
-          ✨ Yeni Dinozor
-        </button>
+          <button
+            onClick={() => setPage('dino-form')}
+            className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-xl font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition duration-300"
+          >
+            ✨ Yeni Dinozor
+          </button>
+        </div>
       </div>
     )
   }
@@ -213,69 +225,76 @@ function BattleSelect({
   }
 
   return (
-    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto bg-gradient-to-br from-dino-100 to-blue-100">
-      <button
-        onClick={onBack}
-        className="self-start px-4 py-2 bg-gray-500 text-white rounded-lg font-bold"
-      >
-        ← Geri
-      </button>
+    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative">
+      {/* Arka plan efekti */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 right-10 w-96 h-96 bg-neon-pink opacity-5 rounded-full blur-3xl"></div>
+      </div>
 
-      <h1 className="text-3xl font-bold text-dino-700 text-center">⚔️ Savaş Seç</h1>
+      <div className="relative z-10">
+        <button
+          onClick={onBack}
+          className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+        >
+          ← Geri
+        </button>
 
-      {dinos.length < 2 ? (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-xl text-dino-600">Savaş için en az 2 dinozor gerek!</p>
-        </div>
-      ) : (
-        <div className="flex-1 flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 flex flex-col gap-2">
-            <p className="font-bold text-lg text-dino-700">1. Dinozor:</p>
-            <div className="flex flex-col gap-2">
-              {dinos.map(d => (
-                <button
-                  key={d.id}
-                  onClick={() => setSelected1(d)}
-                  className={`p-3 rounded text-left font-bold transition ${
-                    selected1?.id === d.id
-                      ? 'bg-dino-500 text-white scale-105'
-                      : 'bg-white border-2 border-dino-300 text-dino-700 hover:border-dino-500'
-                  }`}
-                >
-                  🦖 {d.name} Lvl {d.level}
-                </button>
-              ))}
+        <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-purple">⚔️ Savaş Seç</h1>
+
+        {dinos.length < 2 ? (
+          <div className="flex-1 flex items-center justify-center mt-8">
+            <p className="text-xl text-neon-cyan">Savaş için en az 2 dinozor gerek!</p>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col lg:flex-row gap-4 mt-6">
+            <div className="flex-1 flex flex-col gap-3">
+              <p className="font-bold text-lg text-neon-cyan">1. Dinozor:</p>
+              <div className="flex flex-col gap-2">
+                {dinos.map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => setSelected1(d)}
+                    className={`p-3 rounded-lg text-left font-bold transition ${
+                      selected1?.id === d.id
+                        ? 'glass-dark neon-border-cyan text-neon-cyan scale-105'
+                        : 'glass-dark border border-cyan-500/20 text-neon-cyan hover:border-cyan-500/50'
+                    }`}
+                  >
+                    🦖 {d.name} Lvl {d.level}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col gap-3">
+              <p className="font-bold text-lg text-neon-pink">2. Dinozor:</p>
+              <div className="flex flex-col gap-2">
+                {dinos.map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => setSelected2(d)}
+                    className={`p-3 rounded-lg text-left font-bold transition ${
+                      selected2?.id === d.id
+                        ? 'glass-dark neon-border-pink text-neon-pink scale-105'
+                        : 'glass-dark border border-pink-500/20 text-neon-pink hover:border-pink-500/50'
+                    }`}
+                  >
+                    🦖 {d.name} Lvl {d.level}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
+        )}
 
-          <div className="flex-1 flex flex-col gap-2">
-            <p className="font-bold text-lg text-dino-700">2. Dinozor:</p>
-            <div className="flex flex-col gap-2">
-              {dinos.map(d => (
-                <button
-                  key={d.id}
-                  onClick={() => setSelected2(d)}
-                  className={`p-3 rounded text-left font-bold transition ${
-                    selected2?.id === d.id
-                      ? 'bg-red-500 text-white scale-105'
-                      : 'bg-white border-2 border-red-300 text-red-700 hover:border-red-500'
-                  }`}
-                >
-                  🦖 {d.name} Lvl {d.level}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <button
-        onClick={handleStart}
-        disabled={!selected1 || !selected2 || selected1.id === selected2.id}
-        className="w-full px-6 py-4 bg-gradient-to-br from-red-500 to-red-700 text-white rounded-lg font-bold text-lg hover:shadow-lg disabled:bg-gray-400 active:scale-95 transition"
-      >
-        ⚔️ Savaşı Başlat
-      </button>
+        <button
+          onClick={handleStart}
+          disabled={!selected1 || !selected2 || selected1.id === selected2.id}
+          className="w-full mt-6 px-6 py-4 glass-dark neon-border-pink rounded-lg font-bold text-lg text-neon-pink hover:shadow-neon-pink disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition"
+        >
+          ⚔️ Savaşı Başlat
+        </button>
+      </div>
     </div>
   )
 }
