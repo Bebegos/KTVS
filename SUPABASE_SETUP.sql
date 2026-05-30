@@ -1,11 +1,21 @@
 -- Dino-RP Web Game — Supabase SQL Setup
 -- Supabase SQL Editor'de bu komutları çalıştır
 
+-- 0. PROFILES tablosu (kullanıcı profilleri)
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "profiles_access" ON profiles FOR ALL USING (true) WITH CHECK (true);
+
 -- 1. DINOS tablosu (karakter yönetimi)
 CREATE TABLE IF NOT EXISTS dinos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  family_code TEXT NOT NULL,
-  owner_id UUID,
+  owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  family_code TEXT,
   name TEXT NOT NULL,
   element TEXT,
   passive TEXT,

@@ -24,31 +24,36 @@ export function calculateDamage(
   diceValue: number
 ): number {
   const isCrit = diceValue === GAME_CONFIG.CRIT_VALUE
-  const isHit = !GAME_CONFIG.STUN_MISS_RANGE.includes(diceValue) || !hasEffect(defender, 'stun')
+  const isMiss = diceValue === GAME_CONFIG.MISS_VALUE
 
-  if (!isHit) {
+  if (isMiss) {
     return 0
   }
 
-  let baseDamage = attacker.atk + diceValue
-  let defense = defender.def
+  // Yeni formül: (zar + STR) × modifikatör - DEF
+  let baseDamage = (diceValue + attacker.atk) * 1 // modifikatör şimdilik 1x
 
-  // Güç+ efekti
+  // Güç+ efekti (modifikatör arttır)
+  let modifier = 1
   if (hasEffect(attacker, 'power')) {
-    baseDamage += GAME_CONFIG.EFFECT_BONUS.power
+    modifier = 1.5 // %50 hasar artışı
   }
 
-  // Kalkan+ efekti
+  let totalDamage = (diceValue + attacker.atk) * modifier
+  let defense = defender.def
+
+  // Kalkan+ efekti (savunma arttır)
   if (hasEffect(defender, 'shield')) {
     defense += GAME_CONFIG.EFFECT_BONUS.shield
   }
 
-  let damage = baseDamage - defense
+  // Kritik hasar
+  let finalDamage = totalDamage - defense
   if (isCrit) {
-    damage *= GAME_CONFIG.CRIT_MULTIPLIER
+    finalDamage *= GAME_CONFIG.CRIT_MULTIPLIER
   }
 
-  return Math.max(damage, GAME_CONFIG.MIN_DAMAGE)
+  return Math.max(finalDamage, GAME_CONFIG.MIN_DAMAGE)
 }
 
 export function hasEffect(character: BattleCharacter, effectType: string): boolean {

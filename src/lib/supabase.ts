@@ -29,13 +29,18 @@ function generateFamilyCode(): string {
   return code
 }
 
-export async function getDinos() {
-  const familyCode = await getFamilyCode()
-  const { data, error } = await supabase
-    .from('dinos')
-    .select('*')
-    .eq('family_code', familyCode)
+export async function getDinos(userId?: string) {
+  let query = supabase.from('dinos').select('*')
 
+  if (userId) {
+    query = query.eq('owner_id', userId)
+  } else {
+    // Fallback: family code
+    const familyCode = await getFamilyCode()
+    query = query.eq('family_code', familyCode)
+  }
+
+  const { data, error } = await query
   if (error) throw error
   return data || []
 }
