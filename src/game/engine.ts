@@ -183,6 +183,8 @@ function dinoToCharacter(dino: Dino): BattleCharacter {
     maxCd: a.cd,
     kind: a.kind,
     effect: a.effect,
+    multiplier: a.multiplier,
+    icon: a.icon,
   }))
 
   return {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../lib/auth-context'
 import { Dino, DinoAbility } from '../game/types'
 import { createDino, getDinos } from '../lib/supabase'
+import AttackIconPicker from './AttackIconPicker'
 
 interface DinoFormProps {
   onBack: () => void
@@ -9,11 +10,11 @@ interface DinoFormProps {
 }
 
 const DEFAULT_ABILITIES: DinoAbility[] = [
-  { name: 'Pençe Saldırısı', cd: 0, kind: 'debuff', effect: 'none', multiplier: 1 },
-  { name: 'Zehirli Isırık', cd: 2, kind: 'debuff', effect: 'poison', multiplier: 1 },
-  { name: 'Güçlendirme', cd: 3, kind: 'buff', effect: 'power', multiplier: 1 },
-  { name: 'Hızlı Koşu', cd: 2, kind: 'buff', effect: 'speed', multiplier: 1 },
-  { name: 'ULTI: Meteor', cd: 4, kind: 'debuff', effect: 'stop', multiplier: 2 },
+  { name: 'Pençe Saldırısı', cd: 0, kind: 'debuff', effect: 'none', multiplier: 1, icon: 'claw' },
+  { name: 'Zehirli Isırık', cd: 2, kind: 'debuff', effect: 'poison', multiplier: 1, icon: 'venom' },
+  { name: 'Güçlendirme', cd: 3, kind: 'buff', effect: 'power', multiplier: 1, icon: 'aura' },
+  { name: 'Hızlı Koşu', cd: 2, kind: 'buff', effect: 'speed', multiplier: 1, icon: 'wind' },
+  { name: 'ULTI: Meteor', cd: 4, kind: 'debuff', effect: 'stop', multiplier: 2, icon: 'meteor' },
 ]
 
 export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
@@ -226,6 +227,14 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
                           value={ability.multiplier || 1}
                           onChange={e => updateAbility(idx, 'multiplier', parseFloat(e.target.value))}
                           className="w-full px-2 py-1 bg-slate-800 border border-neon-purple/30 rounded text-sm text-neon-purple"
+                        />
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="block text-xs font-bold text-neon-cyan mb-1">Saldırı İkonu</label>
+                        <AttackIconPicker
+                          selectedId={(ability as any).icon}
+                          onSelect={icon => updateAbility(idx, 'icon', icon)}
                         />
                       </div>
 

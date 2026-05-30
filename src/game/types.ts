@@ -10,6 +10,7 @@ export interface Ability {
   effect: EffectKind
   multiplier?: number // Hasar çarpanı (varsayılan 1x)
   description?: string
+  icon?: string // Saldırı ikonu ID'si
 }
 
 export interface DinoAbility {
@@ -18,6 +19,7 @@ export interface DinoAbility {
   kind: AbilityType
   effect: EffectKind
   multiplier?: number // Hasar çarpanı (varsayılan 1x)
+  icon?: string // Saldırı ikonu ID'si
 }
 
 export interface Dino {
