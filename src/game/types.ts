@@ -8,6 +8,7 @@ export interface Ability {
   maxCd: number
   kind: AbilityType
   effect: EffectKind
+  multiplier?: number // Hasar çarpanı (varsayılan 1x)
   description?: string
 }
 
@@ -16,6 +17,7 @@ export interface DinoAbility {
   cd: number
   kind: AbilityType
   effect: EffectKind
+  multiplier?: number // Hasar çarpanı (varsayılan 1x)
 }
 
 export interface Dino {

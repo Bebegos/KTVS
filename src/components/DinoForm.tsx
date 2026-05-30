@@ -9,11 +9,11 @@ interface DinoFormProps {
 }
 
 const DEFAULT_ABILITIES: DinoAbility[] = [
-  { name: 'Pençe Saldırısı', cd: 0, kind: 'debuff', effect: 'none' },
-  { name: 'Zehirli Isırık', cd: 2, kind: 'debuff', effect: 'poison' },
-  { name: 'Güçlendirme', cd: 3, kind: 'buff', effect: 'power' },
-  { name: 'Hızlı Koşu', cd: 2, kind: 'buff', effect: 'speed' },
-  { name: 'ULTI: Meteor', cd: 4, kind: 'debuff', effect: 'stop' },
+  { name: 'Pençe Saldırısı', cd: 0, kind: 'debuff', effect: 'none', multiplier: 1 },
+  { name: 'Zehirli Isırık', cd: 2, kind: 'debuff', effect: 'poison', multiplier: 1 },
+  { name: 'Güçlendirme', cd: 3, kind: 'buff', effect: 'power', multiplier: 1 },
+  { name: 'Hızlı Koşu', cd: 2, kind: 'buff', effect: 'speed', multiplier: 1 },
+  { name: 'ULTI: Meteor', cd: 4, kind: 'debuff', effect: 'stop', multiplier: 2 },
 ]
 
 export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
@@ -210,6 +210,18 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
                       </div>
                     </div>
 
+                    <div className="mb-2">
+                      <label className="block text-xs font-bold text-dino-700 mb-1">Hasar Çarpanı (×)</label>
+                      <input
+                        type="number"
+                        min="0.5"
+                        step="0.5"
+                        value={ability.multiplier || 1}
+                        onChange={e => updateAbility(idx, 'multiplier', parseFloat(e.target.value))}
+                        className="w-full px-2 py-1 border border-dino-300 rounded text-sm"
+                      />
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => setEditingAbility(null)}
@@ -226,7 +238,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
                   >
                     <p className="font-bold text-dino-700">{ability.name}</p>
                     <p className="text-xs text-dino-600">
-                      CD: {ability.cd} • {ability.kind} • {ability.effect}
+                      CD: {ability.cd} • {ability.kind} • {ability.effect} • ×{ability.multiplier || 1}
                     </p>
                   </button>
                 )}

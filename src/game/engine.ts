@@ -21,7 +21,8 @@ export function rollDice(): DiceResult {
 export function calculateDamage(
   attacker: BattleCharacter,
   defender: BattleCharacter,
-  diceValue: number
+  diceValue: number,
+  abilityMultiplier?: number
 ): number {
   const isCrit = diceValue === GAME_CONFIG.CRIT_VALUE
   const isMiss = diceValue === GAME_CONFIG.MISS_VALUE
@@ -30,13 +31,12 @@ export function calculateDamage(
     return 0
   }
 
-  // Yeni formül: (zar + STR) × modifikatör - DEF
-  let baseDamage = (diceValue + attacker.atk) * 1 // modifikatör şimdilik 1x
+  // Formül: (zar + STR) × yetenek_çarpanı × efekt_çarpanı - DEF
+  let modifier = abilityMultiplier || 1 // Yetenek çarpanı (varsayılan 1x)
 
-  // Güç+ efekti (modifikatör arttır)
-  let modifier = 1
+  // Güç+ efekti (modifikatörü arttır)
   if (hasEffect(attacker, 'power')) {
-    modifier = 1.5 // %50 hasar artışı
+    modifier *= 1.5 // %50 hasar artışı
   }
 
   let totalDamage = (diceValue + attacker.atk) * modifier
@@ -75,7 +75,7 @@ export function applyAbility(
     return newState
   }
 
-  const damage = calculateDamage(attackerChar, defenderChar, diceRoll.value)
+  const damage = calculateDamage(attackerChar, defenderChar, diceRoll.value, ability.multiplier)
   const isHit = damage > 0 && !diceRoll.isMiss
   const isCrit = diceRoll.isCrit && isHit
 
