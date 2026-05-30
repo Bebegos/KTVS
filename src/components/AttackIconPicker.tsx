@@ -35,7 +35,7 @@ export default function AttackIconPicker({ selectedId, onSelect }: AttackIconPic
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-neon-cyan rounded-lg p-3 z-50 max-h-96 overflow-y-auto shadow-lg">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-neon-cyan rounded-lg p-3 z-[100] max-h-96 overflow-y-auto shadow-lg shadow-neon-cyan/50">
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {attackIcons.map(icon => (
               <button
