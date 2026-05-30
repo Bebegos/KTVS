@@ -1,0 +1,15 @@
+# Supabase yapılandırması (Supabase CLI ile kullanılır)
+# Hosted projede bu ayarlar Dashboard'dan da yapılabilir.
+# CLI kullanıyorsan: `supabase link` sonrası `supabase config push` ile uygulanır.
+
+[auth]
+# Site URL ve yönlendirme
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173"]
+
+[auth.email]
+# ALPHA FAZI: Email onayı KAPALI — kayıt sonrası kullanıcı direkt giriş yapar.
+# Üretimde güvenlik için true yapılması önerilir.
+enable_confirmations = false
+# Güvenli şifre değişikliği için tekrar kimlik doğrulama gerekmesin (alpha kolaylığı)
+secure_password_change = false
