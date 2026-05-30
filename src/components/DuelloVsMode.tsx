@@ -85,28 +85,53 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
   function scanQRCode() {
     scanIntervalRef.current = setInterval(() => {
-      if (videoRef.current && canvasRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-        const canvas = canvasRef.current
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
+      if (!videoRef.current || !canvasRef.current) return
 
-        canvas.width = videoRef.current.videoWidth
-        canvas.height = videoRef.current.videoHeight
-        ctx.drawImage(videoRef.current, 0, 0)
+      // Check if video is ready
+      if (videoRef.current.readyState !== videoRef.current.HAVE_ENOUGH_DATA) return
 
+      // Check video dimensions
+      const videoWidth = videoRef.current.videoWidth
+      const videoHeight = videoRef.current.videoHeight
+      if (videoWidth === 0 || videoHeight === 0) return
+
+      const canvas = canvasRef.current
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+
+      // Set canvas dimensions and draw video frame
+      canvas.width = videoWidth
+      canvas.height = videoHeight
+      ctx.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight)
+
+      try {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
         const code = jsQR(imageData.data, imageData.width, imageData.height)
 
         if (code && code.data) {
-          const url = new URL(code.data)
-          const duelloCode = url.searchParams.get('duello')
-          if (duelloCode) {
-            setJoinCode(duelloCode.toUpperCase())
-            stopScanner()
+          try {
+            // Try to parse as URL with duello parameter
+            const url = new URL(code.data)
+            const duelloCode = url.searchParams.get('duello')
+            if (duelloCode && duelloCode.length === 9) {
+              setJoinCode(duelloCode.toUpperCase())
+              stopScanner()
+              return
+            }
+          } catch (e) {
+            // If URL parsing fails, try direct string match
+            const match = code.data.match(/duello=([A-Z0-9]{9})/)
+            if (match && match[1]) {
+              setJoinCode(match[1].toUpperCase())
+              stopScanner()
+              return
+            }
           }
         }
+      } catch (err) {
+        console.error('QR scanning error:', err)
       }
-    }, 200)
+    }, 100)
   }
 
   useEffect(() => {
@@ -119,18 +144,37 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   }, [])
 
   useEffect(() => {
-    if (screen === 'confirmation' && sessionData && sessionData.guest_dino_id && !opponentDino) {
+    if (screen !== 'confirmation' || !sessionData || opponentDino) return
+
+    console.log('Opponent dino load kontrol:', {
+      isHost,
+      guest_dino_id: sessionData.guest_dino_id,
+      host_dino_id: sessionData.host_dino_id
+    })
+
+    // Host yükle: Guest'in dinozorunu
+    if (isHost && sessionData.guest_dino_id) {
+      console.log('Host: Guest dino yükleniyor')
       loadOpponentDino(sessionData.guest_dino_id)
-    } else if (screen === 'confirmation' && sessionData && sessionData.host_dino_id && !opponentDino && !isHost) {
+    }
+    // Guest yükle: Host'un dinozorunu
+    else if (!isHost && sessionData.host_dino_id) {
+      console.log('Guest: Host dino yükleniyor')
       loadOpponentDino(sessionData.host_dino_id)
+    } else {
+      console.warn('Opponent dino ID bulunamadı:', sessionData)
     }
   }, [screen, sessionData, isHost, opponentDino])
 
   async function loadOpponentDino(dinoId: string) {
     try {
+      console.log('Opponent dino yükleniyor:', dinoId)
       const dino = await getDino(dinoId)
+      console.log('Opponent dino yüklemesi başarılı:', dino)
       if (dino) {
         setOpponentDino(dino)
+      } else {
+        console.warn('Dino bulunamadı:', dinoId)
       }
     } catch (err) {
       console.error('Rakip dinozor yüklemesi hatası:', err)
@@ -494,13 +538,24 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           {/* VS */}
           <div className="text-4xl font-black text-neon-cyan">VS</div>
 
-          {sessionData.status === 'ready' && sessionData.guest_dino_id && (
+          {sessionData.status === 'ready' && sessionData.guest_dino_id && sessionData.host_dino_id && opponentDino && (
             <button
               onClick={() => setScreen('battle')}
               className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-lg font-bold text-lg text-neon-cyan hover:shadow-neon-cyan transition"
             >
               ⚔️ DÜELLOYA BAŞLA
             </button>
+          )}
+
+          {/* Debug info - only in development */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="w-full text-xs text-neon-cyan/50 mt-4 p-2 border border-neon-cyan/20 rounded">
+              <p>Status: {sessionData.status}</p>
+              <p>Guest dino: {sessionData.guest_dino_id || 'boş'}</p>
+              <p>Host dino: {sessionData.host_dino_id || 'boş'}</p>
+              <p>Opponent yüklendi: {opponentDino ? 'Evet' : 'Hayır'}</p>
+              <p>Oyuncu: {isHost ? 'Host' : 'Guest'}</p>
+            </div>
           )}
 
           <button
