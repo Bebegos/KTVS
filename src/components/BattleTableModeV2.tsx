@@ -28,6 +28,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       maxCd: a.cd,
       kind: a.kind,
       effect: a.effect,
+      multiplier: a.multiplier,
     })),
   })
 
@@ -47,7 +48,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
     setTimeout(() => {
       // Hasar hesapla
       const baseDamage = diceResult.value + character.dino.atk
-      let damage = baseDamage
+      let damage = baseDamage * (ability.multiplier || 1)
 
       if (diceResult.isCrit) {
         damage *= 2
@@ -58,7 +59,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       setLastDamageAbility({ abilityIdx, damage })
 
       // Log
-      const logMsg = `${ability.name} [Zar: ${diceResult.value}] → ${damage} hasar${
+      const logMsg = `${ability.name} [Zar: ${diceResult.value}] → ${Math.round(damage)} hasar${
         diceResult.isCrit ? ' 🌟 KRİTİK!' : diceResult.isMiss ? ' ❌ IŞKA!' : ''
       }`
       setBattleLog(prev => [logMsg, ...prev.slice(0, 5)])
@@ -136,90 +137,94 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   }
 
   const hpPercent = (character.currentHp / character.dino.maxHp) * 100
-  const hpColor = hpPercent > 50 ? 'bg-green-500' : hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-100 overflow-hidden">
+    <div className="w-screen h-screen flex flex-col relative overflow-hidden">
+      {/* Arka plan blur efektleri */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-20 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-20 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+      </div>
+
       {/* Üst Bar */}
-      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-green-700 to-green-900 text-white shadow-lg border-b-4 border-green-900">
+      <div className="relative z-10 flex justify-between items-center p-4 glass-dark neon-border-cyan border-b">
         <button
           onClick={onBack}
-          className="px-3 py-1 bg-red-600 rounded-lg font-bold text-sm hover:bg-red-700"
+          className="px-4 py-2 glass-dark neon-border-pink rounded-lg font-bold text-neon-pink hover:shadow-neon-pink transition"
         >
           🚪 Çık
         </button>
-        <h1 className="font-black text-lg">🎲 MASADA OYN - {character.dino.name}</h1>
-        <div className="w-20 text-right">
-          <p className="font-black text-sm">Lvl {character.dino.level}</p>
+        <h1 className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
+          🎲 MASADA OYN - {character.dino.name}
+        </h1>
+        <div className="text-right">
+          <p className="font-black text-lg text-neon-cyan">Lvl {character.dino.level}</p>
         </div>
       </div>
 
-      {/* Ana İçerik - Responsive Grid */}
-      <div className="flex-1 overflow-auto p-3 md:p-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Parşömen Kartı */}
+      {/* Ana İçerik */}
+      <div className="flex-1 overflow-auto p-3 md:p-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          {/* Ana Kart */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-green-50 via-yellow-50 to-yellow-100 border-6 border-green-700 rounded-2xl p-4 md:p-6 shadow-2xl"
-            style={{
-              backgroundImage: 'url("data:image/svg+xml,%3Csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="2" /%3E%3C/filter%3E%3Crect width="100" height="100" filter="url(%23noise)" opacity="0.03"/%3E%3C/svg%3E")',
-            }}
+            className="glass-dark neon-border-cyan rounded-2xl p-6 md:p-8"
           >
-            {/* Grid Layout - Responsive */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+            {/* Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Sol Sütun - HP & Statlar */}
               <div className="space-y-4">
                 {/* Başlık */}
-                <div className="bg-green-700 text-white rounded-xl p-3 text-center">
-                  <p className="text-3xl mb-1">🦖</p>
-                  <h2 className="font-black text-xl">{character.dino.name}</h2>
-                  <p className="text-sm font-bold">Seviye {character.dino.level}</p>
+                <div className="glass-dark neon-border-purple rounded-xl p-4 text-center">
+                  <p className="text-4xl mb-2">🦖</p>
+                  <h2 className="font-black text-2xl text-neon-purple">{character.dino.name}</h2>
+                  <p className="text-sm font-bold text-neon-purple/80">Seviye {character.dino.level}</p>
                 </div>
 
                 {/* HP Slider */}
-                <div className="bg-white border-4 border-red-500 rounded-lg p-3">
-                  <div className="flex justify-between mb-2">
-                    <span className="font-black text-red-700">❤️ CAN</span>
-                    <span className="font-bold text-red-700">{Math.round(character.currentHp)}/{character.dino.maxHp}</span>
+                <div className="glass border border-red-500/30 rounded-xl p-4">
+                  <div className="flex justify-between mb-3">
+                    <span className="font-black text-red-400">❤️ CAN</span>
+                    <span className="font-bold text-red-400">{Math.round(character.currentHp)}/{character.dino.maxHp}</span>
                   </div>
 
-                  {/* Görsel Slider */}
+                  {/* Slider */}
                   <input
                     type="range"
                     min="0"
                     max={character.dino.maxHp}
                     value={character.currentHp}
                     onChange={e => updateHp(parseFloat(e.target.value) - character.currentHp)}
-                    className="w-full h-6 rounded-lg appearance-none bg-gray-300 cursor-pointer"
+                    className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700"
                     style={{
-                      background: `linear-gradient(to right, ${hpColor} 0%, ${hpColor} ${hpPercent}%, #d1d5db ${hpPercent}%, #d1d5db 100%)`,
+                      background: `linear-gradient(to right, #00f3ff 0%, #d946ef ${hpPercent}%, #334155 ${hpPercent}%, #334155 100%)`,
                     }}
                   />
 
-                  {/* HP Kontrol Butonları */}
-                  <div className="grid grid-cols-4 gap-1 mt-2">
+                  {/* HP Kontrol */}
+                  <div className="grid grid-cols-4 gap-1 mt-3">
                     <button
                       onClick={() => updateHp(-10)}
-                      className="px-1 py-1 bg-red-600 text-white rounded font-black text-xs hover:bg-red-700"
+                      className="px-2 py-1 glass-dark border border-red-500/50 rounded text-red-400 font-bold text-xs hover:shadow-red-500/50 transition"
                     >
                       -10
                     </button>
                     <button
                       onClick={() => updateHp(-5)}
-                      className="px-1 py-1 bg-red-500 text-white rounded font-black text-xs hover:bg-red-600"
+                      className="px-2 py-1 glass-dark border border-red-500/30 rounded text-red-400 font-bold text-xs hover:shadow-red-500/30 transition"
                     >
                       -5
                     </button>
                     <button
                       onClick={() => updateHp(5)}
-                      className="px-1 py-1 bg-green-500 text-white rounded font-black text-xs hover:bg-green-600"
+                      className="px-2 py-1 glass-dark border border-green-500/30 rounded text-green-400 font-bold text-xs hover:shadow-green-500/30 transition"
                     >
                       +5
                     </button>
                     <button
                       onClick={() => updateHp(10)}
-                      className="px-1 py-1 bg-green-600 text-white rounded font-black text-xs hover:bg-green-700"
+                      className="px-2 py-1 glass-dark border border-green-500/50 rounded text-green-400 font-bold text-xs hover:shadow-green-500/50 transition"
                     >
                       +10
                     </button>
@@ -227,27 +232,27 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                 </div>
 
                 {/* Statlar */}
-                <div className="bg-green-100 border-3 border-green-600 rounded-lg p-3 text-center">
-                  <p className="font-black text-green-700 text-xs mb-2">STATLAR</p>
+                <div className="glass-dark neon-border-purple rounded-xl p-4">
+                  <p className="font-black text-neon-purple text-xs mb-3 text-center">STATLAR</p>
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-orange-700">⚔️ SALDIRI:</span>
-                      <span className="text-2xl font-black text-orange-700">{character.dino.atk}</span>
+                    <div className="flex justify-between items-center glass border border-orange-500/20 p-2 rounded">
+                      <span className="font-bold text-orange-400">⚔️ ATK:</span>
+                      <span className="text-xl font-black text-orange-400">{character.dino.atk}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-blue-700">🛡️ SAVUNMA:</span>
-                      <span className="text-2xl font-black text-blue-700">{character.dino.def}</span>
+                    <div className="flex justify-between items-center glass border border-blue-500/20 p-2 rounded">
+                      <span className="font-bold text-blue-400">🛡️ DEF:</span>
+                      <span className="text-xl font-black text-blue-400">{character.dino.def}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-purple-700">⚡ HIZ:</span>
-                      <span className="text-2xl font-black text-purple-700">{character.dino.spd}</span>
+                    <div className="flex justify-between items-center glass border border-yellow-500/20 p-2 rounded">
+                      <span className="font-bold text-yellow-400">⚡ SPD:</span>
+                      <span className="text-xl font-black text-yellow-400">{character.dino.spd}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Efektler */}
-                <div className="bg-purple-100 border-3 border-purple-600 rounded-lg p-3">
-                  <p className="text-xs font-black text-purple-700 mb-2">AKTIF EFEKTLER ({character.effects.length}/2)</p>
+                <div className="glass-dark neon-border-pink rounded-xl p-4">
+                  <p className="text-xs font-black text-neon-pink mb-3 text-center">AKTIF EFEKTLER ({character.effects.length}/2)</p>
                   <div className="flex gap-2">
                     {[0, 1].map(idx => (
                       <div key={idx} className="flex-1">
@@ -256,16 +261,14 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             onClick={() => removeEffect(idx)}
-                            className={`w-full aspect-square rounded-lg border-3 flex flex-col items-center justify-center font-black cursor-pointer hover:opacity-80 transition ${getEffectBg(
-                              character.effects[idx].type
-                            )}`}
+                            className="w-full aspect-square rounded-lg neon-border-pink glass-dark flex flex-col items-center justify-center font-black cursor-pointer hover:shadow-neon-pink transition"
                           >
                             <p className="text-2xl">{getEffectEmoji(character.effects[idx].type)}</p>
-                            <p className="text-xs font-black">{character.effects[idx].duration}</p>
+                            <p className="text-xs font-black text-neon-pink">{character.effects[idx].duration}</p>
                           </motion.button>
                         ) : (
-                          <div className="w-full aspect-square rounded-lg border-3 border-dashed border-gray-400 bg-gray-100 flex items-center justify-center">
-                            <span className="text-gray-500 text-xs font-bold">Boş</span>
+                          <div className="w-full aspect-square rounded-lg border-2 border-dashed border-neon-cyan/30 glass flex items-center justify-center">
+                            <span className="text-neon-cyan/50 text-xs font-bold">Boş</span>
                           </div>
                         )}
                       </div>
@@ -274,13 +277,13 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                 </div>
               </div>
 
-              {/* Orta/Sağ Sütun - Saldırılar & Zar */}
+              {/* Orta/Sağ Sütun - Yetenekler & Zar */}
               <div className="lg:col-span-2 space-y-4">
-                {/* Yetenekler Grid (1-5) */}
-                <div className="bg-white border-4 border-green-600 rounded-lg p-4">
-                  <p className="font-black text-green-700 text-sm mb-3 text-center">YETENEKLER</p>
+                {/* Yetenekler Grid */}
+                <div className="glass-dark neon-border-cyan rounded-xl p-4">
+                  <p className="font-black text-neon-cyan text-sm mb-4 text-center">⚡ YETENEKLER</p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     {/* 1-4 Normal Yetenekler */}
                     {character.abilities.slice(0, 4).map((ability, idx) => (
                       <AbilityButton
@@ -294,9 +297,9 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                     ))}
                   </div>
 
-                  {/* 5. ULTI (Full Width) */}
+                  {/* 5. ULTI */}
                   {character.abilities[4] && (
-                    <div className="mb-3">
+                    <div className="mb-4">
                       <AbilityButton
                         ability={character.abilities[4]}
                         idx={4}
@@ -308,13 +311,13 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                     </div>
                   )}
 
-                  {/* Zar Widget (Orta) */}
-                  <div className="bg-gradient-to-br from-yellow-300 to-yellow-500 border-4 border-yellow-600 rounded-xl p-4 text-center shadow-lg">
-                    <p className="font-black text-yellow-900 text-xs mb-2">ZAR WIDGET</p>
+                  {/* Zar Widget */}
+                  <div className="glass-dark neon-border-purple rounded-xl p-4 text-center mb-4">
+                    <p className="font-black text-neon-purple text-xs mb-3">🎲 ZAR WIDGET</p>
                     <motion.div
                       animate={diceRolling ? { rotateX: 360, rotateY: 360 } : {}}
                       transition={{ duration: 0.6 }}
-                      className="text-6xl font-black mb-3 cursor-pointer hover:scale-110 transition"
+                      className="text-6xl font-black mb-4 cursor-pointer hover:scale-110 transition text-neon-cyan"
                       onClick={rollDiceManual}
                     >
                       {diceRolling ? '🎲' : lastDiceResult || '?'}
@@ -322,16 +325,16 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                     <button
                       onClick={rollDiceManual}
                       disabled={diceRolling}
-                      className="w-full px-3 py-2 bg-yellow-600 text-white rounded-lg font-black text-sm hover:bg-yellow-700 disabled:opacity-50"
+                      className="w-full px-4 py-2 glass-dark neon-border-purple rounded-lg font-black text-neon-purple hover:shadow-neon-purple disabled:opacity-50 transition"
                     >
                       🎲 ZAR AT
                     </button>
                   </div>
 
-                  {/* Efekt Ekleme Butonları */}
-                  <div className="mt-3 pt-3 border-t-3 border-green-600">
-                    <p className="font-black text-green-700 text-xs mb-2">BUFF/DEBUFF EKLE:</p>
-                    <div className="grid grid-cols-3 gap-1">
+                  {/* Efekt Ekleme */}
+                  <div className="pt-3 border-t border-neon-cyan/30">
+                    <p className="font-black text-neon-cyan text-xs mb-2">BUFF/DEBUFF EKLE:</p>
+                    <div className="grid grid-cols-3 gap-2">
                       {[
                         { type: 'poison', emoji: '☠️', name: 'Zehir' },
                         { type: 'power', emoji: '⚔️', name: 'Güç+' },
@@ -340,7 +343,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                         <button
                           key={e.type}
                           onClick={() => addEffect(e.type)}
-                          className={`p-2 rounded-lg font-bold text-xs border-2 ${getEffectBg(e.type)} hover:opacity-80 transition`}
+                          className="p-2 glass-dark neon-border-pink rounded-lg font-bold text-xs text-neon-pink hover:shadow-neon-pink transition"
                         >
                           {e.emoji}
                         </button>
@@ -351,20 +354,22 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                   {/* Tur Sonlandır */}
                   <button
                     onClick={endTurn}
-                    className="w-full mt-3 px-4 py-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg font-black text-lg hover:shadow-lg active:scale-95 transition"
+                    className="w-full mt-4 px-4 py-3 glass-dark neon-border-cyan rounded-lg font-black text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition"
                   >
                     ✅ TURU BITIR
                   </button>
                 </div>
 
                 {/* Savaş Günlüğü */}
-                <div className="bg-white border-3 border-purple-500 rounded-lg p-3 max-h-32 overflow-y-auto">
-                  <p className="font-black text-purple-700 text-xs mb-2">📋 GÜNLÜK:</p>
-                  {battleLog.map((log, idx) => (
-                    <p key={idx} className="text-purple-700 font-bold text-xs mb-0.5">
-                      {log}
-                    </p>
-                  ))}
+                <div className="glass-dark neon-border-purple rounded-xl p-4 max-h-48 overflow-y-auto">
+                  <p className="font-black text-neon-purple text-xs mb-3">📋 SAVAŞ GÜNLÜĞÜ:</p>
+                  <div className="space-y-1">
+                    {battleLog.map((log, idx) => (
+                      <p key={idx} className="text-neon-purple/80 font-bold text-xs">
+                        {log}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -396,26 +401,20 @@ function AbilityButton({
       disabled={disabled}
       whileHover={{ scale: disabled ? 1 : 1.05 }}
       whileTap={{ scale: disabled ? 1 : 0.95 }}
-      className={`relative p-3 rounded-lg font-bold border-3 transition flex items-center justify-between ${
+      className={`relative w-full p-3 rounded-lg font-bold border-2 transition flex items-center justify-between ${
         isUlti
-          ? 'w-full bg-gradient-to-r from-yellow-300 to-orange-400 border-yellow-600'
-          : 'bg-gradient-to-br from-green-400 to-green-500 border-green-700'
+          ? 'glass-dark neon-border-purple border-2'
+          : 'glass-dark neon-border-cyan border-2'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}`}
     >
       <div className="text-left">
-        <p className="text-sm font-black text-gray-900">{ability.name}</p>
-        {ability.cd > 0 && (
-          <p className="text-xs font-bold text-red-700">CD: {ability.cd}</p>
-        )}
+        <p className={`text-sm font-black ${isUlti ? 'text-neon-purple' : 'text-neon-cyan'}`}>{ability.name}</p>
+        {ability.cd > 0 && <p className="text-xs font-bold text-red-400">CD: {ability.cd}</p>}
       </div>
 
       {damage !== null && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="text-2xl font-black text-red-600 ml-2"
-        >
-          💥 {damage}
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-black text-neon-pink ml-2">
+          💥 {Math.round(damage)}
         </motion.div>
       )}
     </motion.button>
@@ -444,16 +443,4 @@ function getEffectName(type: string): string {
     shield: 'Kalkan+',
   }
   return names[type] || type
-}
-
-function getEffectBg(type: string): string {
-  const styles: Record<string, string> = {
-    poison: 'bg-purple-300 border-purple-700 text-purple-900',
-    stun: 'bg-yellow-300 border-yellow-700 text-yellow-900',
-    stop: 'bg-red-300 border-red-700 text-red-900',
-    power: 'bg-green-300 border-green-700 text-green-900',
-    speed: 'bg-blue-300 border-blue-700 text-blue-900',
-    shield: 'bg-cyan-300 border-cyan-700 text-cyan-900',
-  }
-  return styles[type] || 'bg-gray-300 border-gray-700'
 }
