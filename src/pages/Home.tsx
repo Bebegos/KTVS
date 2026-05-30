@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../lib/auth-context'
 import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
+import { APP_VERSION } from '../config/version'
 import DinoList from '../components/DinoList'
 import DinoForm from '../components/DinoForm'
 import BattleTable from '../components/BattleTable'
@@ -71,6 +72,13 @@ export default function Home() {
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-72 h-72 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        </div>
+
+        {/* Versiyon Göstergesi */}
+        <div className="absolute top-4 left-4 z-10">
+          <div className="glass px-3 py-1 rounded-lg">
+            <p className="text-xs font-bold text-neon-cyan/70">v{APP_VERSION}</p>
+          </div>
         </div>
 
         {/* Üst Bar */}
