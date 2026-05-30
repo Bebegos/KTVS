@@ -9,28 +9,62 @@ CREATE TABLE IF NOT EXISTS profiles (
 );
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- RLS politikası: client (anon + authenticated) profil oluşturabilsin/okuyabilsin.
+-- Email onayı açıkken signUp sonrası oturum olmaz, insert "anon" rolüyle çalışır;
+-- bu yüzden politika tam izinli olmalı.
+DROP POLICY IF EXISTS "profiles_access" ON profiles;
 CREATE POLICY "profiles_access" ON profiles FOR ALL USING (true) WITH CHECK (true);
 
--- Trigger: Yeni auth user'ı profile'a ekle (dashboard'da auth ayarları → hooks → database)
--- NOT: Bunun yerine, aşağıdaki custom SQL'i Supabase dashboard'da şu yolla çalıştır:
--- 1. Authentication → Hooks & Triggers
--- 2. New Trigger → Event: "User signed up" → Run hook
--- Veya doğrudan bunu çalıştır:
+-- ÖNEMLİ — Profil oluşturma stratejisi:
+-- Profil HEM client tarafında (auth-context.tsx içinde upsert ile self-healing)
+-- HEM DE aşağıdaki trigger ile oluşturulur. İkisi de idempotent (ON CONFLICT),
+-- bu yüzden çakışmazlar. Trigger opsiyoneldir ama önerilir.
+--
+-- KRİTİK: Trigger ASLA auth kaydını bloklamamalı. Eğer trigger içindeki INSERT
+-- bir hata fırlatırsa (örn. UNIQUE çakışması), tüm auth.users insert'i geri alınır
+-- ve kullanıcı "Database error saving new user" hatası alır — KAYIT OLAMAZ.
+-- Bunu önlemek için tüm gövde EXCEPTION ile sarmalanır: hata olsa bile auth devam eder.
 
 CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
-  INSERT INTO profiles (id, username)
-  VALUES (new.id, COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)))
-  ON CONFLICT (id) DO NOTHING;
-  RETURN new;
+  BEGIN
+    INSERT INTO public.profiles (id, username)
+    VALUES (
+      NEW.id,
+      COALESCE(
+        NULLIF(NEW.raw_user_meta_data->>'username', ''),
+        split_part(NEW.email, '@', 1),
+        'oyuncu_' || substr(NEW.id::text, 1, 8)
+      )
+    )
+    ON CONFLICT (id) DO NOTHING;
+  EXCEPTION
+    WHEN unique_violation THEN
+      -- username zaten alınmış: id+rastgele ek ile tekrar dene, yine başarısızsa yut
+      BEGIN
+        INSERT INTO public.profiles (id, username)
+        VALUES (NEW.id, split_part(NEW.email, '@', 1) || '_' || substr(NEW.id::text, 1, 4))
+        ON CONFLICT (id) DO NOTHING;
+      EXCEPTION WHEN OTHERS THEN
+        NULL; -- yine olmadıysa client tarafı self-healing devreye girer
+      END;
+    WHEN OTHERS THEN
+      NULL; -- HER hata yutulur: auth kaydı ASLA bloklanmaz
+  END;
+  RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE handle_new_user();
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- 1. DINOS tablosu (karakter yönetimi)
 CREATE TABLE IF NOT EXISTS dinos (

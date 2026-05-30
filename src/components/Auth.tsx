@@ -11,10 +11,12 @@ export default function Auth() {
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setInfo(null)
     setLoading(true)
 
     try {
@@ -26,7 +28,11 @@ export default function Auth() {
           setLoading(false)
           return
         }
-        await signUp(email, password, username)
+        const result = await signUp(email, password, username)
+        if (result.needsEmailConfirmation) {
+          setInfo('Kayıt başarılı! 📧 E-postana gönderilen onay linkine tıkla, sonra giriş yap.')
+          setMode('login')
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu')
@@ -60,6 +66,7 @@ export default function Auth() {
             onClick={() => {
               setMode('login')
               setError(null)
+              setInfo(null)
             }}
             className={`flex-1 py-3 px-4 rounded-lg font-bold text-lg transition ${
               mode === 'login'
@@ -73,6 +80,7 @@ export default function Auth() {
             onClick={() => {
               setMode('register')
               setError(null)
+              setInfo(null)
             }}
             className={`flex-1 py-3 px-4 rounded-lg font-bold text-lg transition ${
               mode === 'register'
@@ -88,6 +96,13 @@ export default function Auth() {
         {error && (
           <div className="mb-4 p-3 glass border border-red-500/50 rounded-lg text-red-400 font-bold text-sm">
             ⚠️ {error}
+          </div>
+        )}
+
+        {/* Bilgi Mesajı */}
+        {info && (
+          <div className="mb-4 p-3 glass border border-green-500/50 rounded-lg text-green-400 font-bold text-sm">
+            ✅ {info}
           </div>
         )}
 

@@ -8,11 +8,15 @@ interface User {
   username?: string
 }
 
+interface SignUpResult {
+  needsEmailConfirmation: boolean
+}
+
 interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
-  signUp: (email: string, password: string, username: string) => Promise<void>
+  signUp: (email: string, password: string, username: string) => Promise<SignUpResult>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -28,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session?.user) {
-        loadUserProfile(session.user.id)
+        loadUserProfile(session.user)
       }
       setLoading(false)
     })
@@ -37,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async (event, session) => {
         setSession(session)
         if (session?.user) {
-          loadUserProfile(session.user.id)
+          loadUserProfile(session.user)
         } else {
           setUser(null)
         }
@@ -47,22 +51,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription?.unsubscribe()
   }, [])
 
-  async function loadUserProfile(userId: string) {
+  // Profili yükle — yoksa otomatik oluştur (self-healing).
+  // Trigger olsun olmasın, timing ne olursa olsun profil garanti oluşturulur.
+  async function loadUserProfile(authUser: { id: string; email?: string; user_metadata?: any }) {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
-        .single()
+        .eq('id', authUser.id)
+        .maybeSingle()
 
-      if (error) throw error
+      if (error) {
+        console.error('Profile sorgu hatası:', error)
+      }
+
+      // Profil yoksa oluştur (metadata'daki username veya email'den türet)
+      if (!data) {
+        const fallbackUsername =
+          authUser.user_metadata?.username ||
+          authUser.email?.split('@')[0] ||
+          `oyuncu_${authUser.id.slice(0, 8)}`
+
+        const { data: created, error: insertError } = await supabase
+          .from('profiles')
+          .upsert(
+            { id: authUser.id, username: fallbackUsername },
+            { onConflict: 'id' }
+          )
+          .select()
+          .maybeSingle()
+
+        if (insertError) {
+          console.error('Profile oluşturma hatası (loadUserProfile):', insertError)
+        }
+
+        setUser({
+          id: authUser.id,
+          email: authUser.email,
+          username: created?.username || fallbackUsername,
+        })
+        return
+      }
+
       setUser({
-        id: userId,
-        email: session?.user?.email,
-        username: data?.username,
+        id: authUser.id,
+        email: authUser.email,
+        username: data.username,
       })
     } catch (err) {
       console.error('Profile yükleme hatası:', err)
+      // En kötü durumda bile kullanıcıyı set et ki uygulama açılsın
+      setUser({
+        id: authUser.id,
+        email: authUser.email,
+        username: authUser.user_metadata?.username || authUser.email?.split('@')[0],
+      })
     }
   }
 
@@ -71,12 +114,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Email, şifre ve kullanıcı adı gerekli')
     }
 
+    const trimmedUsername = username.trim()
+
+    // 1. Auth kaydı (username metadata'ya yazılır)
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          username,
+          username: trimmedUsername,
         },
       },
     })
@@ -90,34 +136,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Kullanıcı oluşturulamadı')
     }
 
-    // Profile manuel olarak oluştur — trigger fallback
-    try {
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: authData.user.id,
-        username: username.trim(),
-      })
-
-      if (profileError) {
-        console.error('Profile insert hatası:', profileError)
-        // Eğer profile oluşturulamadıysa (username duplicate, tablo yok, vb)
-        // ama auth başarılı olduysa, devam et
-        if (profileError.code === '42P01') {
-          // Tablo yok
-          throw new Error('Supabase veritabanı kurulumı tamamlanmamış. SQL komutlarını çalıştır.')
-        }
-        if (profileError.code === '23505') {
-          // Unique constraint
-          throw new Error('Bu kullanıcı adı zaten kullanılıyor')
-        }
-      }
-    } catch (err: any) {
-      console.error('Profile oluşturma hatası:', err)
-      // Auth başarılı olduysa, profile hatası önemli olmayabilir
-      // Ama kullanıcıya bildir
-      if (err.message && err.message.includes('Supabase')) {
-        throw err
-      }
+    // Supabase, mevcut e-posta için identities=[] döner (zaten kayıtlı)
+    if (authData.user.identities && authData.user.identities.length === 0) {
+      throw new Error('Bu e-posta zaten kayıtlı. Giriş yapmayı dene.')
     }
+
+    // 2. Profili oluştur (upsert — idempotent, trigger olsa da çakışmaz)
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .upsert(
+        { id: authData.user.id, username: trimmedUsername },
+        { onConflict: 'id' }
+      )
+
+    if (profileError) {
+      console.error('Profile insert hatası:', profileError)
+      if (profileError.code === '42P01') {
+        throw new Error('Veritabanı kurulumu eksik. SUPABASE_SETUP.sql komutlarını çalıştır.')
+      }
+      if (profileError.code === '23505') {
+        throw new Error('Bu kullanıcı adı zaten kullanılıyor')
+      }
+      // Diğer profil hataları auth'u engellemez ama bilgilendir
+      throw new Error(`Profil oluşturulamadı: ${profileError.message}`)
+    }
+
+    // 3. Oturum varsa (email onayı kapalı) kullanıcıyı hemen set et
+    if (authData.session?.user) {
+      await loadUserProfile(authData.session.user)
+      return { needsEmailConfirmation: false }
+    }
+
+    // Oturum yok — email onayı açık, kullanıcı e-postasını onaylamalı
+    return { needsEmailConfirmation: true }
   }
 
   async function signIn(email: string, password: string) {
