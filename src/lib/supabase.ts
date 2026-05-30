@@ -11,6 +11,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Yardımcı fonksiyonlar
 
+function mapDinoData(data: any): any {
+  if (!data) return data
+  if (Array.isArray(data)) {
+    return data.map(item => ({
+      ...item,
+      maxHp: item.max_hp
+    }))
+  }
+  return {
+    ...data,
+    maxHp: data.max_hp
+  }
+}
+
 export async function getFamilyCode(): Promise<string> {
   let code = localStorage.getItem('familyCode')
   if (!code) {
@@ -42,7 +56,7 @@ export async function getDinos(userId?: string) {
 
   const { data, error } = await query
   if (error) throw error
-  return data || []
+  return mapDinoData(data) || []
 }
 
 export async function getDino(id: string) {
@@ -53,7 +67,7 @@ export async function getDino(id: string) {
     .single()
 
   if (error) throw error
-  return data
+  return mapDinoData(data)
 }
 
 export async function createDino(dino: any) {
