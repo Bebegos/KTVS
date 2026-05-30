@@ -3,6 +3,7 @@ import { useAuth } from '../lib/auth-context'
 import { Dino } from '../game/types'
 import { deleteDino, getDinos } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
+import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 
 interface DinoListProps {
   dinos: Dino[]
@@ -86,16 +87,33 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                 </div>
 
                 {dino.abilities.length > 0 && (
-                  <div className="mb-3 text-xs">
-                    <p className="font-bold text-neon-cyan/70 mb-1">Yetenekler:</p>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="mb-3">
+                    <p className="font-bold text-neon-cyan/70 mb-2 text-xs">⚡ Yetenekler:</p>
+                    <div className="space-y-2">
                       {dino.abilities.map((a, idx) => (
                         <div
                           key={idx}
-                          className="glass border border-neon-purple/30 text-neon-purple px-2 py-1 rounded text-xs font-bold flex items-center gap-1"
+                          className="glass-dark border border-neon-purple/30 rounded-lg p-2 flex items-start gap-2"
                         >
-                          <AbilityIcon iconId={(a as any).icon} size="sm" />
-                          {a.name}
+                          <AbilityIcon iconId={(a as any).icon} size="md" className="flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-black text-neon-purple text-sm">{a.name}</p>
+                            <div className="text-xs text-neon-purple/70 space-y-0.5">
+                              {a.effect === 'none' ? (
+                                <p>Saldırı • ×{a.multiplier || 1}</p>
+                              ) : (
+                                <p className={isBuffEffect(a.effect) ? 'text-green-400' : 'text-red-400'}>
+                                  {isBuffEffect(a.effect) ? '⬆️ Buff' : '⬇️ Debuff'} • ×{a.multiplier || 1}
+                                </p>
+                              )}
+                              {a.effect !== 'none' && (
+                                <p>
+                                  {getEffectEmoji(a.effect)} <span className="font-bold text-neon-cyan">{getEffectNameTR(a.effect)}</span>
+                                </p>
+                              )}
+                              {a.cd > 0 && <p>CD: <span className="font-bold">{a.cd}</span> tur</p>}
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>

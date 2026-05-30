@@ -4,6 +4,7 @@ import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice } from '../game/engine'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
+import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 
 interface BattleTableModeV2Props {
   dino: Dino
@@ -43,6 +44,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   const [battleLog, setBattleLog] = useState<string[]>([])
   const [currentEffectVisual, setCurrentEffectVisual] = useState<'buff' | 'debuff' | 'damage' | null>(null)
   const [showEffectVisual, setShowEffectVisual] = useState(false)
+  const [abilityUsedThisTurn, setAbilityUsedThisTurn] = useState(false)
+  const [showSkipTurnModal, setShowSkipTurnModal] = useState(false)
 
   function rollDiceForAttack(abilityIdx: number) {
     if (diceRolling || character.abilities[abilityIdx].cd > 0) return
@@ -81,6 +84,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       newAbilities[abilityIdx].cd = ability.maxCd
       setCharacter(c => ({ ...c, abilities: newAbilities }))
 
+      // Mark ability as used this turn
+      setAbilityUsedThisTurn(true)
       setDiceRolling(false)
     }, 800)
   }
@@ -138,6 +143,12 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   }
 
   function endTurn() {
+    // Check if ability was used this turn
+    if (!abilityUsedThisTurn) {
+      setShowSkipTurnModal(true)
+      return
+    }
+
     const newAbilities = character.abilities.map(a => ({
       ...a,
       cd: Math.max(0, a.cd - 1),
@@ -167,6 +178,15 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       abilities: newAbilities,
       effects: newEffects,
     }))
+
+    // Reset ability used flag for next turn
+    setAbilityUsedThisTurn(false)
+  }
+
+  function confirmSkipTurn() {
+    setShowSkipTurnModal(false)
+    setAbilityUsedThisTurn(false)
+    endTurn()
   }
 
   const hpPercent = (character.currentHp / maxHp) * 100
@@ -330,7 +350,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                         key={idx}
                         ability={ability}
                         idx={idx}
-                        disabled={character.abilities[idx].cd > 0 || diceRolling}
+                        disabled={character.abilities[idx].cd > 0 || diceRolling || abilityUsedThisTurn}
                         onClick={() => rollDiceForAttack(idx)}
                         damage={lastDamageAbility?.abilityIdx === idx ? lastDamageAbility.damage : null}
                       />
@@ -343,7 +363,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                       <AbilityButton
                         ability={character.abilities[4]}
                         idx={4}
-                        disabled={character.abilities[4].cd > 0 || diceRolling}
+                        disabled={character.abilities[4].cd > 0 || diceRolling || abilityUsedThisTurn}
                         onClick={() => rollDiceForAttack(4)}
                         damage={lastDamageAbility?.abilityIdx === 4 ? lastDamageAbility.damage : null}
                         isUlti
@@ -423,6 +443,42 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
           </motion.div>
         </div>
       </div>
+
+      {/* Skip Turn Confirmation Modal */}
+      {showSkipTurnModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[200] p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            className="glass-dark neon-border-purple rounded-xl p-8 max-w-md text-center"
+          >
+            <div className="text-5xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-black text-neon-purple mb-3">Yetenek Kullanmadan Tur Geç?</h2>
+            <p className="text-sm text-neon-purple/80 mb-6">
+              Herhangi bir yetenek kullanmadan tur geçmek üzeresin. Devam etmek istiyor musun?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowSkipTurnModal(false)}
+                className="flex-1 px-4 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+              >
+                ← Geri
+              </button>
+              <button
+                onClick={confirmSkipTurn}
+                className="flex-1 px-4 py-3 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple transition"
+              >
+                ✓ Devam Et
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   )
 }
@@ -463,11 +519,17 @@ function AbilityButton({
       <div className="text-left flex-1">
         <p className={`text-sm font-black ${isUlti ? 'text-neon-purple' : 'text-neon-cyan'}`}>{ability.name}</p>
         <div className="text-xs space-y-1 mt-1">
-          <p className={ability.kind === 'buff' ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
-            {ability.kind === 'buff' ? '⬆️ BUFF' : '⬇️ DEBUFF'} • ×{ability.multiplier || 1}
-          </p>
+          {ability.effect === 'none' ? (
+            <p className="text-neon-cyan/70 font-bold">Saldırı • ×{ability.multiplier || 1}</p>
+          ) : (
+            <p className={isBuffEffect(ability.effect) ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+              {isBuffEffect(ability.effect) ? '⬆️ Buff' : '⬇️ Debuff'} • ×{ability.multiplier || 1}
+            </p>
+          )}
           {ability.effect !== 'none' && (
-            <p className="text-neon-purple/70">Efekt: {ability.effect}</p>
+            <p className="text-neon-purple/70">
+              {getEffectEmoji(ability.effect)} {getEffectNameTR(ability.effect)}
+            </p>
           )}
           {ability.cd > 0 && <p className="text-red-400 font-bold">CD: {ability.cd} tur</p>}
         </div>
@@ -484,31 +546,3 @@ function AbilityButton({
   )
 }
 
-function getEffectEmoji(type: string): string {
-  const emojis: Record<string, string> = {
-    poison: '☠️',
-    stun: '🌀',
-    stop: '🛑',
-    power: '⚔️',
-    speed: '⚡',
-    shield: '🛡️',
-  }
-  return emojis[type] || '❓'
-}
-
-function getEffectName(type: string): string {
-  const names: Record<string, string> = {
-    poison: 'Zehir',
-    stun: 'Sersem',
-    stop: 'Dur',
-    power: 'Güç+',
-    speed: 'Hız+',
-    shield: 'Kalkan+',
-  }
-  return names[type] || type
-}
-
-function isBuffEffect(type: string): boolean {
-  const buffs = ['power', 'speed', 'shield']
-  return buffs.includes(type)
-}

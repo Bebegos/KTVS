@@ -158,12 +158,12 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
           </div>
 
           {/* Yetenekler */}
-          <div className="glass-dark neon-border-cyan rounded-lg p-4">
+          <div className="glass-dark neon-border-cyan rounded-lg p-4 overflow-visible relative z-20">
             <h2 className="text-xl font-bold text-neon-cyan mb-3">Yetenekler (maksimum 5)</h2>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 relative">
               {form.abilities.map((ability, idx) => (
-                <div key={idx} className="glass border border-neon-cyan/30 rounded p-3">
+                <div key={idx} className="glass border border-neon-cyan/30 rounded p-3 relative z-10">
                   {editingAbility === idx ? (
                     <>
                       <div className="mb-2">
