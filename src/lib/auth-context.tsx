@@ -67,6 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signUp(email: string, password: string, username: string) {
+    if (!email || !password || !username) {
+      throw new Error('Email, şifre ve kullanıcı adı gerekli')
+    }
+
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -77,18 +81,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     })
 
-    if (authError) throw authError
-    if (!authData.user) throw new Error('Kullanıcı oluşturulamadı')
+    if (authError) {
+      console.error('Auth signup hatası:', authError)
+      throw new Error(`Kayıt hatası: ${authError.message}`)
+    }
 
-    // Profile trigger otomatik oluşturacak, ama fallback olarak manuel insert
+    if (!authData.user) {
+      throw new Error('Kullanıcı oluşturulamadı')
+    }
+
+    // Profile manuel olarak oluştur — trigger fallback
     try {
-      await supabase.from('profiles').insert({
+      const { error: profileError } = await supabase.from('profiles').insert({
         id: authData.user.id,
-        username,
+        username: username.trim(),
       })
-    } catch (err) {
-      // Trigger zaten oluşturmuş olabilir, hata yoksay
-      console.log('Profile oluşturma (trigger yapacak):', err)
+
+      if (profileError) {
+        console.error('Profile insert hatası:', profileError)
+        // Eğer profile oluşturulamadıysa (username duplicate, tablo yok, vb)
+        // ama auth başarılı olduysa, devam et
+        if (profileError.code === '42P01') {
+          // Tablo yok
+          throw new Error('Supabase veritabanı kurulumı tamamlanmamış. SQL komutlarını çalıştır.')
+        }
+        if (profileError.code === '23505') {
+          // Unique constraint
+          throw new Error('Bu kullanıcı adı zaten kullanılıyor')
+        }
+      }
+    } catch (err: any) {
+      console.error('Profile oluşturma hatası:', err)
+      // Auth başarılı olduysa, profile hatası önemli olmayabilir
+      // Ama kullanıcıya bildir
+      if (err.message && err.message.includes('Supabase')) {
+        throw err
+      }
     }
   }
 
