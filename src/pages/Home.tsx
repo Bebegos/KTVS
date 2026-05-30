@@ -19,10 +19,17 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadDinos()
-  }, [])
+    // User değişince (login/logout) dinozorları yeniden yükle
+    if (user?.id) {
+      loadDinos()
+    } else {
+      setDinos([])
+      setLoading(false)
+    }
+  }, [user?.id])
 
   async function loadDinos() {
+    setLoading(true)
     try {
       if (user?.id) {
         const data = await getDinos(user.id)
