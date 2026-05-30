@@ -163,8 +163,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       </div>
 
       {/* Ana İçerik */}
-      <div className="flex-1 overflow-auto p-3 md:p-6 relative z-10">
-        <div className="max-w-7xl mx-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-6 relative z-10">
+        <div className="max-w-7xl mx-auto h-full">
           {/* Ana Kart */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -261,10 +261,14 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             onClick={() => removeEffect(idx)}
-                            className="w-full aspect-square rounded-lg neon-border-pink glass-dark flex flex-col items-center justify-center font-black cursor-pointer hover:shadow-neon-pink transition"
+                            className={`w-full aspect-square rounded-lg flex flex-col items-center justify-center font-black cursor-pointer hover:opacity-80 transition ${
+                              isBuffEffect(character.effects[idx].type)
+                                ? 'glass-dark border-2 border-green-500 text-green-400'
+                                : 'glass-dark border-2 border-red-500 text-red-400'
+                            }`}
                           >
                             <p className="text-2xl">{getEffectEmoji(character.effects[idx].type)}</p>
-                            <p className="text-xs font-black text-neon-pink">{character.effects[idx].duration}</p>
+                            <p className="text-xs font-black">{character.effects[idx].duration}</p>
                           </motion.button>
                         ) : (
                           <div className="w-full aspect-square rounded-lg border-2 border-dashed border-neon-cyan/30 glass flex items-center justify-center">
@@ -336,14 +340,18 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                     <p className="font-black text-neon-cyan text-xs mb-2">BUFF/DEBUFF EKLE:</p>
                     <div className="grid grid-cols-3 gap-2">
                       {[
-                        { type: 'poison', emoji: '☠️', name: 'Zehir' },
-                        { type: 'power', emoji: '⚔️', name: 'Güç+' },
-                        { type: 'shield', emoji: '🛡️', name: 'Kalkan+' },
+                        { type: 'poison', emoji: '☠️', name: 'Zehir', isBuff: false },
+                        { type: 'power', emoji: '⚔️', name: 'Güç+', isBuff: true },
+                        { type: 'shield', emoji: '🛡️', name: 'Kalkan+', isBuff: true },
                       ].map(e => (
                         <button
                           key={e.type}
                           onClick={() => addEffect(e.type)}
-                          className="p-2 glass-dark neon-border-pink rounded-lg font-bold text-xs text-neon-pink hover:shadow-neon-pink transition"
+                          className={`p-2 glass-dark rounded-lg font-bold text-xs transition ${
+                            e.isBuff
+                              ? 'border-2 border-green-500 text-green-400 hover:shadow-lg hover:shadow-green-500/50'
+                              : 'border-2 border-red-500 text-red-400 hover:shadow-lg hover:shadow-red-500/50'
+                          }`}
                         >
                           {e.emoji}
                         </button>
@@ -443,4 +451,9 @@ function getEffectName(type: string): string {
     shield: 'Kalkan+',
   }
   return names[type] || type
+}
+
+function isBuffEffect(type: string): boolean {
+  const buffs = ['power', 'speed', 'shield']
+  return buffs.includes(type)
 }
