@@ -5,9 +5,10 @@ import { Dino } from '../game/types'
 import DinoList from '../components/DinoList'
 import DinoForm from '../components/DinoForm'
 import BattleScreenNew from '../components/BattleScreenNew'
+import BattleTable from '../components/BattleTable'
 import MatchLog from '../components/MatchLog'
 
-type PageName = 'home' | 'dino-list' | 'battle' | 'match-log' | 'dino-form' | 'battle-select'
+type PageName = 'home' | 'dino-list' | 'battle' | 'battle-table' | 'match-log' | 'dino-form' | 'battle-select'
 
 export default function Home() {
   const { user, signOut } = useAuth()
@@ -87,7 +88,14 @@ export default function Home() {
           onClick={() => setPage('battle-select')}
           className="w-full max-w-sm px-6 py-4 bg-gradient-to-br from-red-400 to-red-600 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition shadow-md"
         >
-          ⚔️ Savaş
+          ⚔️ Savaş (2 vs 2)
+        </button>
+
+        <button
+          onClick={() => setPage('battle-table')}
+          className="w-full max-w-sm px-6 py-4 bg-gradient-to-br from-yellow-400 to-orange-600 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition shadow-md"
+        >
+          🎲 Masada Oyna
         </button>
 
         <button
@@ -134,6 +142,18 @@ export default function Home() {
 
   if (page === 'match-log') {
     return <MatchLog onBack={() => setPage('home')} />
+  }
+
+  if (page === 'battle-table') {
+    return (
+      <BattleTable
+        onBack={() => setPage('home')}
+        onRefresh={(newDinos) => {
+          setDinos(newDinos)
+          setPage('home')
+        }}
+      />
+    )
   }
 
   if (page === 'battle-select') {
