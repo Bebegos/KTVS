@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice, calculateDamage, hasEffect, applyEffect } from '../game/engine'
+import { getEffectNameTR } from '../lib/effect-translations'
 import { supabase } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
@@ -95,7 +96,12 @@ export default function DuelloBattleScreen({
 
   // Subscribe to opponent's ability selections
   useEffect(() => {
-    if (!sessionId) return
+    if (!sessionId) {
+      console.warn('DuelloBattleScreen: sessionId yok!')
+      return
+    }
+
+    console.log('Subscription kurulacak:', { sessionId, playerId, opponentId })
 
     const channel = supabase
       .channel(`battle:${sessionId}`)
@@ -109,16 +115,23 @@ export default function DuelloBattleScreen({
         },
         (payload) => {
           const action = payload.new as any
+          console.log('Battle action alındı:', action)
           // If this is from opponent, update their selected ability
           if (action.player_id !== playerId) {
+            console.log('Rakip yetenek seçildi:', action.ability_index)
             setOpponentSelectedAbility(action.ability_index)
+          } else {
+            console.log('Kendi seçimim, yok say')
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('Subscription status:', status)
+      })
 
     subscriptionRef.current = channel
     return () => {
+      console.log('Subscription temizleniyor')
       channel.unsubscribe()
     }
   }, [sessionId, playerId])
@@ -132,7 +145,10 @@ export default function DuelloBattleScreen({
   }, [playerSelectedAbility, opponentSelectedAbility])
 
   async function selectAbility(abilityIdx: number) {
-    if (roundInProgress || playerSelectedAbility !== null) return
+    if (roundInProgress || playerSelectedAbility !== null) {
+      console.log('selectAbility: Bloklandı', { roundInProgress, playerSelectedAbility })
+      return
+    }
     if (playerChar.abilities[abilityIdx].cd > 0) {
       setBattleLog(prev => ['❌ Yetenek henüz hazır değil!', ...prev.slice(0, 9)])
       return
@@ -147,21 +163,39 @@ export default function DuelloBattleScreen({
     // Roll dice
     const diceResult = rollDice()
 
+    console.log('Yetenek seçimi başlıyor:', {
+      abilityIdx,
+      sessionId,
+      playerId,
+      diceResult: diceResult.value
+    })
+
     // Store in Supabase so opponent knows
     try {
-      await supabase.from('battle_actions').insert({
+      const { error } = await supabase.from('battle_actions').insert({
         session_id: sessionId,
         player_id: playerId,
         ability_index: abilityIdx,
         dice_result: diceResult.value,
         timestamp: Date.now(),
       })
+
+      if (error) {
+        console.error('Supabase insert hatası:', error)
+        setBattleLog(prev => ['❌ Yetenek kaydedilemedi!', ...prev.slice(0, 9)])
+        return
+      }
+
+      console.log('Yetenek başarıyla kaydedildi')
     } catch (err) {
       console.error('Failed to save ability selection:', err)
+      setBattleLog(prev => ['❌ Hata oluştu!', ...prev.slice(0, 9)])
+      return
     }
 
     setPlayerSelectedAbility(abilityIdx)
     setLastDiceResult(diceResult.value)
+    console.log('Player seçim state güncellendi')
   }
 
   function executeRound() {
@@ -457,7 +491,7 @@ export default function DuelloBattleScreen({
                 {ability.effect !== 'none' && (
                   <div className="flex justify-between">
                     <span>Efekt:</span>
-                    <span className="font-black">{ability.effect}</span>
+                    <span className="font-black">{getEffectNameTR(ability.effect)}</span>
                   </div>
                 )}
                 {ability.cd > 0 && (
