@@ -116,16 +116,16 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
     if (existing !== -1) {
       // Efekt zaten var, süresi resetle
       newEffects[existing].duration = 2
-      setBattleLog(prev => [`${getEffectName(effectType)} yenilendi!`, ...prev.slice(0, 5)])
+      setBattleLog(prev => [`${getEffectNameTR(effectType)} yenilendi!`, ...prev.slice(0, 5)])
     } else if (newEffects.length < 2) {
       // Slot boş, direkt ekle
       newEffects.push({ type: effectType as any, duration: 2 })
-      setBattleLog(prev => [`${getEffectName(effectType)} eklendi!`, ...prev.slice(0, 5)])
+      setBattleLog(prev => [`${getEffectNameTR(effectType)} eklendi!`, ...prev.slice(0, 5)])
     } else {
       // 2 efekt zaten var, en eskisini çıkar
       newEffects.shift() // En eski olanı sil
       newEffects.push({ type: effectType as any, duration: 2 })
-      setBattleLog(prev => [`${getEffectName(effectType)} eklendi! (Eski efekt çıkarıldı)`, ...prev.slice(0, 5)])
+      setBattleLog(prev => [`${getEffectNameTR(effectType)} eklendi! (Eski efekt çıkarıldı)`, ...prev.slice(0, 5)])
     }
 
     setCharacter(c => ({ ...c, effects: newEffects }))
