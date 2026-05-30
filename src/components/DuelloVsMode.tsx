@@ -190,7 +190,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   // Options Screen
   if (screen === 'options') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
         {/* Arka plan */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
@@ -244,7 +244,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   // Host Screen (Davet Et)
   if (screen === 'host') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
         {/* Arka plan */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
@@ -257,7 +257,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           ← Geri
         </button>
 
-        <div className="flex flex-col items-center gap-8 relative z-10 max-w-md">
+        <div className="flex flex-col items-center gap-8 relative z-10 max-w-md w-full pb-8 mt-8 md:mt-0">
           <h1 className="text-4xl font-black text-neon-cyan text-center">Davet Linki</h1>
 
           {/* Dinozor Info */}
@@ -307,7 +307,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   // Join Screen (Katıl)
   if (screen === 'join') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
         {/* Arka plan */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
@@ -323,7 +323,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           ← Geri
         </button>
 
-        <div className="flex flex-col items-center gap-8 relative z-10 max-w-md w-full">
+        <div className="flex flex-col items-center gap-8 relative z-10 max-w-md w-full pb-8 mt-8 md:mt-0">
           <h1 className="text-4xl font-black text-neon-purple text-center">Katıl</h1>
 
           {/* Dinozor Info */}
@@ -431,7 +431,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   // Confirmation Screen (Onay)
   if (screen === 'confirmation' && sessionData) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
         {/* Arka plan */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>

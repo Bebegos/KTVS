@@ -9,13 +9,14 @@ import BattleTable from '../components/BattleTable'
 import BattleTableModeV2 from '../components/BattleTableModeV2'
 import MatchLog from '../components/MatchLog'
 
-type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs'
+type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs'
 
 export default function Home() {
   const { user, signOut } = useAuth()
   const [page, setPage] = useState<PageName>('home')
   const [dinos, setDinos] = useState<Dino[]>([])
   const [selectedOfflineDino, setSelectedOfflineDino] = useState<Dino | null>(null)
+  const [selectedDuelloDino, setSelectedDuelloDino] = useState<Dino | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function Home() {
   // Ana Menü
   if (page === 'home') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 gap-6 relative overflow-hidden">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-6 relative overflow-y-auto">
         {/* Arka plan efekti */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
@@ -84,8 +85,8 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Başlık */}
-        <div className="text-center mb-8 z-10">
+        {/* Başlık - md+ ekranlarda mt-0, sm ekranlarda mt-8 (top bar'dan uzak olması için) */}
+        <div className="text-center mb-8 z-10 mt-8 md:mt-0">
           <div className="text-8xl mb-4 float-animation">🦖</div>
           <h1 className="text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink mb-2">
             Dino-RP
@@ -94,12 +95,12 @@ export default function Home() {
         </div>
 
         {/* Butonlar */}
-        <div className="w-full max-w-sm flex flex-col gap-3 z-10">
+        <div className="w-full max-w-sm flex flex-col gap-3 z-10 pb-8">
           {/* Düello VS - En Üstte */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setPage('duello-vs')}
+            onClick={() => setPage('duello-vs-select')}
             className="w-full px-6 py-5 glass-dark neon-border-purple rounded-xl font-black text-xl text-neon-purple hover:shadow-neon-purple active:scale-95 transition duration-300 relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-neon-purple/20 to-transparent"></div>
@@ -175,14 +176,33 @@ export default function Home() {
     return <MatchLog onBack={() => setPage('home')} />
   }
 
-  if (page === 'duello-vs') {
+  if (page === 'duello-vs-select') {
+    return (
+      <DuelloVsSelectDino
+        dinos={dinos}
+        onSelect={(dino) => {
+          setSelectedDuelloDino(dino)
+          setPage('duello-vs')
+        }}
+        onBack={() => setPage('home')}
+      />
+    )
+  }
+
+  if (page === 'duello-vs' && selectedDuelloDino) {
     return (
       <BattleTable
-        onBack={() => setPage('home')}
-        onRefresh={(newDinos) => {
-          setDinos(newDinos)
+        onBack={() => {
+          setSelectedDuelloDino(null)
           setPage('home')
         }}
+        onRefresh={(newDinos) => {
+          setDinos(newDinos)
+          setSelectedDuelloDino(null)
+          setPage('home')
+        }}
+        selectedDino={selectedDuelloDino}
+        startInDuelMode={true}
       />
     )
   }
@@ -221,6 +241,74 @@ export default function Home() {
   return null
 }
 
+function DuelloVsSelectDino({
+  dinos,
+  onSelect,
+  onBack,
+}: {
+  dinos: Dino[]
+  onSelect: (dino: Dino) => void
+  onBack: () => void
+}) {
+  return (
+    <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto">
+      {/* Arka plan blur */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+      </div>
+
+      <button
+        onClick={onBack}
+        className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+      >
+        ← Geri
+      </button>
+
+      <div className="text-center mb-8 relative z-10 mt-8 md:mt-0">
+        <div className="text-8xl mb-4 float-animation">⚔️</div>
+        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-cyan mb-2">
+          Düello VS
+        </h1>
+        <p className="text-lg text-neon-purple/80">Dinozorunu seç</p>
+      </div>
+
+      {dinos.length === 0 ? (
+        <div className="text-center relative z-10">
+          <p className="text-xl text-neon-cyan mb-4">Dinozor yok!</p>
+          <button
+            onClick={onBack}
+            className="px-6 py-3 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple"
+          >
+            Geri Dön
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl relative z-10 pb-8">
+          {dinos.map(dino => (
+            <motion.button
+              key={dino.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onSelect(dino)}
+              className="p-6 glass-dark neon-border-purple rounded-xl hover:shadow-neon-purple transition"
+            >
+              <div className="text-5xl mb-3">🦖</div>
+              <h2 className="text-2xl font-black text-neon-purple mb-1">{dino.name}</h2>
+              <p className="text-sm text-neon-purple/80 font-bold mb-4">Lvl {dino.level}</p>
+              <div className="grid grid-cols-3 gap-2 text-xs font-bold">
+                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp}</div>
+                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk}</div>
+                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def}</div>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function OfflineSelectDino({
   dinos,
   onSelect,
@@ -231,7 +319,7 @@ function OfflineSelectDino({
   onBack: () => void
 }) {
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 gap-4 relative overflow-hidden">
+    <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto">
       {/* Arka plan blur */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
@@ -245,7 +333,7 @@ function OfflineSelectDino({
         ← Geri
       </button>
 
-      <div className="text-center mb-8 relative z-10">
+      <div className="text-center mb-8 relative z-10 mt-8 md:mt-0">
         <div className="text-8xl mb-4 float-animation">🎲</div>
         <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple mb-2">
           Masada Oyna
@@ -264,7 +352,7 @@ function OfflineSelectDino({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl relative z-10 pb-8">
           {dinos.map(dino => (
             <motion.button
               key={dino.id}

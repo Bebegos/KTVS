@@ -17,11 +17,14 @@ interface BattleChar {
 }
 
 export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTableModeV2Props) {
+  // Dino'nun maxHp'sini kontrol et ve fallback sağla
+  const maxHp = dino?.maxHp ?? 30
+
   const [character, setCharacter] = useState<BattleChar>({
     dino,
-    currentHp: dino.maxHp,
+    currentHp: maxHp,
     effects: [],
-    abilities: dino.abilities.map((a, idx) => ({
+    abilities: (dino?.abilities ?? []).map((a, idx) => ({
       id: `${dino.id}-${idx}`,
       name: a.name,
       cd: 0,
@@ -109,7 +112,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   }
 
   function updateHp(amount: number) {
-    const newHp = Math.max(0, Math.min(character.dino.maxHp, character.currentHp + amount))
+    const newHp = Math.max(0, Math.min(maxHp, character.currentHp + amount))
     setCharacter(c => ({ ...c, currentHp: newHp }))
   }
 
@@ -145,7 +148,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
     }))
   }
 
-  const hpPercent = (character.currentHp / character.dino.maxHp) * 100
+  const hpPercent = (character.currentHp / maxHp) * 100
 
   return (
     <div className="w-screen h-screen flex flex-col relative overflow-hidden">
@@ -195,14 +198,14 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                 <div className="glass border border-red-500/30 rounded-xl p-4">
                   <div className="flex justify-between mb-3">
                     <span className="font-black text-red-400">❤️ CAN</span>
-                    <span className="font-bold text-red-400">{Math.round(character.currentHp)}/{character.dino.maxHp}</span>
+                    <span className="font-bold text-red-400">{Math.round(character.currentHp)}/{maxHp}</span>
                   </div>
 
                   {/* Slider */}
                   <input
                     type="range"
                     min="0"
-                    max={character.dino.maxHp}
+                    max={maxHp}
                     value={character.currentHp}
                     onChange={e => updateHp(parseFloat(e.target.value) - character.currentHp)}
                     className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700"

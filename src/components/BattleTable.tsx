@@ -9,16 +9,18 @@ import DuelloVsMode from './DuelloVsMode'
 interface BattleTableProps {
   onBack: () => void
   onRefresh: (dinos: Dino[]) => void
+  selectedDino?: Dino
+  startInDuelMode?: boolean
 }
 
 type BattleMode = 'select-mode' | 'select-dino' | 'offline' | 'duello-vs'
 
-export default function BattleTable({ onBack, onRefresh }: BattleTableProps) {
+export default function BattleTable({ onBack, onRefresh, selectedDino: propSelectedDino, startInDuelMode }: BattleTableProps) {
   const { user } = useAuth()
   const [dinos, setDinos] = useState<Dino[]>([])
-  const [selectedDino, setSelectedDino] = useState<Dino | null>(null)
+  const [selectedDino, setSelectedDino] = useState<Dino | null>(propSelectedDino || null)
   const [loading, setLoading] = useState(true)
-  const [mode, setMode] = useState<BattleMode>('select-mode')
+  const [mode, setMode] = useState<BattleMode>(startInDuelMode ? 'select-dino' : 'select-mode')
 
   useEffect(() => {
     loadDinos()
