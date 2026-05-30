@@ -90,18 +90,32 @@ export default function DuelloBattleScreen({
   const [currentEffectVisual, setCurrentEffectVisual] = useState<'buff' | 'debuff' | 'damage' | null>(null)
   const [showEffectVisual, setShowEffectVisual] = useState(false)
 
-  const playerHpPercent = (playerChar.currentHp / playerChar.dino.maxHp) * 100
-  const opponentHpPercent = (opponentChar.currentHp / opponentChar.dino.maxHp) * 100
+  const [playerHpPercent, setPlayerHpPercent] = useState(0)
+  const [opponentHpPercent, setOpponentHpPercent] = useState(0)
+  const [debugLogs, setDebugLogs] = useState<string[]>(['Battle başladı'])
+  const [showDebug, setShowDebug] = useState(true)
   const subscriptionRef = useRef<any>(null)
+
+  // Update HP percentages
+  useEffect(() => {
+    setPlayerHpPercent((playerChar.currentHp / playerChar.dino.maxHp) * 100)
+    setOpponentHpPercent((opponentChar.currentHp / opponentChar.dino.maxHp) * 100)
+  }, [playerChar.currentHp, opponentChar.currentHp, playerChar.dino.maxHp, opponentChar.dino.maxHp])
+
+  // Helper function to add debug logs
+  const addLog = (msg: string) => {
+    console.log(msg)
+    setDebugLogs(prev => [msg, ...prev.slice(0, 14)])
+  }
 
   // Subscribe to opponent's ability selections
   useEffect(() => {
     if (!sessionId) {
-      console.warn('DuelloBattleScreen: sessionId yok!')
+      addLog('❌ sessionId yok!')
       return
     }
 
-    console.log('Subscription kurulacak:', { sessionId, playerId, opponentId })
+    addLog(`📡 Subscription: ${sessionId}`)
 
     const channel = supabase
       .channel(`battle:${sessionId}`)
@@ -115,23 +129,23 @@ export default function DuelloBattleScreen({
         },
         (payload) => {
           const action = payload.new as any
-          console.log('Battle action alındı:', action)
+          addLog(`📥 Action: idx=${action.ability_index}, player=${action.player_id?.substring(0, 8)}...`)
           // If this is from opponent, update their selected ability
           if (action.player_id !== playerId) {
-            console.log('Rakip yetenek seçildi:', action.ability_index)
+            addLog(`👹 Rakip seçti: ability #${action.ability_index}`)
             setOpponentSelectedAbility(action.ability_index)
           } else {
-            console.log('Kendi seçimim, yok say')
+            addLog(`👤 Kendi seçim (skip)`)
           }
         }
       )
       .subscribe((status) => {
-        console.log('Subscription status:', status)
+        addLog(`🔌 Status: ${status}`)
       })
 
     subscriptionRef.current = channel
     return () => {
-      console.log('Subscription temizleniyor')
+      addLog('🧹 Subscription temizleniyor')
       channel.unsubscribe()
     }
   }, [sessionId, playerId])
@@ -146,32 +160,29 @@ export default function DuelloBattleScreen({
 
   async function selectAbility(abilityIdx: number) {
     if (roundInProgress || playerSelectedAbility !== null) {
-      console.log('selectAbility: Bloklandı', { roundInProgress, playerSelectedAbility })
+      addLog(`⛔ Bloklandı: roundInProgress=${roundInProgress}, selected=${playerSelectedAbility}`)
       return
     }
     if (playerChar.abilities[abilityIdx].cd > 0) {
+      addLog(`⏳ CD: ${playerChar.abilities[abilityIdx].cd} tur`)
       setBattleLog(prev => ['❌ Yetenek henüz hazır değil!', ...prev.slice(0, 9)])
       return
     }
 
     // Check if stunned or stopped
     if (playerChar.effects.some(e => e.type === 'stun' || e.type === 'stop')) {
+      addLog('🌀 Sersem/Dur effekti aktif')
       setBattleLog(prev => ['❌ Harekete geçilemez!', ...prev.slice(0, 9)])
       return
     }
 
     // Roll dice
     const diceResult = rollDice()
-
-    console.log('Yetenek seçimi başlıyor:', {
-      abilityIdx,
-      sessionId,
-      playerId,
-      diceResult: diceResult.value
-    })
+    addLog(`🎲 Zar: ${diceResult.value}, Yetenek: ${playerChar.abilities[abilityIdx].name}`)
 
     // Store in Supabase so opponent knows
     try {
+      addLog(`💾 Supabase'e yazılıyor...`)
       const { error } = await supabase.from('battle_actions').insert({
         session_id: sessionId,
         player_id: playerId,
@@ -181,21 +192,21 @@ export default function DuelloBattleScreen({
       })
 
       if (error) {
-        console.error('Supabase insert hatası:', error)
+        addLog(`❌ Supabase HATASI: ${error.message}`)
         setBattleLog(prev => ['❌ Yetenek kaydedilemedi!', ...prev.slice(0, 9)])
         return
       }
 
-      console.log('Yetenek başarıyla kaydedildi')
+      addLog(`✅ Supabase'e yazıldı`)
     } catch (err) {
-      console.error('Failed to save ability selection:', err)
+      addLog(`❌ Exception: ${err instanceof Error ? err.message : String(err)}`)
       setBattleLog(prev => ['❌ Hata oluştu!', ...prev.slice(0, 9)])
       return
     }
 
     setPlayerSelectedAbility(abilityIdx)
     setLastDiceResult(diceResult.value)
-    console.log('Player seçim state güncellendi')
+    addLog(`👤 Seçim yapıldı, rakip bekleniyor...`)
   }
 
   function executeRound() {
@@ -524,15 +535,27 @@ export default function DuelloBattleScreen({
         </p>
       </div>
 
-      {/* Battle log */}
-      <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 flex-1 overflow-y-auto">
-        <div className="space-y-2">
-          {battleLog.map((log, idx) => (
+      {/* Battle log / Debug Panel */}
+      <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 flex-1 overflow-y-auto flex flex-col">
+        <div className="flex justify-between items-center mb-3">
+          <p className="text-xs font-bold text-neon-purple/70">
+            {showDebug ? '🔧 DEBUG' : '📋 SAVAŞ GÜNLÜĞÜ'}
+          </p>
+          <button
+            onClick={() => setShowDebug(!showDebug)}
+            className="text-xs px-2 py-1 glass neon-border-cyan rounded text-neon-cyan hover:shadow-neon-cyan transition"
+          >
+            {showDebug ? '📋 Günlük' : '🔧 Debug'}
+          </button>
+        </div>
+
+        <div className="space-y-1 flex-1 overflow-y-auto text-xs">
+          {(showDebug ? debugLogs : battleLog).map((log, idx) => (
             <motion.p
               key={idx}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-sm text-neon-purple font-bold"
+              className={`font-bold ${showDebug ? 'text-neon-cyan/80' : 'text-neon-purple'}`}
             >
               {log}
             </motion.p>
