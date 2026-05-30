@@ -548,7 +548,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           )}
 
           {/* Debug info - only in development */}
-          {process.env.NODE_ENV === 'development' && (
+          {import.meta.env.DEV && (
             <div className="w-full text-xs text-neon-cyan/50 mt-4 p-2 border border-neon-cyan/20 rounded">
               <p>Status: {sessionData.status}</p>
               <p>Guest dino: {sessionData.guest_dino_id || 'boş'}</p>
