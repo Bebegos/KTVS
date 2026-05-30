@@ -36,16 +36,24 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-dino-100 via-purple-100 to-blue-100">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Arka plan efekti */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+      </div>
+
       {/* Başlık */}
-      <div className="text-center mb-8">
-        <div className="text-8xl mb-2">🦖</div>
-        <h1 className="text-4xl font-bold text-dino-700 mb-2">Dino-RP</h1>
-        <p className="text-lg text-dino-600">Dinozor Savaş ve Gelişim Oyunu</p>
+      <div className="text-center mb-8 relative z-10">
+        <div className="text-8xl mb-4 float-animation">🦖</div>
+        <h1 className="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink mb-2">
+          Dino-RP
+        </h1>
+        <p className="text-lg text-neon-cyan opacity-80">Dinozor Savaş ve Gelişim Oyunu</p>
       </div>
 
       {/* Form Kartı */}
-      <div className="w-full max-w-md bg-white border-4 border-dino-300 rounded-xl shadow-xl p-6">
+      <div className="w-full max-w-md glass-dark neon-border-cyan rounded-2xl p-8 relative z-10">
         {/* Tab */}
         <div className="flex gap-2 mb-6">
           <button
@@ -55,8 +63,8 @@ export default function Auth() {
             }}
             className={`flex-1 py-3 px-4 rounded-lg font-bold text-lg transition ${
               mode === 'login'
-                ? 'bg-dino-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'glass-dark neon-border-cyan text-neon-cyan shadow-neon-cyan'
+                : 'glass border border-neon-cyan/20 text-neon-cyan/60 hover:border-neon-cyan/40'
             }`}
           >
             🔓 Giriş Yap
@@ -68,8 +76,8 @@ export default function Auth() {
             }}
             className={`flex-1 py-3 px-4 rounded-lg font-bold text-lg transition ${
               mode === 'register'
-                ? 'bg-purple-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'glass-dark neon-border-purple text-neon-purple shadow-neon-purple'
+                : 'glass border border-neon-purple/20 text-neon-purple/60 hover:border-neon-purple/40'
             }`}
           >
             ✨ Kaydol
@@ -78,7 +86,7 @@ export default function Auth() {
 
         {/* Hata Mesajı */}
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border-2 border-red-500 rounded-lg text-red-700 font-bold text-sm">
+          <div className="mb-4 p-3 glass border border-red-500/50 rounded-lg text-red-400 font-bold text-sm">
             ⚠️ {error}
           </div>
         )}
@@ -88,13 +96,13 @@ export default function Auth() {
           {/* Kullanıcı Adı (sadece register'da) */}
           {mode === 'register' && (
             <div>
-              <label className="block font-bold text-dino-700 mb-2">👤 Kullanıcı Adı</label>
+              <label className="block font-bold text-neon-cyan mb-2">👤 Kullanıcı Adı</label>
               <input
                 type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 placeholder="Örn: Dinozor123"
-                className="w-full px-4 py-3 border-2 border-dino-300 rounded-lg text-lg font-bold focus:outline-none focus:border-dino-500"
+                className="w-full px-4 py-3 bg-slate-800 border border-neon-cyan/30 rounded-lg text-lg font-bold text-neon-cyan placeholder-neon-cyan/40 focus:outline-none focus:border-neon-cyan focus:shadow-neon-cyan transition"
                 required
               />
             </div>
@@ -102,30 +110,30 @@ export default function Auth() {
 
           {/* Email */}
           <div>
-            <label className="block font-bold text-dino-700 mb-2">📧 E-posta</label>
+            <label className="block font-bold text-neon-cyan mb-2">📧 E-posta</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="örnek@email.com"
-              className="w-full px-4 py-3 border-2 border-dino-300 rounded-lg text-lg font-bold focus:outline-none focus:border-dino-500"
+              className="w-full px-4 py-3 bg-slate-800 border border-neon-cyan/30 rounded-lg text-lg font-bold text-neon-cyan placeholder-neon-cyan/40 focus:outline-none focus:border-neon-cyan focus:shadow-neon-cyan transition"
               required
             />
           </div>
 
           {/* Şifre */}
           <div>
-            <label className="block font-bold text-dino-700 mb-2">🔐 Şifre</label>
+            <label className="block font-bold text-neon-cyan mb-2">🔐 Şifre</label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 border-2 border-dino-300 rounded-lg text-lg font-bold focus:outline-none focus:border-dino-500"
+              className="w-full px-4 py-3 bg-slate-800 border border-neon-cyan/30 rounded-lg text-lg font-bold text-neon-cyan placeholder-neon-cyan/40 focus:outline-none focus:border-neon-cyan focus:shadow-neon-cyan transition"
               required
             />
             {mode === 'register' && (
-              <p className="text-xs text-dino-600 mt-1">Minimum 6 karakter</p>
+              <p className="text-xs text-neon-cyan/70 mt-1">Minimum 6 karakter</p>
             )}
           </div>
 
@@ -133,12 +141,12 @@ export default function Auth() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-4 px-6 rounded-lg font-bold text-lg text-white transition ${
+            className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition ${
               loading
-                ? 'bg-gray-400 cursor-not-allowed'
+                ? 'glass opacity-50 cursor-not-allowed text-neon-cyan/50'
                 : mode === 'login'
-                ? 'bg-dino-500 hover:bg-dino-600 active:bg-dino-700'
-                : 'bg-purple-500 hover:bg-purple-600 active:bg-purple-700'
+                ? 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan active:scale-95'
+                : 'glass-dark neon-border-purple text-neon-purple hover:shadow-neon-purple active:scale-95'
             }`}
           >
             {loading ? '⏳ Yükleniyor...' : mode === 'login' ? '🔓 Giriş Yap' : '✨ Kaydol'}
@@ -146,7 +154,7 @@ export default function Auth() {
         </form>
 
         {/* Bilgi */}
-        <div className="mt-4 p-3 bg-dino-50 border-2 border-dino-200 rounded-lg text-sm text-dino-700">
+        <div className="mt-4 p-3 glass border border-neon-cyan/20 rounded-lg text-sm text-neon-cyan/80">
           <p className="font-bold mb-1">💡 İpucu:</p>
           <p>
             {mode === 'login'
