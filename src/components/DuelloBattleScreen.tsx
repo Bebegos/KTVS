@@ -11,6 +11,8 @@ interface DuelloBattleScreenProps {
   opponentDino: Dino
   sessionId: string
   isHost: boolean
+  playerId: string
+  opponentId: string
   onBattleEnd: (winner: 'player' | 'opponent') => void
   onBack: () => void
 }
@@ -35,6 +37,8 @@ export default function DuelloBattleScreen({
   opponentDino,
   sessionId,
   isHost,
+  playerId,
+  opponentId,
   onBattleEnd,
   onBack,
 }: DuelloBattleScreenProps) {
@@ -106,7 +110,7 @@ export default function DuelloBattleScreen({
         (payload) => {
           const action = payload.new as any
           // If this is from opponent, update their selected ability
-          if (action.player_id !== playerDino.id) {
+          if (action.player_id !== playerId) {
             setOpponentSelectedAbility(action.ability_index)
           }
         }
@@ -117,7 +121,7 @@ export default function DuelloBattleScreen({
     return () => {
       channel.unsubscribe()
     }
-  }, [sessionId, playerDino.id])
+  }, [sessionId, playerId])
 
   // When both players have selected, execute their actions
   useEffect(() => {
@@ -147,7 +151,7 @@ export default function DuelloBattleScreen({
     try {
       await supabase.from('battle_actions').insert({
         session_id: sessionId,
-        player_id: playerDino.id,
+        player_id: playerId,
         ability_index: abilityIdx,
         dice_result: diceResult.value,
         timestamp: Date.now(),

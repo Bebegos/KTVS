@@ -366,12 +366,13 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           ) : (
             <>
               {/* Camera View */}
-              <div className="glass-dark neon-border-purple rounded-xl overflow-hidden w-full">
+              <div className="w-full bg-black rounded-xl overflow-hidden border-2 border-neon-purple">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  className="w-full aspect-square object-cover"
+                  muted
+                  className="w-full h-64 object-cover bg-black"
                 />
               </div>
               <canvas ref={canvasRef} className="hidden" />
@@ -381,7 +382,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
                 onClick={stopScanner}
                 className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-lg font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition"
               >
-                ✋ DURDU
+                ✋ DURDUR
               </button>
             </>
           )}
@@ -404,13 +405,15 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   }
 
   // Battle Screen (Düello)
-  if (screen === 'battle' && sessionData && opponentDino) {
+  if (screen === 'battle' && sessionData && opponentDino && user) {
     return (
       <DuelloBattleScreen
         playerDino={selectedDino}
         opponentDino={opponentDino}
         sessionId={sessionId}
         isHost={isHost}
+        playerId={user.id}
+        opponentId={isHost ? (sessionData.guest_player_id || '') : (sessionData.host_player_id || '')}
         onBattleEnd={(winner) => {
           // Handle battle end
           setScreen('options')
@@ -444,9 +447,9 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-            {/* Host Dino */}
+            {/* Current Player's Dino */}
             <div className="glass-dark neon-border-cyan rounded-xl p-6 text-center">
-              <p className="text-xs font-bold text-neon-cyan mb-2">DAVET EDEN</p>
+              <p className="text-xs font-bold text-neon-cyan mb-2">SEN</p>
               <div className="text-5xl mb-3">🦖</div>
               <h2 className="text-2xl font-black text-neon-cyan mb-1">{selectedDino.name}</h2>
               <p className="text-sm text-neon-cyan/80 mb-4">Lvl {selectedDino.level}</p>
@@ -455,14 +458,12 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
                 <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {selectedDino.atk}</div>
                 <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {selectedDino.def}</div>
               </div>
-              {isHost && (
-                <p className="text-xs text-neon-cyan/60 mt-3">✓ Hazır</p>
-              )}
+              <p className="text-xs text-neon-cyan/60 mt-3">✓ Hazır</p>
             </div>
 
-            {/* Guest Dino */}
+            {/* Opponent's Dino */}
             <div className="glass-dark neon-border-purple rounded-xl p-6 text-center">
-              <p className="text-xs font-bold text-neon-purple mb-2">{isHost ? 'KATILAN' : 'DAVET EDEN'}</p>
+              <p className="text-xs font-bold text-neon-purple mb-2">RAKİP</p>
               <div className="text-5xl mb-3">🦖</div>
               {opponentDino ? (
                 <>
