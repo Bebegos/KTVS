@@ -4,6 +4,7 @@ import { useAuth } from '../lib/auth-context'
 import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
 import BattleTableModeV2 from './BattleTableModeV2'
+import DuelloVsMode from './DuelloVsMode'
 
 interface BattleTableProps {
   onBack: () => void
@@ -192,22 +193,13 @@ export default function BattleTable({ onBack, onRefresh }: BattleTableProps) {
 
   if (mode === 'duello-vs' && selectedDino) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative">
-        <button
-          onClick={() => {
-            setSelectedDino(null)
-            setMode('select-mode')
-          }}
-          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
-        >
-          ← Geri
-        </button>
-
-        <div className="text-center">
-          <h1 className="text-4xl font-black text-neon-purple mb-6">Düello Vs Modu</h1>
-          <p className="text-neon-cyan mb-8">Yakında kullanılabilir olacak...</p>
-        </div>
-      </div>
+      <DuelloVsMode
+        selectedDino={selectedDino}
+        onBack={() => {
+          setSelectedDino(null)
+          setMode('select-mode')
+        }}
+      />
     )
   }
 
