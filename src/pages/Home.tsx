@@ -4,7 +4,7 @@ import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
 import DinoList from '../components/DinoList'
 import DinoForm from '../components/DinoForm'
-import BattleScreen from '../components/BattleScreen'
+import BattleScreenNew from '../components/BattleScreenNew'
 import MatchLog from '../components/MatchLog'
 
 type PageName = 'home' | 'dino-list' | 'battle' | 'match-log' | 'dino-form' | 'battle-select'
@@ -152,7 +152,7 @@ export default function Home() {
 
   if (page === 'battle' && selectedDino1 && selectedDino2) {
     return (
-      <BattleScreen
+      <BattleScreenNew
         dino1={selectedDino1}
         dino2={selectedDino2}
         onBack={() => setPage('home')}

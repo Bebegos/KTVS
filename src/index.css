@@ -67,3 +67,37 @@ html, body {
 .damage-shake {
   animation: shake 0.3s ease-in-out;
 }
+
+/* Landscape Mode Optimizations */
+@media (orientation: landscape) {
+  html, body, #root {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Scrollbar ince tutma */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+}
+
+/* Mobile Phone Optimizations */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
