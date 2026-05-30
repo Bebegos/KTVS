@@ -145,26 +145,32 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
   if (screen === 'result') {
     const winner = battleState.winner === 'p1' ? dino1.name : dino2.name
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-4 gap-4 bg-gradient-to-br from-yellow-100 to-orange-100">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 gap-4 relative overflow-hidden">
+        {/* Arka plan */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-20 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        </div>
+
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          className="text-8xl"
+          className="text-8xl relative z-10"
         >
           🏆
         </motion.div>
-        <h1 className="text-4xl font-black text-orange-700 text-center">
+        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-pink text-center relative z-10">
           {winner} Kazandı!
         </h1>
-        <div className="text-center bg-white border-4 border-orange-500 rounded-xl p-4">
-          <p className="text-2xl font-bold text-orange-600 mb-2">{battleState.round} tur sürdü</p>
-          <p className="text-lg text-orange-700">
+        <div className="text-center glass-dark neon-border-cyan rounded-xl p-6 relative z-10">
+          <p className="text-2xl font-bold text-neon-cyan mb-2">{battleState.round} tur sürdü</p>
+          <p className="text-lg text-neon-cyan/80">
             {battleState.winner === 'p1' ? dino1.name : dino2.name} {calculateXpReward('normal')} XP kazandı!
           </p>
         </div>
         <button
           onClick={onBack}
-          className="px-6 py-4 bg-gradient-to-br from-dino-500 to-dino-700 text-white rounded-xl font-bold text-lg hover:shadow-lg active:scale-95 transition"
+          className="px-6 py-4 glass-dark neon-border-purple rounded-xl font-bold text-lg text-neon-purple hover:shadow-neon-purple active:scale-95 transition relative z-10"
         >
           ← Ana Menüye Dön
         </button>
@@ -176,23 +182,31 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
   const p2 = battleState.p2
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-gradient-to-br from-dino-50 via-blue-50 to-purple-50 overflow-hidden">
+    <div className="w-screen h-screen flex flex-col relative overflow-hidden">
+      {/* Arka plan blur efektleri */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-20 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-20 w-96 h-96 bg-neon-pink opacity-5 rounded-full blur-3xl"></div>
+      </div>
+
       {/* Üst Bar */}
-      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-dino-500 to-blue-500 text-white shadow-lg">
+      <div className="relative z-10 flex justify-between items-center p-4 glass-dark neon-border-cyan border-b">
         <button
           onClick={onBack}
-          className="px-3 py-1 bg-red-500 rounded font-bold text-sm hover:bg-red-600"
+          className="px-4 py-2 glass-dark neon-border-pink rounded-lg font-bold text-neon-pink hover:shadow-neon-pink transition"
         >
           🚪 Çık
         </button>
-        <p className="font-black text-lg">⚔️ TUR {battleState.round}</p>
-        <div className="w-24 h-8 bg-white rounded-lg border-2 border-white flex items-center justify-center">
-          <p className="font-black text-dino-700">SAVAŞ</p>
+        <p className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
+          ⚔️ TUR {battleState.round}
+        </p>
+        <div className="px-4 py-2 glass-dark neon-border-cyan rounded-lg">
+          <p className="font-black text-neon-cyan">SAVAŞ</p>
         </div>
       </div>
 
-      {/* Ana Savaş Alanı (Landscape optimized) */}
-      <div className="flex-1 flex gap-2 overflow-hidden p-2">
+      {/* Ana Savaş Alanı */}
+      <div className="relative z-10 flex-1 flex gap-3 overflow-hidden p-3">
         {/* Dinozor 1 */}
         <CharacterCard
           dino={dino1}
@@ -209,7 +223,7 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
         />
 
         {/* Orta Alan: Zar + Kontroller */}
-        <div className="flex flex-col gap-2 items-center justify-center w-32">
+        <div className="flex flex-col gap-3 items-center justify-center w-40">
           {/* Zar */}
           <DiceRoller rolling={diceRolling} lastValue={lastDiceResult} />
 
@@ -227,16 +241,16 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
             disabled={diceRolling}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="w-full px-2 py-3 bg-gradient-to-br from-yellow-400 to-yellow-600 text-white rounded-xl font-black text-sm hover:shadow-lg disabled:opacity-50 transition"
+            className="w-full px-3 py-4 glass-dark neon-border-cyan rounded-xl font-black text-lg text-neon-cyan hover:shadow-neon-cyan disabled:opacity-50 transition"
           >
-            ✅<br />TUR<br />BITIR
+            ✅ TUR BITIR
           </motion.button>
 
           {/* Savaş Günlüğü */}
-          <div className="flex-1 w-full bg-white border-3 border-purple-400 rounded-lg p-2 overflow-y-auto text-xs">
-            <p className="font-black text-purple-700 mb-1 sticky top-0 bg-white">📋 LOG</p>
+          <div className="flex-1 w-full glass-dark neon-border-purple rounded-lg p-3 overflow-y-auto text-xs">
+            <p className="font-black text-neon-purple mb-2 sticky top-0">📋 LOG</p>
             {battleLog.map((log, idx) => (
-              <p key={idx} className="text-purple-700 font-bold mb-0.5">
+              <p key={idx} className="text-neon-purple/80 font-bold mb-1">
                 {log}
               </p>
             ))}
@@ -286,33 +300,39 @@ function LevelUpScreen({
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 gap-4 bg-gradient-to-br from-purple-100 to-pink-100">
+    <div className="flex-1 flex flex-col items-center justify-center p-4 gap-4 relative overflow-hidden">
+      {/* Arka plan */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+      </div>
+
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        className="text-8xl"
+        className="text-8xl relative z-10"
       >
         ⭐
       </motion.div>
 
-      <h1 className="text-4xl font-black text-purple-700 text-center">
+      <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-pink text-center relative z-10">
         {dino.name} Level Atladı!
       </h1>
 
-      <p className="text-2xl font-bold text-purple-600">
+      <p className="text-2xl font-bold text-neon-cyan relative z-10">
         Yeni Seviye: {dino.level}
       </p>
 
-      <div className="bg-white border-4 border-purple-300 rounded-xl p-6 max-w-md w-full">
-        <p className="font-black text-lg text-purple-700 mb-4">
+      <div className="glass-dark neon-border-purple rounded-xl p-8 max-w-md w-full relative z-10">
+        <p className="font-black text-lg text-neon-purple mb-6 text-center">
           {points} PUAN DAĞIT
         </p>
 
         <div className="flex flex-col gap-4 mb-6">
           {(['atk', 'def', 'spd'] as const).map(stat => (
             <div key={stat} className="flex items-center gap-3">
-              <span className="font-black text-lg min-w-20">
-                {stat === 'atk' ? '⚔️ SALDIRI' : stat === 'def' ? '🛡️ SAVUNMA' : '⚡ HIZ'}
+              <span className="font-black text-sm min-w-24 text-neon-cyan">
+                {stat === 'atk' ? '⚔️ ATK' : stat === 'def' ? '🛡️ DEF' : '⚡ SPD'}
               </span>
               <button
                 onClick={() =>
@@ -321,7 +341,7 @@ function LevelUpScreen({
                     [stat]: Math.max(0, s[stat] - 1),
                   }))
                 }
-                className="px-3 py-1 bg-red-500 text-white rounded font-black"
+                className="px-3 py-1 glass-dark border border-red-500/50 text-red-400 rounded font-black hover:border-red-500/80 transition"
               >
                 −
               </button>
@@ -335,7 +355,7 @@ function LevelUpScreen({
                     [stat]: Math.max(0, parseInt(e.target.value) || 0),
                   }))
                 }
-                className="w-12 text-center px-2 py-1 border-3 border-purple-300 rounded font-black text-lg"
+                className="w-12 text-center px-2 py-1 bg-slate-800 border border-neon-purple rounded font-black text-lg text-neon-purple"
               />
               <button
                 onClick={() =>
@@ -346,7 +366,7 @@ function LevelUpScreen({
                   }))
                 }
                 disabled={remainingPoints <= 0}
-                className="px-3 py-1 bg-dino-500 text-white rounded font-black disabled:bg-gray-400"
+                className="px-3 py-1 glass-dark border border-green-500/50 text-green-400 rounded font-black hover:border-green-500/80 disabled:opacity-50 transition"
               >
                 +
               </button>
@@ -354,14 +374,18 @@ function LevelUpScreen({
           ))}
         </div>
 
-        <p className={`text-lg font-black mb-4 text-center ${remainingPoints === 0 ? 'text-dino-600' : 'text-red-600'}`}>
+        <p className={`text-lg font-black mb-6 text-center ${remainingPoints === 0 ? 'text-neon-cyan' : 'text-red-400'}`}>
           Kalan: {remainingPoints} puan
         </p>
 
         <button
           onClick={handleSubmit}
           disabled={remainingPoints !== 0}
-          className="w-full px-6 py-3 bg-purple-500 text-white rounded-lg font-black text-lg hover:bg-purple-600 disabled:bg-gray-400"
+          className={`w-full px-6 py-3 glass-dark rounded-lg font-black text-lg transition ${
+            remainingPoints === 0
+              ? 'neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
+              : 'border border-gray-600/50 text-gray-500 cursor-not-allowed opacity-50'
+          }`}
         >
           ✅ ONAYLA
         </button>
