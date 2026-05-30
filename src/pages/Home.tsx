@@ -7,6 +7,7 @@ import DinoList from '../components/DinoList'
 import DinoForm from '../components/DinoForm'
 import BattleTable from '../components/BattleTable'
 import BattleTableModeV2 from '../components/BattleTableModeV2'
+import DuelloVsMode from '../components/DuelloVsMode'
 import MatchLog from '../components/MatchLog'
 
 type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs'
@@ -202,18 +203,12 @@ export default function Home() {
 
   if (page === 'duello-vs' && selectedDuelloDino) {
     return (
-      <BattleTable
+      <DuelloVsMode
+        selectedDino={selectedDuelloDino}
         onBack={() => {
           setSelectedDuelloDino(null)
           setPage('home')
         }}
-        onRefresh={(newDinos) => {
-          setDinos(newDinos)
-          setSelectedDuelloDino(null)
-          setPage('home')
-        }}
-        selectedDino={selectedDuelloDino}
-        startInDuelMode={true}
       />
     )
   }
