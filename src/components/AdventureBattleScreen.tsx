@@ -261,7 +261,7 @@ export default function AdventureBattleScreen({
             onClick={() => onComplete(adventureWon, totalXpGained)}
             className="hs-btn hs-btn-block"
           >
-            {adventureWon ? '✨ Sonraki Macera' : '← Geri Dön'}
+            <span>{adventureWon ? 'Sonraki Macera' : 'Geri Dön'}</span>
           </button>
         </motion.div>
       </div>
@@ -502,7 +502,7 @@ export default function AdventureBattleScreen({
         onClick={onBack}
         className="hs-btn absolute top-4 left-4 z-10"
       >
-        ← Geri
+        <span>Geri</span>
       </button>
 
       <div className="flex flex-col items-center gap-6 z-10 mt-8 max-w-2xl mx-auto">
@@ -546,7 +546,7 @@ export default function AdventureBattleScreen({
             onClick={startBattle}
             className="hs-btn hs-btn-lg hs-btn-block"
           >
-            {currentScene.actionText || 'İlerle'}
+            <span>{currentScene.actionText || 'İlerle'}</span>
           </motion.button>
         </div>
       </div>

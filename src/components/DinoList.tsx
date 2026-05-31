@@ -67,7 +67,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
           onClick={onBack}
           className="hs-btn"
         >
-          Geri
+          <span>Geri</span>
         </button>
 
         <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">Dinozorlarım</h1>
@@ -77,20 +77,20 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
             <p className="text-2xl text-neon-cyan">Henüz dinozor yok. Yeni bir tane oluştur!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4 mt-6">
             {dinos.map(dino => {
               const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || dino.pendingRewards.pendingAbilityIds.length > 0)
 
               return (
                 <motion.div
                   key={dino.id}
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ translateY: -4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleOpenDetail(dino)}
                   className={`hs-card rounded-2xl p-6 cursor-pointer transition relative ${
                     hasPendingRewards
                       ? 'ring-2 ring-yellow-500 ring-offset-1 ring-offset-slate-900 shadow-2xl shadow-yellow-500/40'
-                      : 'hover:shadow-lg'
+                      : ''
                   }`}
                 >
                   {/* Level-up badge */}
@@ -103,10 +103,10 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                       ⬆
                     </motion.div>
                   )}
-                  <h2 className="text-3xl font-black bg-gradient-to-r from-gold-light to-gold-mid bg-clip-text text-transparent mb-2">{dino.name}</h2>
-                  <p className="text-sm text-gold-light/80 mb-4 font-semibold">
+                  <h2 className="text-2xl font-black text-amber-950 mb-1 drop-shadow-lg">{dino.name}</h2>
+                  <p className="text-xs text-amber-700 mb-4 font-bold tracking-wide">
                     {dino.element && `${dino.element} • `}
-                    Seviye {dino.level}
+                    LEVEL {dino.level}
                   </p>
 
                   {/* Class & Spec Medallions */}
@@ -217,14 +217,14 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                     onClick={() => handleOpenDetail(dino)}
                     className="hs-btn flex-1"
                   >
-                    Detaylar
+                    <span>Detaylar</span>
                   </button>
                   {onEdit && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onEdit(dino) }}
                       className="hs-btn hs-btn-purple flex-1"
                     >
-                      Düzen
+                      <span>Düzen</span>
                     </button>
                   )}
                   <button
@@ -232,7 +232,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                     disabled={deleting === dino.id}
                     className="hs-btn hs-btn-red flex-1"
                   >
-                    {deleting === dino.id ? 'Siliniyor...' : 'Sil'}
+                    <span>{deleting === dino.id ? 'Siliniyor...' : 'Sil'}</span>
                   </button>
                 </div>
                 </motion.div>

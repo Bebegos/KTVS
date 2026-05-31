@@ -76,7 +76,7 @@ const HsButton = forwardRef<HTMLButtonElement, HsButtonProps>(function HsButton(
       {...animation}
       {...(rest as any)}
     >
-      {children}
+      {typeof children === 'string' ? <span>{children}</span> : children}
     </motion.button>
   )
 })

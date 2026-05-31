@@ -151,7 +151,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
             onClick={onBack}
             className="hs-btn"
           >
-            Geri
+            <span>Geri</span>
           </button>
           <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink">
             Yeni Dinozor
@@ -264,7 +264,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 disabled={selectedClassAbilities.length !== 2}
                 className="hs-btn hs-btn-block"
               >
-                Devam Et
+                <span>Devam Et</span>
               </button>
             </motion.div>
           )}
@@ -352,7 +352,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 disabled={!selectedSpecAbility}
                 className="hs-btn hs-btn-purple hs-btn-block"
               >
-                Devam Et
+                <span>Devam Et</span>
               </button>
             </motion.div>
           )}
@@ -498,7 +498,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                   disabled={loading || !stats.name.trim()}
                   className="hs-btn hs-btn-green w-full px-6 py-4 text-lg mt-4"
                 >
-                  {loading ? 'Dinozor Oluşturuluyor...' : 'Dinozor Oluştur'}
+                  <span>{loading ? 'Dinozor Oluşturuluyor...' : 'Dinozor Oluştur'}</span>
                 </button>
               </div>
             </motion.div>
