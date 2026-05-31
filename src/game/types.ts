@@ -24,7 +24,8 @@ export interface Dino {
   name: string
   element?: string
   passive?: string
-  maxHp: number
+  sta?: number // Stamina - determines maxHp based on class/spec (NEW)
+  maxHp: number // Current implementation - can be stamina-based or direct
   atk: number
   def: number
   spd: number
@@ -37,7 +38,7 @@ export interface Dino {
   // Class and spec system
   class?: string // 'big_carnivore', 'raptor', 'giant_herbivore', 'flying_carnivore'
   spec?: string // Specialization within the class
-  hpPerLevelStat?: number // How many HP per stat point spent on HP (1.0, 1.5, 2.0)
+  staminaToHpMultiplier?: number // How many HP per stamina point (1.0, 1.5, 2.0)
 
   // Pending rewards (earned but not yet spent)
   pendingRewards?: PendingRewards
