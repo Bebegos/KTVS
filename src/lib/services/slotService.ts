@@ -7,11 +7,11 @@ import { Dino, SlotState, SlotStatus, ValidationResult } from '../../game/types'
 // Slot unlock levels - when each slot becomes available
 const SLOT_UNLOCK_LEVELS = {
   0: 0, // Slot 0: Always available
-  1: 3, // Slot 1: Level 3
-  2: 6, // Slot 2: Level 6
-  3: 9, // Slot 3: Level 9
-  4: 12, // Slot 4: Level 12
-  5: 15, // Slot 5: Ultimate - Level 15
+  1: 1, // Slot 1: Level 1
+  2: 1, // Slot 2: Level 1
+  3: 1, // Slot 3: Level 1
+  4: 2, // Slot 4: Level 2
+  5: 3, // Slot 5: Level 3 (ultimate slot opens at level 3)
 }
 
 class SlotService {
@@ -33,6 +33,13 @@ class SlotService {
     if (slot < 0 || slot > 5) {
       console.warn(`Invalid slot number: ${slot}`)
       return true
+    }
+
+    // Ultimate slot (5) is special - unlocks at level 3 AND when ultimate is obtained
+    if (slot === 5) {
+      const requiredLevel = this.getSlotRequiredLevel(5)
+      const hasUltimate = dino.abilities[5] && dino.abilities[5].name
+      return dino.level < requiredLevel || !hasUltimate
     }
 
     const requiredLevel = this.getSlotRequiredLevel(slot)
