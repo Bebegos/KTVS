@@ -248,7 +248,7 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
 
           {/* Savaş Günlüğü */}
           <div className="flex-1 w-full glass-dark neon-border-purple rounded-lg p-3 overflow-y-auto text-xs">
-            <p className="font-black text-neon-purple mb-2 sticky top-0">📋 LOG</p>
+            <p className="font-black text-neon-purple mb-2 sticky top-0">LOG</p>
             {battleLog.map((log, idx) => (
               <p key={idx} className="text-neon-purple/80 font-bold mb-1">
                 {log}
@@ -383,7 +383,7 @@ function LevelUpScreen({
           disabled={remainingPoints !== 0}
           className="hs-btn hs-btn-lg hs-btn-block"
         >
-          ✅ ONAYLA
+          ONAYLA
         </button>
       </div>
     </div>

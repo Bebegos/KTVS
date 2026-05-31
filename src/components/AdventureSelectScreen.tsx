@@ -31,14 +31,13 @@ export default function AdventureSelectScreen({
         onClick={onBack}
         className="hs-btn absolute top-4 left-4 z-10"
       >
-        ← Geri
+        Geri
       </button>
 
       {!selectedDino ? (
         // DINO SELECTION
         <div className="flex flex-col items-center gap-6 z-10 mt-8">
           <div className="text-center mb-4">
-            <div className="text-6xl mb-3">🦖</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
               Maceraya Başla
             </h1>
@@ -59,7 +58,6 @@ export default function AdventureSelectScreen({
                   onClick={() => setSelectedDino(dino)}
                   className="glass-dark neon-border-cyan rounded-xl p-6 text-left hover:shadow-neon-cyan transition"
                 >
-                  <div className="text-4xl mb-3">🦖</div>
                   <h2 className="text-2xl font-black text-neon-cyan">{dino.name}</h2>
                   <p className="text-sm text-neon-cyan/70 mb-4">Seviye {dino.level}</p>
                   <div className="grid grid-cols-2 gap-2 text-xs font-bold">
@@ -93,7 +91,7 @@ export default function AdventureSelectScreen({
               onClick={() => setSelectedDino(null)}
               className="hs-btn hs-btn-purple"
             >
-              ← Dino Değiştir
+              Dino Değiştir
             </button>
             <div className="flex-1 glass-dark neon-border-cyan rounded-lg p-4 text-center">
               <p className="text-sm text-neon-cyan/70">Seçili Dino</p>
@@ -102,7 +100,6 @@ export default function AdventureSelectScreen({
           </div>
 
           <div className="text-center mb-4">
-            <div className="text-6xl mb-3">🗺️</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-pink">
               Maceraları Seç
             </h1>
@@ -136,7 +133,6 @@ export default function AdventureSelectScreen({
 
                       <div className="flex gap-4 text-sm font-bold flex-wrap">
                         <div className="glass-dark border border-neon-cyan/30 rounded px-3 py-1">
-                          {adventure.difficulty === 'easy' ? '🟢' : adventure.difficulty === 'normal' ? '🟡' : '🔴'}{' '}
                           {adventure.difficulty === 'easy'
                             ? 'Kolay'
                             : adventure.difficulty === 'normal'
@@ -144,13 +140,13 @@ export default function AdventureSelectScreen({
                             : 'Zor'}
                         </div>
                         <div className="glass-dark border border-neon-purple/30 rounded px-3 py-1">
-                          ⚔️ {getTotalEnemyCount(adventure)} Düşman
+                          {getTotalEnemyCount(adventure)} Düşman
                         </div>
                         <div className="glass-dark border border-yellow-500/30 rounded px-3 py-1 text-yellow-400">
-                          ✨ {adventure.xpReward} XP
+                          {adventure.xpReward} XP
                         </div>
                         <div className="glass-dark border border-orange-500/30 rounded px-3 py-1 text-orange-400">
-                          💰 {adventure.coinReward} DinoCoin
+                          {adventure.coinReward} DinoCoin
                         </div>
                       </div>
                     </div>
