@@ -10,6 +10,7 @@ import { getEffectEmoji } from '../lib/effect-translations'
 import RewardSpendingModal from './RewardSpendingModal'
 import StatDisplay from './StatDisplay'
 import StatBonusAllocator from './StatBonusAllocator'
+import AbilityDiscoveryModal from './AbilityDiscoveryModal'
 
 interface DinoDetailPageProps {
   dino: Dino
@@ -21,6 +22,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
   const [dino, setDino] = useState(initialDino)
   const [rewardModalOpen, setRewardModalOpen] = useState(false)
   const [showBonusAllocator, setShowBonusAllocator] = useState(false)
+  const [showAbilityDiscovery, setShowAbilityDiscovery] = useState(false)
 
   const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || dino.pendingRewards.pendingAbilityIds.length > 0)
 
@@ -206,7 +208,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                       )}
                       {dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__')).length > 0 && (
                         <button
-                          onClick={() => setRewardModalOpen(true)}
+                          onClick={() => setShowAbilityDiscovery(true)}
                           className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-purple-100 font-black rounded-lg transition active:scale-95 shadow-lg shadow-purple-500/30"
                         >
                           ✨ Yetenek Keşfet
@@ -294,6 +296,19 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
             isOpen={rewardModalOpen}
             onClose={() => setRewardModalOpen(false)}
             onConfirm={handleRewardSpent}
+          />
+        )}
+        {showAbilityDiscovery && dino.pendingRewards && (
+          <AbilityDiscoveryModal
+            dino={dino}
+            abilityCount={dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__')).length}
+            isOpen={showAbilityDiscovery}
+            onClose={() => setShowAbilityDiscovery(false)}
+            onComplete={(updatedDino) => {
+              setDino(updatedDino)
+              setShowAbilityDiscovery(false)
+              onRefresh([updatedDino])
+            }}
           />
         )}
       </AnimatePresence>
