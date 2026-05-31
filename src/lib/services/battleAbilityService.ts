@@ -49,7 +49,7 @@ class BattleAbilityService {
         abilityId: storedAbility.name,
         name: def.name,
         kind: def.kind as any,
-        effect: def.effect,
+        effects: def.effects || [],
         multiplier: def.damageMultiplier || 1,
         icon: def.icon,
         description: def.description,
@@ -164,15 +164,23 @@ class BattleAbilityService {
       targetDied = defender.currentHp <= 0
     }
 
-    // Apply effect - buffs/heals go to attacker, debuffs go to defender
+    // Apply effects - buffs/heals go to attacker, debuffs go to defender
     let effectApplied: string | null = null
-    if (ability.effect !== 'none') {
+    if (ability.effects && ability.effects.length > 0) {
       const effectTarget =
         ability.kind === 'buff' || ability.kind === 'heal' ? attacker : defender
-      const applied = effectService.applyEffect(effectTarget, ability.effect as any)
-      if (applied) {
-        const effectDef = abilityDefinitionService.getAbility(ability.abilityId)
-        effectApplied = effectDef?.name || ability.effect
+      const appliedEffects: string[] = []
+      for (const effectId of ability.effects) {
+        const applied = effectService.applyEffect(effectTarget, effectId as any)
+        if (applied) {
+          // Get effect name from library
+          const effectDef = abilityDefinitionService.getAbility(ability.abilityId)
+          const effect = effectDef ? `${effectDef.name}` : String(effectId)
+          appliedEffects.push(effect)
+        }
+      }
+      if (appliedEffects.length > 0) {
+        effectApplied = appliedEffects.join(' + ')
       }
     }
 

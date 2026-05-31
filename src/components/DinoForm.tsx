@@ -10,11 +10,11 @@ interface DinoFormProps {
 }
 
 const DEFAULT_ABILITIES: DinoAbility[] = [
-  { name: 'Pençe Saldırısı', cd: 0, kind: 'debuff', effect: 'none', multiplier: 1, icon: 'claw' },
-  { name: 'Zehirli Isırık', cd: 2, kind: 'debuff', effect: 'poison', multiplier: 1, icon: 'venom' },
-  { name: 'Güçlendirme', cd: 3, kind: 'buff', effect: 'power', multiplier: 1, icon: 'aura' },
-  { name: 'Hızlı Koşu', cd: 2, kind: 'buff', effect: 'speed', multiplier: 1, icon: 'wind' },
-  { name: 'ULTI: Meteor', cd: 4, kind: 'debuff', effect: 'stop', multiplier: 2, icon: 'meteor' },
+  { name: 'Pençe Saldırısı', cd: 0, kind: 'debuff', effects: [], multiplier: 1, icon: 'claw' },
+  { name: 'Zehirli Isırık', cd: 2, kind: 'debuff', effects: ['poison'], multiplier: 1, icon: 'venom' },
+  { name: 'Güçlendirme', cd: 3, kind: 'buff', effects: ['power'], multiplier: 1, icon: 'aura' },
+  { name: 'Hızlı Koşu', cd: 2, kind: 'buff', effects: ['speed'], multiplier: 1, icon: 'wind' },
+  { name: 'ULTI: Meteor', cd: 4, kind: 'debuff', effects: ['stop'], multiplier: 2, icon: 'meteor' },
 ]
 
 export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
@@ -203,7 +203,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
                         <div>
                           <label className="block text-xs font-bold text-neon-cyan mb-1">Efekt</label>
                           <select
-                            value={ability.effect}
+                            value={ability.effects}
                             onChange={e => updateAbility(idx, 'effect', e.target.value)}
                             className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan"
                           >
@@ -254,7 +254,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
                     >
                       <p className="font-bold text-neon-cyan">{ability.name}</p>
                       <p className="text-xs text-neon-cyan/70">
-                        CD: {ability.cd} • {ability.kind} • {ability.effect} • ×{ability.multiplier || 1}
+                        CD: {ability.cd} • {ability.kind} • {ability.effects?.join(', ') || 'Yok'} • ×{ability.multiplier || 1}
                       </p>
                     </button>
                   )}

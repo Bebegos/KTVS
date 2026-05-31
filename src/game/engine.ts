@@ -84,9 +84,11 @@ export function applyAbility(
     defenderChar.currentHp = Math.max(0, defenderChar.currentHp - damage)
   }
 
-  // Yetenek efektini uygula
-  if (ability.effect !== 'none' && isHit) {
-    applyEffect(defenderChar, ability.effect, 2)
+  // Yetenek efektlerini uygula
+  if (ability.effects && ability.effects.length > 0 && isHit) {
+    for (const effectId of ability.effects) {
+      applyEffect(defenderChar, effectId, 2)
+    }
   }
 
   // CD başlat
@@ -182,7 +184,7 @@ function dinoToCharacter(dino: Dino): BattleCharacter {
     cd: 0,
     maxCd: a.cd,
     kind: a.kind,
-    effect: a.effect,
+    effects: a.effects || [],
     multiplier: a.multiplier,
     icon: a.icon,
   }))

@@ -19,7 +19,7 @@ export interface AbilityDefinition {
   category?: string
   cooldown: number
   damageMultiplier?: number
-  effect: EffectKind
+  effects: EffectKind[]
   description?: string
   fullDescription?: string
   isVampiric?: boolean
@@ -45,7 +45,7 @@ class AbilityDefinitionService {
       category: abilityDef.category,
       cooldown: abilityDef.cooldown || 0,
       damageMultiplier: abilityDef.damageMultiplier,
-      effect: abilityDef.effect as EffectKind,
+      effects: (abilityDef.effects || []) as EffectKind[],
       description: abilityDef.description,
       fullDescription: abilityDef.fullDescription,
       isPassive: abilityDef.isPassive,
@@ -73,7 +73,7 @@ class AbilityDefinitionService {
           category: ability.category,
           cooldown: ability.cooldown || 0,
           damageMultiplier: ability.damageMultiplier,
-          effect: ability.effect as EffectKind,
+          effects: (ability.effects || []) as EffectKind[],
           description: ability.description,
           fullDescription: ability.fullDescription,
           isPassive: ability.isPassive,
@@ -105,7 +105,7 @@ class AbilityDefinitionService {
           category: ability.category,
           cooldown: ability.cooldown || 0,
           damageMultiplier: ability.damageMultiplier,
-          effect: ability.effect as EffectKind,
+          effects: (ability.effects || []) as EffectKind[],
           description: ability.description,
           fullDescription: ability.fullDescription,
           isPassive: ability.isPassive,
@@ -136,7 +136,7 @@ class AbilityDefinitionService {
           category: ability.category,
           cooldown: ability.cooldown || 0,
           damageMultiplier: ability.damageMultiplier,
-          effect: ability.effect as EffectKind,
+          effects: (ability.effects || []) as EffectKind[],
           description: ability.description,
           fullDescription: ability.fullDescription,
           isPassive: ability.isPassive,

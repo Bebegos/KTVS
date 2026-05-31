@@ -20,7 +20,7 @@ class DinoAbilityService {
         name: '', // Empty
         cd: 0,
         kind: 'attack',
-        effect: 'none',
+        effects: [],
       })
     }
 
@@ -52,7 +52,7 @@ class DinoAbilityService {
       name: abilityDef.name,
       cd: 0,
       kind: abilityDef.kind,
-      effect: abilityDef.effect,
+      effects: abilityDef.effects,
       multiplier: abilityDef.damageMultiplier,
       icon: abilityDef.icon,
       description: abilityDef.description,
@@ -65,7 +65,7 @@ class DinoAbilityService {
         name: '',
         cd: 0,
         kind: 'attack',
-        effect: 'none',
+        effects: [],
       })
     }
 
@@ -93,7 +93,7 @@ class DinoAbilityService {
         name: '',
         cd: 0,
         kind: 'attack',
-        effect: 'none',
+        effects: [],
       })
     }
 
@@ -102,7 +102,7 @@ class DinoAbilityService {
       name: '',
       cd: 0,
       kind: 'attack',
-      effect: 'none',
+      effects: [],
     }
 
     return { valid: true }
@@ -180,7 +180,7 @@ class DinoAbilityService {
             name: '',
             cd: 0,
             kind: 'attack',
-            effect: 'none',
+            effects: [],
           }
         }
       }
@@ -208,7 +208,7 @@ class DinoAbilityService {
       name: def.name,
       cd: 0,
       kind: def.kind,
-      effect: def.effect,
+      effects: def.effects,
       multiplier: def.damageMultiplier,
       icon: def.icon,
       description: def.description,

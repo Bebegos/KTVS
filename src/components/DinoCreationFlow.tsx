@@ -107,7 +107,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
             name: abilityDef.name,
             cd: 0,
             kind: systemKind,
-            effect: abilityDef.effect as any,
+            effects: (abilityDef.effects || []) as any[],
             multiplier: abilityDef.damageMultiplier,
             icon: abilityDef.icon,
           })
@@ -122,7 +122,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
           name: specAbilityDef.name,
           cd: 0,
           kind: systemKind,
-          effect: specAbilityDef.effect as any,
+          effects: (specAbilityDef.effects || []) as any[],
           multiplier: specAbilityDef.damageMultiplier,
           icon: specAbilityDef.icon,
         })
@@ -134,7 +134,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
           name: '[Seviye 2\'de Açılacak]',
           cd: 0,
           kind: 'debuff',
-          effect: 'none',
+          effects: [],
           multiplier: 0,
           icon: 'placeholder',
         },
@@ -142,7 +142,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
           name: '[Seviye 3\'te Açılacak]',
           cd: 0,
           kind: 'debuff',
-          effect: 'none',
+          effects: [],
           multiplier: 0,
           icon: 'placeholder',
         }

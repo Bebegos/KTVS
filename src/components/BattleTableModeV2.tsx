@@ -350,7 +350,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                             </p>
                             <p className="text-xs text-yellow-200/80 font-bold mt-1">ULTIMATE</p>
                             <div className="text-xs space-y-1 mt-2">
-                              {battleState.player.abilities[5].effect === 'none' ? (
+                              {!battleState.player.abilities[5].effects || battleState.player.abilities[5].effects.length === 0 ? (
                                 <p className="text-yellow-100/70 font-bold">Saldırı • ×{battleState.player.abilities[5].multiplier || 1}</p>
                               ) : (
                                 <p className="text-yellow-100 font-bold">
@@ -511,7 +511,7 @@ function AbilityButton({
           {ability?.name || 'Bilinmiyor'}
         </p>
         <div className="text-xs space-y-1 mt-1">
-          {ability?.effect === 'none' ? (
+          {!ability?.effects || ability.effects.length === 0 ? (
             <p className="text-neon-cyan/70 font-bold">Saldırı • ×{ability?.multiplier || 1}</p>
           ) : (
             <p className={isUlti ? 'text-purple-400 font-bold' : 'text-red-400 font-bold'}>

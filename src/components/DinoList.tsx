@@ -120,17 +120,17 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                           <div className="flex-1 min-w-0">
                             <p className="font-black text-neon-purple text-sm">{a.name}</p>
                             <div className="text-xs text-neon-purple/70 space-y-0.5">
-                              {a.effect === 'none' ? (
+                              {!a.effects || a.effects.length === 0 ? (
                                 <p>Saldırı • ×{a.multiplier || 1}</p>
                               ) : (
-                                <p className={isBuffEffect(a.effect) ? 'text-green-400' : 'text-red-400'}>
-                                  {isBuffEffect(a.effect) ? '⬆️ Buff' : '⬇️ Debuff'} • ×{a.multiplier || 1}
+                                <p className={isBuffEffect(a.effects[0]) ? 'text-green-400' : 'text-red-400'}>
+                                  {isBuffEffect(a.effects[0]) ? '⬆️ Buff' : '⬇️ Debuff'} • ×{a.multiplier || 1}
                                 </p>
                               )}
-                              {a.effect !== 'none' && (
+                              {a.effects && a.effects.length > 0 && (
                                 <span className="flex items-center gap-1">
-                                  <SvgIcon id={a.effect} type="effect" size="xs" fallback={getEffectEmoji(a.effect)} />
-                                  <span className="font-bold text-neon-cyan">{getEffectNameTR(a.effect)}</span>
+                                  <SvgIcon id={a.effects[0]} type="effect" size="xs" fallback={getEffectEmoji(a.effects[0])} />
+                                  <span className="font-bold text-neon-cyan">{getEffectNameTR(a.effects[0])}</span>
                                 </span>
                               )}
                               {a.cd > 0 && <p>CD: <span className="font-bold">{a.cd}</span> tur</p>}

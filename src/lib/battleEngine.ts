@@ -183,13 +183,19 @@ export class BattleEngine {
       targetDied = defender.currentHp <= 0
     }
 
-    // Apply effect - buff goes to attacker, debuff goes to defender, heal goes to attacker
-    let effectApplied: string | null = null
-    if (ability.effect !== 'none') {
+    // Apply effects - buff goes to attacker, debuff goes to defender, heal goes to attacker
+    const appliedEffects: string[] = []
+    if (ability.effects && ability.effects.length > 0) {
       // Determine target: buffs and heal effects go to attacker, debuffs go to defender
       const effectTarget = (ability.kind === 'buff' || ability.kind === 'heal') ? attacker : defender
-      effectApplied = this.applyEffect(effectTarget, ability.effect)
+      for (const effectId of ability.effects) {
+        const appliedName = this.applyEffect(effectTarget, effectId)
+        if (appliedName) {
+          appliedEffects.push(appliedName)
+        }
+      }
     }
+    const effectApplied = appliedEffects.length > 0 ? appliedEffects.join(' + ') : null
 
     // Set cooldown (ensure cooldown array is properly sized)
     if (!attacker.cooldowns || attacker.cooldowns.length <= abilityIdx) {
@@ -260,8 +266,8 @@ export class BattleEngine {
       // Reset duration if effect exists, mark as fresh
       character.effects[existingIdx].duration = duration
       character.effects[existingIdx].justApplied = true
-    } else if (character.effects.length < 2) {
-      // Add if slot available (max 2 effects)
+    } else if (character.effects.length < 4) {
+      // Add if slot available (max 4 effects to allow multiple effects per ability)
       character.effects.push({
         type: effectId as any,
         duration,

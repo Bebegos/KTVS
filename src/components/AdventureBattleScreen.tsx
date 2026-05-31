@@ -542,9 +542,10 @@ function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): 
   // Their attacks still hit, but lose any debuff rider (e.g. bite won't bleed).
   const sanitizedAbilities =
     enemyData.level < 10
-      ? playerDino.abilities.map(a =>
-          ENEMY_DEBUFFS.includes(a.effect) ? { ...a, effect: 'none' as const } : a
-        )
+      ? playerDino.abilities.map(a => {
+          const hasDebuff = a.effects && a.effects.some(e => ENEMY_DEBUFFS.includes(e))
+          return hasDebuff ? { ...a, effects: [] } : a
+        })
       : playerDino.abilities
 
   return {

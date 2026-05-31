@@ -27,7 +27,7 @@ export default function BattleTableMode({ dino, onBack, onRefresh }: BattleTable
       cd: 0,
       maxCd: a.cd,
       kind: a.kind,
-      effect: a.effect,
+      effects: a.effects || [],
     })),
   })
 

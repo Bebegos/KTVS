@@ -290,10 +290,10 @@ export default function PvEBattleScreen({
                   <span>Çarpan:</span>
                   <span className="font-black">×{ability.multiplier || 1}</span>
                 </div>
-                {ability.effect !== 'none' && (
+                {ability.effects && ability.effects.length > 0 && (
                   <div className="flex justify-between">
-                    <span>Efekt:</span>
-                    <span className="font-black">{getEffectNameTR(ability.effect)}</span>
+                    <span>Efektler:</span>
+                    <span className="font-black">{ability.effects.map(e => getEffectNameTR(e)).join(' + ')}</span>
                   </div>
                 )}
                 {battleState.player.cooldowns[idx] > 0 && (

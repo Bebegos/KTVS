@@ -75,19 +75,23 @@ export default function AbilityInfoModal({ ability, cooldown, isOpen, onClose }:
         </div>
 
         {/* Effect Info */}
-        {ability.effect !== 'none' && (
+        {ability.effects && ability.effects.length > 0 && (
           <div className="mb-4 p-3 rounded-lg bg-slate-700/40 border border-neon-purple/30">
-            <p className="text-xs font-bold text-neon-purple mb-2">EFEKT:</p>
-            <div className="flex items-center gap-2">
-              <SvgIcon
-                id={ability.effect}
-                type="effect"
-                size="sm"
-                fallback={getEffectEmoji(ability.effect)}
-              />
-              <span className={`font-bold ${isBuffEffect(ability.effect) ? 'text-green-400' : 'text-red-400'}`}>
-                {getEffectNameTR(ability.effect)}
-              </span>
+            <p className="text-xs font-bold text-neon-purple mb-2">EFEKTLER:</p>
+            <div className="space-y-2">
+              {ability.effects.map((effectId, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <SvgIcon
+                    id={effectId}
+                    type="effect"
+                    size="sm"
+                    fallback={getEffectEmoji(effectId)}
+                  />
+                  <span className={`font-bold ${isBuffEffect(effectId) ? 'text-green-400' : 'text-red-400'}`}>
+                    {getEffectNameTR(effectId)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         )}

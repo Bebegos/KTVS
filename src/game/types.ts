@@ -7,7 +7,7 @@ export interface Ability {
   cd: number
   maxCd: number
   kind: AbilityType
-  effect: EffectKind
+  effects: EffectKind[]
   multiplier?: number // Hasar çarpanı (varsayılan 1x)
   description?: string
   icon?: string // Saldırı ikonu ID'si
@@ -17,7 +17,7 @@ export interface DinoAbility {
   name: string
   cd: number
   kind: AbilityType
-  effect: EffectKind
+  effects: EffectKind[] // Array of effects
   multiplier?: number // Hasar çarpanı (varsayılan 1x)
   icon?: string // Saldırı ikonu ID'si
   description?: string // Ability description
@@ -119,7 +119,7 @@ export interface BattleAbility {
   abilityId: string
   name: string
   kind: AbilityType
-  effect: EffectKind
+  effects: EffectKind[]
   multiplier?: number
   icon?: string
   description?: string

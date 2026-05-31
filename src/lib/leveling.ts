@@ -91,7 +91,7 @@ export function abilityToDinoAbility(ability: any): DinoAbility {
     name: ability.name,
     cd: ability.cooldown || 0,
     kind: ability.kind,
-    effect: ability.effect,
+    effects: ability.effects || [],
     multiplier: ability.damageMultiplier || 0,
     icon: ability.icon,
   }
