@@ -13,18 +13,22 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 function mapDinoData(data: any): any {
   if (!data) return data
+
+  const transform = (item: any) => ({
+    ...item,
+    maxHp: item.max_hp,
+    abilityIds: item.ability_ids || [],
+    pendingRewards: item.pending_rewards ? {
+      unspentStatPoints: item.pending_rewards.unspent_stat_points || 0,
+      pendingAbilityIds: item.pending_rewards.pending_ability_ids || [],
+      pendingAbilitySlot: item.pending_rewards.pending_ability_slot,
+    } : undefined,
+  })
+
   if (Array.isArray(data)) {
-    return data.map(item => ({
-      ...item,
-      maxHp: item.max_hp,
-      abilityIds: item.ability_ids || []
-    }))
+    return data.map(transform)
   }
-  return {
-    ...data,
-    maxHp: data.max_hp,
-    abilityIds: data.ability_ids || []
-  }
+  return transform(data)
 }
 
 export async function getFamilyCode(): Promise<string> {

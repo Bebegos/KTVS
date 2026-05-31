@@ -13,6 +13,12 @@ export interface Ability {
   icon?: string // Saldırı ikonu ID'si
 }
 
+export interface PendingRewards {
+  unspentStatPoints: number // Points earned from level-ups, not yet spent
+  pendingAbilityIds: string[] // Ability IDs earned but not yet assigned to slots
+  pendingAbilitySlot?: number // Which slot is being filled (0-5)
+}
+
 export interface Dino {
   id: string
   name: string
@@ -31,6 +37,9 @@ export interface Dino {
   // Class and spec system
   class?: string // 'big_carnivore', 'raptor', 'giant_herbivore', 'flying_carnivore'
   spec?: string // Specialization within the class
+
+  // Pending rewards (earned but not yet spent)
+  pendingRewards?: PendingRewards
 }
 
 export interface ActiveEffect {
