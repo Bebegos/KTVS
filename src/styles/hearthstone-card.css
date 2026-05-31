@@ -783,3 +783,136 @@
   position: relative;
   z-index: 2;
 }
+
+/* ============================================================
+   BATTLE RESULT CARD - Post-Battle Summary Display
+   ============================================================ */
+
+.battle-result-card {
+  display: block;
+}
+
+.battle-result-winner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%);
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.winner-badge {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.winner-info {
+  flex: 1;
+}
+
+.winner-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #2a1810;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.winner-stats {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-badge.xp-badge {
+  background: linear-gradient(135deg, #d4af37 0%, #f5e1a4 100%);
+  color: #2a1810;
+}
+
+.stat-badge.coin-badge {
+  background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
+  color: #78350f;
+}
+
+.stat-badge.xp-badge-small {
+  background: rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.stat-badge.coin-badge-small {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.battle-result-divider {
+  text-align: center;
+  padding: 12px 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #8b7500;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  margin: 12px 0;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.battle-result-loser {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.loser-badge {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.loser-info {
+  flex: 1;
+}
+
+.loser-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2a1810;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.loser-stats {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.battle-result-duration {
+  text-align: center;
+  padding: 8px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+}
