@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino } from '../game/types'
 import { abilityDefinitionService, discoveryService } from '../lib/services'
-import DinoCard from './DinoCard'
+import HearthstoneCard from './HearthstoneCard'
 import AbilityIcon from './AbilityIcon'
 import SvgIcon from './SvgIcon'
 import MedallionIcon from './MedallionIcon'
@@ -51,44 +51,58 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
           <span>Geri</span>
         </button>
 
-        {/* Main Dinosaur Card */}
-        <div className="mb-6 max-w-2xl">
-          <DinoCard dino={dino} mode="display" />
+        {/* Minimal Header Card with just Name & Level */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 max-w-md"
+        >
+          <HearthstoneCard
+            title={dino.name}
+            subtitle={`Level ${dino.level} • ${dino.element || 'Normal'}`}
+            mode="display"
+            className="minimal-dino-header"
+          >
+            <div className="text-center space-y-2">
+              <div className="text-4xl">✨</div>
+              <p className="text-xs text-gold-light font-bold uppercase tracking-wider">Dinozorlaştırma Ekranı</p>
+            </div>
+          </HearthstoneCard>
+        </motion.div>
 
-          {/* Level-up reward call to action */}
-          {hasPendingRewards && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="premium-reward-banner mt-3 rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/15 via-yellow-600/10 to-amber-500/15 p-4 space-y-3"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-2xl animate-pulse">⚡</span>
-                <h3 className="text-lg font-black text-amber-200">SEVİYE ÖDÜLLERİ HAZIR!</h3>
-              </div>
+        {/* Level-up reward call to action */}
+        {hasPendingRewards && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="premium-reward-banner rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/15 via-yellow-600/10 to-amber-500/15 p-4 space-y-3 mb-6"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-2xl animate-pulse">⚡</span>
+              <h3 className="text-lg font-black text-amber-200">SEVİYE ÖDÜLLERİ HAZIR!</h3>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Stat distribution button */}
-                <button
-                  onClick={() => setShowBonusAllocator(true)}
-                  disabled={statPoints <= 0}
-                  className="hs-btn hs-btn-green disabled:opacity-40"
-                >
-                  <span>📊 Stat Dağıt{statPoints > 0 ? ` (${statPoints})` : ''}</span>
-                </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Stat distribution button */}
+              <button
+                onClick={() => setShowBonusAllocator(true)}
+                disabled={statPoints <= 0}
+                className="hs-btn hs-btn-green disabled:opacity-40"
+              >
+                <span>📊 Stat Dağıt{statPoints > 0 ? ` (${statPoints})` : ''}</span>
+              </button>
 
-                {/* Ability discovery button (premium amber glow) */}
-                <button
-                  onClick={() => setShowAbilityDiscovery(true)}
-                  disabled={discoveryCount <= 0}
-                  className="hs-btn hs-btn-premium disabled:opacity-40 disabled:animate-none"
-                >
-                  <span>✦ Yetenek Aç{discoveryCount > 0 ? ` (${discoveryCount})` : ''} ✦</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </div>
+              {/* Ability discovery button (premium amber glow) */}
+              <button
+                onClick={() => setShowAbilityDiscovery(true)}
+                disabled={discoveryCount <= 0}
+                className="hs-btn hs-btn-premium disabled:opacity-40 disabled:animate-none"
+              >
+                <span>✦ Yetenek Aç{discoveryCount > 0 ? ` (${discoveryCount})` : ''} ✦</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Stats & Info */}
@@ -253,17 +267,88 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
               </motion.div>
             )}
 
-            {/* Abilities */}
-            {dino.abilityIds.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-slate-800/60 to-slate-800/40 border border-neon-purple/30 rounded-xl p-5 space-y-4"
-              >
-                <h2 className="text-lg font-black text-neon-purple">⚡ YETENEKLER ({dino.abilityIds.filter(id => id).length})</h2>
+            {/* Abilities with Empty Slots Visualization */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-br from-slate-800/60 to-slate-800/40 border border-neon-purple/30 rounded-xl p-5 space-y-4"
+            >
+              <h2 className="text-lg font-black text-neon-purple">⚡ YETENEKLER ({dino.abilityIds?.filter(id => id).length || 0}/6)</h2>
 
-                <div className="space-y-3">
+              {/* Slot Grid (6 total slots) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {/* Slots 0-4: Class/Spec abilities */}
+                {[0, 1, 2, 3, 4].map((slotIdx) => {
+                  const abilityId = dino.abilityIds?.[slotIdx]
+                  const ability = abilityId ? abilityDefinitionService.getAbility(abilityId) : null
+
+                  if (ability) {
+                    return (
+                      <div
+                        key={slotIdx}
+                        className="bg-gradient-to-b from-neon-purple/30 to-neon-purple/10 border-2 border-neon-purple/50 rounded-lg p-3 space-y-2"
+                      >
+                        <div className="flex justify-center">
+                          <AbilityIcon iconId={ability.icon} size="md" />
+                        </div>
+                        <p className="text-xs font-black text-neon-purple text-center line-clamp-2">{ability.name}</p>
+                        <p className="text-xs text-neon-purple/70 text-center">×{ability.damageMultiplier || 1}</p>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div
+                      key={slotIdx}
+                      className="bg-gradient-to-b from-slate-700/30 to-slate-800/30 border-2 border-dashed border-neon-purple/20 rounded-lg p-3 flex items-center justify-center min-h-24"
+                    >
+                      <div className="text-center">
+                        <p className="text-2xl opacity-30">⚡</p>
+                        <p className="text-xs text-neon-purple/40 font-bold">Slot {slotIdx + 1}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+
+                {/* Slot 5: Ultimate ability */}
+                {(() => {
+                  const abilityId = dino.abilityIds?.[5]
+                  const ability = abilityId ? abilityDefinitionService.getAbility(abilityId) : null
+
+                  if (ability) {
+                    return (
+                      <div
+                        key={5}
+                        className="col-span-2 sm:col-span-3 bg-gradient-to-b from-orange-500/30 to-red-600/20 border-2 border-orange-400/60 rounded-lg p-3 space-y-2"
+                      >
+                        <div className="flex justify-center">
+                          <AbilityIcon iconId={ability.icon} size="lg" />
+                        </div>
+                        <p className="text-sm font-black text-orange-300 text-center">👑 {ability.name}</p>
+                        <p className="text-xs text-orange-300/70 text-center">×{ability.damageMultiplier || 1}</p>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div
+                      key={5}
+                      className="col-span-2 sm:col-span-3 bg-gradient-to-b from-orange-500/10 to-red-600/10 border-2 border-dashed border-orange-400/20 rounded-lg p-4 flex items-center justify-center min-h-20"
+                    >
+                      <div className="text-center">
+                        <p className="text-3xl opacity-20">👑</p>
+                        <p className="text-xs text-orange-400/40 font-bold">ULTIMATE SLOT</p>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+
+              {/* Detailed Ability List */}
+              {dino.abilityIds && dino.abilityIds.length > 0 && (
+                <div className="mt-6 pt-4 border-t border-neon-purple/20 space-y-3">
+                  <p className="text-xs font-bold text-neon-purple/70 uppercase">Yetenek Detayları</p>
                   {dino.abilityIds.map((abilityId, idx) => {
                     if (!abilityId) return null
                     const ability = abilityDefinitionService.getAbility(abilityId)
@@ -272,51 +357,23 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                     return (
                       <div
                         key={idx}
-                        className="bg-gradient-to-r from-neon-purple/10 to-neon-purple/5 border border-neon-purple/30 rounded-lg p-4 space-y-2"
+                        className="bg-neon-purple/5 border border-neon-purple/20 rounded-lg p-3 space-y-1"
                       >
-                        <div className="flex items-start gap-3">
-                          <AbilityIcon iconId={ability.icon} size="md" />
-                          <div className="flex-1">
-                            <p className="font-black text-neon-purple text-sm">{ability.name}</p>
-                            <p className="text-xs text-neon-purple/70">{ability.description}</p>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-black text-neon-purple/70">Slot {idx + 1}:</p>
+                          <p className="font-bold text-neon-purple text-sm">{ability.name}</p>
                         </div>
-
-                        {/* Ability Details */}
-                        <div className="text-xs text-neon-purple/70 space-y-1 ml-11">
-                          <div className="flex justify-between">
-                            <span>Hasar Çarpanı:</span>
-                            <span className="font-bold">×{ability.damageMultiplier || 1}</span>
-                          </div>
-                          {ability.cooldown && ability.cooldown > 0 && (
-                            <div className="flex justify-between">
-                              <span>Cooldown:</span>
-                              <span className="font-bold">{ability.cooldown} tur</span>
-                            </div>
-                          )}
-                          {ability.effects && ability.effects.length > 0 && (
-                            <div className="flex items-center gap-2">
-                              <span>Efektler:</span>
-                              <div className="flex gap-1">
-                                {ability.effects.map((effectId: any, idx2: number) => (
-                                  <SvgIcon
-                                    key={idx2}
-                                    id={effectId}
-                                    type="effect"
-                                    size="xs"
-                                    fallback={getEffectEmoji(effectId)}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                        <p className="text-xs text-neon-purple/70">{ability.description}</p>
+                        <div className="text-xs text-neon-purple/60 flex gap-3">
+                          <span>×{ability.damageMultiplier || 1} DMG</span>
+                          {ability.cooldown && ability.cooldown > 0 && <span>CD: {ability.cooldown}t</span>}
                         </div>
                       </div>
                     )
                   })}
                 </div>
-              </motion.div>
-            )}
+              )}
+            </motion.div>
           </div>
         </div>
       </div>
