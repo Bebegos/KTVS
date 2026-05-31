@@ -6,6 +6,8 @@ import { getEffectNameTR } from '../lib/effect-translations'
 import { supabase, addXpToDino, recordDuelloMatch, abandonDuelloSession } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
+import EffectsDisplay from './EffectsDisplay'
+import BattleStatsCard from './BattleStatsCard'
 
 interface DuelloBattleScreenProps {
   playerDino: Dino
@@ -89,6 +91,7 @@ export default function DuelloBattleScreen({
   const [roundInProgress, setRoundInProgress] = useState(false)
   const [currentEffectVisual, setCurrentEffectVisual] = useState<'buff' | 'debuff' | 'damage' | null>(null)
   const [showEffectVisual, setShowEffectVisual] = useState(false)
+  const [round, setRound] = useState(1)
 
   const [playerHpPercent, setPlayerHpPercent] = useState(0)
   const [opponentHpPercent, setOpponentHpPercent] = useState(0)
@@ -470,6 +473,7 @@ export default function DuelloBattleScreen({
         setPlayerSelectedAbility(null)
         setOpponentSelectedAbility(null)
         setRoundInProgress(false)
+        setRound(prev => prev + 1)
       }, 1500)
     }
   }
@@ -613,32 +617,62 @@ export default function DuelloBattleScreen({
         </button>
       </div>
 
-      {/* Header with stats */}
+      {/* Header with turn counter badge */}
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex-1" />
+        <div className="glass-dark border border-neon-pink/50 rounded-lg px-4 py-2 text-center">
+          <p className="text-lg font-black text-neon-pink">🔄 Tur {round}</p>
+        </div>
+      </div>
+
+      {/* Battle stats section */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        {/* Player */}
-        <div className="glass-dark neon-border-cyan rounded-lg p-4">
-          <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
-          <h2 className="text-lg font-black text-neon-cyan mb-2">{playerChar.dino.name}</h2>
-          <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-            <div
-              className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-              style={{ width: `${Math.max(0, playerHpPercent)}%` }}
-            />
+        {/* Player card */}
+        <div>
+          {/* HP Bar */}
+          <div className="glass-dark neon-border-cyan rounded-lg p-4 mb-3">
+            <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
+            <h2 className="text-lg font-black text-neon-cyan mb-2">{playerChar.dino.name}</h2>
+            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
+              <div
+                className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
+                style={{ width: `${Math.max(0, playerHpPercent)}%` }}
+              />
+            </div>
+            <p className="text-xs text-neon-cyan mb-3">{Math.max(0, playerChar.currentHp)}/{playerChar.dino.maxHp}</p>
+
+            {/* Effects display */}
+            <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
+              <EffectsDisplay effects={playerChar.effects} />
+            </div>
           </div>
-          <p className="text-xs text-neon-cyan">{Math.max(0, playerChar.currentHp)}/{playerChar.dino.maxHp}</p>
+
+          {/* Stats Card */}
+          <BattleStatsCard dino={playerChar.dino} effects={playerChar.effects} isPlayer={true} />
         </div>
 
-        {/* Opponent */}
-        <div className="glass-dark neon-border-purple rounded-lg p-4">
-          <p className="text-xs font-bold text-neon-purple mb-2">RAKİP</p>
-          <h2 className="text-lg font-black text-neon-purple mb-2">{opponentChar.dino.name}</h2>
-          <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-            <div
-              className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-              style={{ width: `${Math.max(0, opponentHpPercent)}%` }}
-            />
+        {/* Opponent card */}
+        <div>
+          {/* HP Bar */}
+          <div className="glass-dark neon-border-purple rounded-lg p-4 mb-3">
+            <p className="text-xs font-bold text-neon-purple mb-2">RAKİP</p>
+            <h2 className="text-lg font-black text-neon-purple mb-2">{opponentChar.dino.name}</h2>
+            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
+              <div
+                className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
+                style={{ width: `${Math.max(0, opponentHpPercent)}%` }}
+              />
+            </div>
+            <p className="text-xs text-neon-purple mb-3">{Math.max(0, opponentChar.currentHp)}/{opponentChar.dino.maxHp}</p>
+
+            {/* Effects display */}
+            <div className="mb-3 p-3 bg-neon-purple/5 rounded-lg border border-neon-purple/20">
+              <EffectsDisplay effects={opponentChar.effects} />
+            </div>
           </div>
-          <p className="text-xs text-neon-purple">{Math.max(0, opponentChar.currentHp)}/{opponentChar.dino.maxHp}</p>
+
+          {/* Stats Card */}
+          <BattleStatsCard dino={opponentChar.dino} effects={opponentChar.effects} isPlayer={false} />
         </div>
       </div>
 

@@ -37,6 +37,7 @@ export default {
       borderColor: {
         'neon-cyan': '#00f3ff',
         'neon-purple': '#d946ef',
+        'neon-pink': '#ff006e',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

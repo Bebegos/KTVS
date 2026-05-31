@@ -66,36 +66,40 @@ export default function EffectsDisplay({ effects }: EffectsDisplayProps) {
               className="glass-dark neon-border-cyan rounded-xl p-6 max-w-sm"
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="text-5xl">
-                  {selectedEffect.definition.emoji}
-                </div>
-                <div>
-                  <h2 className="text-2xl font-black text-neon-cyan">
-                    {selectedEffect.definition.name}
-                  </h2>
-                  <p className="text-xs text-neon-cyan/70">
-                    {selectedEffect.definition.type === 'buff'
-                      ? '📈 Buff'
-                      : '📉 Debuff'}
-                  </p>
-                </div>
-              </div>
+              {selectedEffect.definition && (
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="text-5xl">
+                      {selectedEffect.definition.emoji}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-black text-neon-cyan">
+                        {selectedEffect.definition.name}
+                      </h2>
+                      <p className="text-xs text-neon-cyan/70">
+                        {selectedEffect.definition.type === 'buff'
+                          ? '📈 Buff'
+                          : '📉 Debuff'}
+                      </p>
+                    </div>
+                  </div>
 
-              <div className="mb-4 p-3 border border-neon-cyan/30 rounded-lg bg-neon-cyan/5">
-                <p className="text-sm text-neon-cyan font-bold">
-                  ⏱️ Kalan: {selectedEffect.effect.duration} tur
-                </p>
-              </div>
+                  <div className="mb-4 p-3 border border-neon-cyan/30 rounded-lg bg-neon-cyan/5">
+                    <p className="text-sm text-neon-cyan font-bold">
+                      ⏱️ Kalan: {selectedEffect.effect.duration} tur
+                    </p>
+                  </div>
 
-              <div className="mb-4">
-                <p className="text-xs font-bold text-neon-cyan/70 mb-2">
-                  Açıklama:
-                </p>
-                <p className="text-sm text-neon-cyan leading-relaxed">
-                  {selectedEffect.definition.fullDescription}
-                </p>
-              </div>
+                  <div className="mb-4">
+                    <p className="text-xs font-bold text-neon-cyan/70 mb-2">
+                      Açıklama:
+                    </p>
+                    <p className="text-sm text-neon-cyan leading-relaxed">
+                      {selectedEffect.definition.fullDescription}
+                    </p>
+                  </div>
+                </>
+              )}
 
               <button
                 onClick={() => setSelectedEffect(null)}
