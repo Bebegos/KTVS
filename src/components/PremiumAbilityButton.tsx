@@ -1,6 +1,8 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Ability } from '../game/types'
 import AbilityIcon from './AbilityIcon'
+import AbilityPreview from './battle-effects/AbilityPreview'
 import SvgIcon from './SvgIcon'
 import { getEffectEmoji } from '../lib/effect-translations'
 
@@ -33,6 +35,7 @@ export default function PremiumAbilityButton({
   onInfo,
   lockedLevel,
 }: PremiumAbilityButtonProps) {
+  const [isHovering, setIsHovering] = useState(false)
   if (isLocked) {
     return (
       <motion.button
@@ -67,12 +70,17 @@ export default function PremiumAbilityButton({
   const damage = Math.floor((ability.multiplier || 1) * 5) // Assuming base damage of 5
 
   return (
-    <motion.button
-      whileHover={{ scale: !disabled && !isSelected && canUse ? 1.03 : 1 }}
-      whileTap={{ scale: !disabled && !isSelected && canUse ? 0.97 : 1 }}
-      onClick={() => !disabled && canUse && onClick?.()}
-      disabled={disabled || !canUse}
-      className={`relative p-3 rounded-xl font-bold transition flex flex-col items-start gap-2 overflow-hidden ${
+    <div
+      className="relative"
+      onMouseEnter={() => !disabled && setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <motion.button
+        whileHover={{ scale: !disabled && !isSelected && canUse ? 1.03 : 1 }}
+        whileTap={{ scale: !disabled && !isSelected && canUse ? 0.97 : 1 }}
+        onClick={() => !disabled && canUse && onClick?.()}
+        disabled={disabled || !canUse}
+        className={`relative p-3 rounded-xl font-bold transition flex flex-col items-start gap-2 overflow-hidden ${
         isUltimate ? 'col-span-2 min-h-20' : 'min-h-24'
       } ${
         isSelected
@@ -191,6 +199,20 @@ export default function PremiumAbilityButton({
           />
         </div>
       )}
-    </motion.button>
+      </motion.button>
+
+      {/* Ability preview on hover */}
+      <AnimatePresence>
+        {isHovering && ability && (
+          <AbilityPreview
+            ability={ability}
+            cooldown={cooldown}
+            maxCooldown={maxCooldown}
+            isAvailable={canUse}
+            isLocked={isLocked}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
