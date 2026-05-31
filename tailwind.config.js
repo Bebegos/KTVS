@@ -59,8 +59,10 @@ export default {
         }
       },
       fontFamily: {
-        hs: ['"Trajan Pro"', 'Cinzel', 'Georgia', 'serif'],
-        display: ['Cinzel', 'Georgia', 'serif'],
+        sans: ['"Cinzel"', '"Playfair Display"', 'Georgia', 'serif'],
+        serif: ['"Crimson Text"', '"Cinzel"', 'Georgia', 'serif'],
+        display: ['"Playfair Display"', 'Cinzel', 'Georgia', 'serif'],
+        hs: ['"Playfair Display"', 'Cinzel', 'Georgia', 'serif'],
       },
       backdropBlur: {
         xs: '2px',

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:wght@700;900&family=Crimson+Text:wght@400;600&display=swap');
 @import './styles/hs-buttons.css';
 @import './styles/hs-stat-icons.css';
 @tailwind base;
