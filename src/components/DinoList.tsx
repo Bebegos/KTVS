@@ -16,9 +16,10 @@ interface DinoListProps {
   onBack: () => void
   onRefresh: (dinos: Dino[]) => void
   onEdit?: (dino: Dino) => void
+  onViewDetail?: (dino: Dino) => void
 }
 
-export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListProps) {
+export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetail }: DinoListProps) {
   const { user } = useAuth()
   const [deleting, setDeleting] = useState<string | null>(null)
   const [selectedDino, setSelectedDino] = useState<Dino | null>(null)
@@ -39,8 +40,12 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
   }
 
   function handleOpenDetail(dino: Dino) {
-    setSelectedDino(dino)
-    setDetailModalOpen(true)
+    if (onViewDetail) {
+      onViewDetail(dino)
+    } else {
+      setSelectedDino(dino)
+      setDetailModalOpen(true)
+    }
   }
 
   function handleCloseDetail() {

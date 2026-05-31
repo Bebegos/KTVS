@@ -7,6 +7,7 @@ import { APP_VERSION } from '../config/version'
 import { Adventure } from '../lib/adventures'
 import DinoList from '../components/DinoList'
 import DinoCreationFlow from '../components/DinoCreationFlow'
+import DinoDetailPage from '../components/DinoDetailPage'
 import BattleTable from '../components/BattleTable'
 import BattleTableModeV2 from '../components/BattleTableModeV2'
 import DuelloVsMode from '../components/DuelloVsMode'
@@ -16,12 +17,13 @@ import AdventureBattleScreen from '../components/AdventureBattleScreen'
 import DinoCoinsDisplay from '../components/DinoCoinsDisplay'
 import SiteLogo from '../components/SiteLogo'
 
-type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs' | 'adventure-select' | 'adventure-battle'
+type PageName = 'home' | 'dino-list' | 'dino-detail' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs' | 'adventure-select' | 'adventure-battle'
 
 export default function Home() {
   const { user, signOut } = useAuth()
   const [page, setPage] = useState<PageName>('home')
   const [dinos, setDinos] = useState<Dino[]>([])
+  const [selectedDetailDino, setSelectedDetailDino] = useState<Dino | null>(null)
   const [selectedOfflineDino, setSelectedOfflineDino] = useState<Dino | null>(null)
   const [selectedDuelloDino, setSelectedDuelloDino] = useState<Dino | null>(null)
   const [selectedAdventureDino, setSelectedAdventureDino] = useState<Dino | null>(null)
@@ -188,6 +190,26 @@ export default function Home() {
         onRefresh={(newDinos) => {
           setDinos(newDinos)
           setPage('home')
+        }}
+        onViewDetail={(dino) => {
+          setSelectedDetailDino(dino)
+          setPage('dino-detail')
+        }}
+      />
+    )
+  }
+
+  if (page === 'dino-detail' && selectedDetailDino) {
+    return (
+      <DinoDetailPage
+        dino={selectedDetailDino}
+        onBack={() => {
+          setSelectedDetailDino(null)
+          setPage('dino-list')
+        }}
+        onRefresh={(newDinos) => {
+          setDinos(newDinos)
+          setSelectedDetailDino(newDinos[0] || null)
         }}
       />
     )
