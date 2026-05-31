@@ -151,10 +151,10 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
             onClick={onBack}
             className="hs-btn"
           >
-            ← Geri
+            Geri
           </button>
           <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink">
-            ✨ Yeni Dinozor
+            Yeni Dinozor
           </h1>
           <div className="w-24" /> {/* Spacer */}
         </div>
@@ -186,7 +186,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               exit="exit"
             >
               <h2 className="text-2xl font-bold text-neon-cyan mb-6 text-center">
-                🦖 Dinozor Sınıfını Seç
+                Dinozor Sınıfını Seç
               </h2>
 
               <HsCardGrid className="max-w-4xl mx-auto">
@@ -202,7 +202,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                           <MedallionIcon id={classAbs.id} type="class" size="xl" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-lg font-black text-amber-900 mb-1">{classAbs.emoji} {classAbs.name}</h3>
+                          <h3 className="text-lg font-black text-amber-900 mb-1">{classAbs.name}</h3>
                           <p className="text-sm text-amber-800">{classAbs.description}</p>
                         </div>
                       </div>
@@ -227,21 +227,21 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 2 Sınıf Yeteneği Seç
               </h2>
 
-              <div className="grid grid-cols-1 gap-3 mb-6">
+              <div className="space-y-3 mb-6">
                 {classAbilities.map(ability => (
-                  <motion.button
+                  <motion.div
                     key={ability.id}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleSelectClassAbility(ability.id)}
-                    className={`p-4 rounded-lg transition ${
+                    className={`p-4 rounded-lg cursor-pointer transition border-2 ${
                       selectedClassAbilities.includes(ability.id)
-                        ? 'bg-slate-800/80 border-2 border-neon-cyan shadow-neon-cyan'
-                        : 'bg-slate-800/60 border border-neon-cyan/40 hover:border-neon-cyan'
+                        ? 'bg-slate-800/80 border-neon-cyan shadow-lg shadow-neon-cyan/50'
+                        : 'bg-slate-800/60 border-neon-cyan/40 hover:border-neon-cyan'
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <SvgIcon id={ability.id} type="ability" size="lg" fallback={ability.emoji} />
+                      <SvgIcon id={ability.id} type="ability" size="lg" fallback="" />
                       <div className="flex-1 text-left">
                         <h4 className="font-black text-neon-cyan mb-1">{ability.name}</h4>
                         <p className="text-sm text-neon-cyan/70 mb-1">{ability.description}</p>
@@ -250,10 +250,12 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                         </p>
                       </div>
                       {selectedClassAbilities.includes(ability.id) && (
-                        <p className="text-2xl">✓</p>
+                        <div className="flex-shrink-0 w-8 h-8 bg-neon-cyan rounded-full flex items-center justify-center">
+                          <span className="text-slate-900 font-black">✓</span>
+                        </div>
                       )}
                     </div>
-                  </motion.button>
+                  </motion.div>
                 ))}
               </div>
 
@@ -262,7 +264,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 disabled={selectedClassAbilities.length !== 2}
                 className="hs-btn hs-btn-block"
               >
-                Devam Et →
+                Devam Et
               </button>
             </motion.div>
           )}
@@ -313,21 +315,21 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 1 Özel Yetenek Seç
               </h2>
 
-              <div className="grid grid-cols-1 gap-3 mb-6">
+              <div className="space-y-3 mb-6">
                 {specAbilities.map(ability => (
-                  <motion.button
+                  <motion.div
                     key={ability.id}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleSelectSpecAbility(ability.id)}
-                    className={`p-4 rounded-lg transition ${
+                    className={`p-4 rounded-lg cursor-pointer transition border-2 ${
                       selectedSpecAbility === ability.id
-                        ? 'bg-slate-800/80 border-2 border-neon-purple shadow-neon-purple'
-                        : 'bg-slate-800/60 border border-neon-purple/40 hover:border-neon-purple'
+                        ? 'bg-slate-800/80 border-neon-purple shadow-lg shadow-neon-purple/50'
+                        : 'bg-slate-800/60 border-neon-purple/40 hover:border-neon-purple'
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <SvgIcon id={ability.id} type="ability" size="lg" fallback={ability.emoji} />
+                      <SvgIcon id={ability.id} type="ability" size="lg" fallback="" />
                       <div className="flex-1 text-left">
                         <h4 className="font-black text-neon-purple mb-1">{ability.name}</h4>
                         <p className="text-sm text-neon-purple/70 mb-1">{ability.description}</p>
@@ -336,10 +338,12 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                         </p>
                       </div>
                       {selectedSpecAbility === ability.id && (
-                        <p className="text-2xl">✓</p>
+                        <div className="flex-shrink-0 w-8 h-8 bg-neon-purple rounded-full flex items-center justify-center">
+                          <span className="text-slate-900 font-black">✓</span>
+                        </div>
                       )}
                     </div>
-                  </motion.button>
+                  </motion.div>
                 ))}
               </div>
 
@@ -348,7 +352,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 disabled={!selectedSpecAbility}
                 className="hs-btn hs-btn-purple hs-btn-block"
               >
-                Devam Et →
+                Devam Et
               </button>
             </motion.div>
           )}
@@ -370,7 +374,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               <div className="bg-slate-800/60 border border-neon-pink/40 rounded-lg p-6 space-y-4">
                 {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-bold text-neon-pink mb-2">🦖 Dinozor Adı *</label>
+                  <label className="block text-sm font-bold text-neon-pink mb-2">Dinozor Adı *</label>
                   <input
                     type="text"
                     value={stats.name}
@@ -390,7 +394,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                       {/* Stat Distribution Explanation */}
                       <div className="mt-6 space-y-3">
                         <div className="p-3 bg-gradient-to-r from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-lg">
-                          <p className="text-xs font-bold text-blue-400 mb-2">📊 SINIFINDAN GELEN STATLAR:</p>
+                          <p className="text-xs font-bold text-blue-400 mb-2">SINIFINDAN GELEN STATLAR</p>
                           <div className="space-y-1 text-xs text-white/80">
                             {breakdown.classTheme && (
                               <>
@@ -405,7 +409,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                         </div>
 
                         <div className="p-3 bg-gradient-to-r from-purple-500/10 to-purple-500/5 border border-purple-500/30 rounded-lg">
-                          <p className="text-xs font-bold text-purple-400 mb-2">⭐ ÖZELLESTIRMESINDEN GELEN BONUSLAR:</p>
+                          <p className="text-xs font-bold text-purple-400 mb-2">ÖZELLESTIRMESINDEN GELEN BONUSLAR</p>
                           <div className="space-y-1 text-xs text-white/80">
                             {breakdown.specTheme && (
                               <>
@@ -480,7 +484,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
 
                 {/* Summary */}
                 <div className="mt-6 p-4 bg-neon-pink/10 border border-neon-pink/30 rounded-lg">
-                  <p className="text-sm font-bold text-neon-pink mb-3">📋 ÖZETi:</p>
+                  <p className="text-sm font-bold text-neon-pink mb-3">ÖZET</p>
                   <div className="space-y-1 text-sm text-neon-pink/80">
                     <p>Sınıf: <span className="font-bold">{CLASS_ABILITIES[selectedClass].name}</span></p>
                     <p>Özelleştirme: <span className="font-bold">{SPEC_ABILITIES[selectedSpec].name}</span></p>
@@ -492,9 +496,9 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 <button
                   onClick={handleCreateDino}
                   disabled={loading || !stats.name.trim()}
-                  className="hs-button-green w-full px-6 py-4 text-lg mt-4"
+                  className="hs-btn hs-btn-green w-full px-6 py-4 text-lg mt-4"
                 >
-                  {loading ? '⏳ Dinozor Oluşturuluyor...' : '🎉 Dinozor Oluştur!'}
+                  {loading ? 'Dinozor Oluşturuluyor...' : 'Dinozor Oluştur'}
                 </button>
               </div>
             </motion.div>
