@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino } from '../game/types'
 import { abilityDefinitionService } from '../lib/services/abilityDefinitionService'
@@ -6,16 +7,19 @@ import AbilityIcon from './AbilityIcon'
 import MedallionIcon from './MedallionIcon'
 import SvgIcon from './SvgIcon'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
+import RewardSpendingModal from './RewardSpendingModal'
 
 interface DinoDetailModalProps {
   dino: Dino
   isOpen: boolean
   onClose: () => void
   onEdit?: () => void
-  onSpendRewards?: () => void
+  onSpendRewards?: (updatedDino: Dino) => void
 }
 
 export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpendRewards }: DinoDetailModalProps) {
+  const [rewardModalOpen, setRewardModalOpen] = useState(false)
+
   if (!isOpen) return null
 
   const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || dino.pendingRewards.pendingAbilityIds.length > 0)
@@ -137,14 +141,12 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
               </div>
             )}
 
-            {onSpendRewards && (
-              <button
-                onClick={onSpendRewards}
-                className="w-full mt-3 px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-yellow-100 font-bold rounded-lg transition"
-              >
-                Ödüllerini Harca →
-              </button>
-            )}
+            <button
+              onClick={() => setRewardModalOpen(true)}
+              className="w-full mt-3 px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-yellow-100 font-bold rounded-lg transition"
+            >
+              Ödüllerini Harca →
+            </button>
           </div>
         )}
 
@@ -225,6 +227,23 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
           </button>
         </div>
       </motion.div>
+
+      {/* Reward Spending Modal */}
+      <AnimatePresence>
+        {rewardModalOpen && (
+          <RewardSpendingModal
+            dino={dino}
+            isOpen={rewardModalOpen}
+            onClose={() => setRewardModalOpen(false)}
+            onConfirm={(updatedDino) => {
+              if (onSpendRewards) {
+                onSpendRewards(updatedDino)
+              }
+              setRewardModalOpen(false)
+            }}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

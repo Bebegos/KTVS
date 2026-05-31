@@ -234,9 +234,10 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
             isOpen={detailModalOpen}
             onClose={handleCloseDetail}
             onEdit={onEdit ? () => { onEdit(selectedDino); handleCloseDetail() } : undefined}
-            onSpendRewards={() => {
-              // TODO: Navigate to reward spending screen
-              console.log('Spend rewards for', selectedDino.id)
+            onSpendRewards={(updatedDino) => {
+              const updatedList = dinos.map(d => d.id === updatedDino.id ? updatedDino : d)
+              onRefresh(updatedList)
+              handleCloseDetail()
             }}
           />
         )}
