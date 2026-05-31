@@ -152,13 +152,13 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
 
         {/* Stat Points Section */}
         <div className="p-6 border-b border-yellow-500/30 space-y-4 bg-yellow-500/5">
-          <h2 className="font-bold text-yellow-300 mb-4">📈 {pendingPoints} Stat Puanı Dağıt</h2>
+          <h2 className="font-bold text-yellow-300 mb-4">{pendingPoints} Stat Puanı Dağıt</h2>
 
           <div className="space-y-3">
             {/* ATK */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-bold text-orange-300">⚔️ SALDIRI</label>
+                <label className="text-sm font-bold text-orange-300">SALDIRI</label>
                 <span className="text-lg font-black text-orange-400">{statAllocation.atk}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -188,7 +188,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
             {/* DEF */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-bold text-blue-300">🛡️ SAVUNMA</label>
+                <label className="text-sm font-bold text-blue-300">SAVUNMA</label>
                 <span className="text-lg font-black text-blue-400">{statAllocation.def}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -252,18 +252,18 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
               : 'bg-red-500/20 text-red-300 border border-red-500/30'
           }`}>
             {remainingPoints === 0
-              ? '✓ Tüm puanlar dağıtıldı'
-              : `⚠️ Kalan: ${remainingPoints} puan`}
+              ? 'Tüm puanlar dağıtıldı'
+              : `Kalan: ${remainingPoints} puan`}
           </div>
         </div>
 
         {/* Abilities Section */}
         {pendingAbilities.length > 0 && (
           <div className="p-6 border-b border-yellow-500/30 space-y-4 bg-purple-500/5">
-            <h2 className="font-bold text-purple-300 mb-4">✨ {pendingAbilities.length} Yetenek Seç</h2>
+            <h2 className="font-bold text-purple-300 mb-4">{pendingAbilities.length} Yetenek Seç</h2>
 
             {emptySlots.length === 0 ? (
-              <p className="text-sm text-red-300 font-bold">⚠️ Boş yetenek slotu yok!</p>
+              <p className="text-sm text-red-300 font-bold">Boş yetenek slotu yok!</p>
             ) : (
               <div className="space-y-3">
                 {pendingAbilities.map((abilityId, idx) => {
@@ -310,8 +310,8 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
                 : 'bg-red-500/20 text-red-300 border border-red-500/30'
             }`}>
               {selectedAbilities.size === pendingAbilities.length
-                ? `✓ Tüm yetenekler seçildi (${selectedAbilities.size}/${pendingAbilities.length})`
-                : `⚠️ ${pendingAbilities.length - selectedAbilities.size} yetenek seçilecek`}
+                ? `Tüm yetenekler seçildi (${selectedAbilities.size}/${pendingAbilities.length})`
+                : `${pendingAbilities.length - selectedAbilities.size} yetenek seçilecek`}
             </div>
           </div>
         )}
