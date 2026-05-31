@@ -16,8 +16,10 @@ function mapDinoData(data: any): any {
 
   const transform = (item: any) => ({
     ...item,
-    maxHp: item.max_hp,
+    maxHp: item.max_hp || item.sta || 30,
+    sta: item.sta,
     abilityIds: item.ability_ids || [],
+    staminaToHpMultiplier: item.stamina_to_hp_multiplier,
     pendingRewards: item.pending_rewards ? {
       unspentStatPoints: item.pending_rewards.unspent_stat_points || 0,
       pendingAbilityIds: item.pending_rewards.pending_ability_ids || [],

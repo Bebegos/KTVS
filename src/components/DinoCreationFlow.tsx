@@ -11,9 +11,8 @@ import {
   CLASS_ABILITIES,
   SPEC_ABILITIES,
 } from '../lib/abilities'
-import { getClassIcon, getSpecIcon, getAbilityIcon } from '../lib/icons'
+import { getClassIcon, getSpecIcon } from '../lib/icons'
 import { calculateStartingStats, getStatDistributionBreakdown } from '../lib/statDistribution'
-import { getStatOrder } from '../lib/stat-system'
 import SvgIcon from './SvgIcon'
 import MedallionIcon from './MedallionIcon'
 import StatDisplay from './StatDisplay'
@@ -106,11 +105,11 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
 
       await createDino({
         name: stats.name,
-        max_hp: calculatedStats.maxHp,
+        sta: calculatedStats.maxHp, // Use the calculated HP as stamina base
         atk: calculatedStats.atk,
         def: calculatedStats.def,
         spd: calculatedStats.spd,
-        hp_per_level_stat: calculatedStats.hpPerLevelStat,
+        stamina_to_hp_multiplier: calculatedStats.hpPerLevelStat, // Changed field name
         level: 1,
         xp: 0,
         ability_ids: abilityIds,
@@ -418,28 +417,58 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                         </div>
                       </div>
 
-                      {/* Final Stats Display */}
-                      <div className="mt-6 grid grid-cols-2 gap-3">
-                        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
-                          <p className="text-xs font-bold text-red-400 mb-1">❤️ CAN</p>
-                          <p className="text-2xl font-black text-red-300">{finalStats.maxHp}</p>
-                          <p className="text-xs text-red-400/70 mt-1">{finalStats.hpPerLevelStat}x level bonus</p>
-                        </div>
-                        <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 text-center">
-                          <p className="text-xs font-bold text-orange-400 mb-1">⚔️ SALDIRI</p>
-                          <p className="text-2xl font-black text-orange-300">{finalStats.atk}</p>
-                          <p className="text-xs text-orange-400/70 mt-1">(5 + {finalStats.atk - 5})</p>
-                        </div>
-                        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-center">
-                          <p className="text-xs font-bold text-blue-400 mb-1">🛡️ SAVUNMA</p>
-                          <p className="text-2xl font-black text-blue-300">{finalStats.def}</p>
-                          <p className="text-xs text-blue-400/70 mt-1">(5 + {finalStats.def - 5})</p>
-                        </div>
-                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-center">
-                          <p className="text-xs font-bold text-yellow-400 mb-1">⚡ HIZ</p>
-                          <p className="text-2xl font-black text-yellow-300">{finalStats.spd}</p>
-                          <p className="text-xs text-yellow-400/70 mt-1">(5 + {finalStats.spd - 5})</p>
-                        </div>
+                      {/* Final Stats Display - Premium StatDisplay Components */}
+                      <div className="mt-6 space-y-3">
+                        {(() => {
+                          const tempDino: Dino = {
+                            id: 'temp',
+                            name: stats.name,
+                            maxHp: finalStats.maxHp,
+                            atk: finalStats.atk,
+                            def: finalStats.def,
+                            spd: finalStats.spd,
+                            sta: finalStats.maxHp,
+                            level: 1,
+                            xp: 0,
+                            abilityIds: [],
+                            familyCode: '',
+                            class: selectedClass,
+                            spec: selectedSpec,
+                            staminaToHpMultiplier: finalStats.hpPerLevelStat,
+                          }
+                          return (
+                            <div className="grid grid-cols-2 gap-3">
+                              <StatDisplay
+                                stat="sta"
+                                dino={tempDino}
+                                value={finalStats.maxHp}
+                                size="md"
+                                showDetailButton={true}
+                              />
+                              <StatDisplay
+                                stat="atk"
+                                dino={tempDino}
+                                value={finalStats.atk}
+                                size="md"
+                                showDetailButton={true}
+                              />
+                              <StatDisplay
+                                stat="def"
+                                dino={tempDino}
+                                value={finalStats.def}
+                                size="md"
+                                showDetailButton={true}
+                              />
+                              <StatDisplay
+                                stat="spd"
+                                dino={tempDino}
+                                value={finalStats.spd}
+                                size="md"
+                                showDetailButton={true}
+                              />
+                            </div>
+                          )
+                        })()}
                       </div>
                     </>
                   )
