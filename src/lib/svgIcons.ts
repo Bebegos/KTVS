@@ -409,6 +409,58 @@ export function getAbilityIcon(abilityId: string): SvgIcon | undefined {
   return ABILITY_ICONS[abilityId.toLowerCase()]
 }
 
+export function getAbilityIconByName(iconName: string): SvgIcon | undefined {
+  // Map ability icon names (claw, bite, armor, etc.) to SVG icon IDs
+  const ICON_NAME_MAP: Record<string, string> = {
+    claw: 'penca',
+    bite: 'isirma',
+    pounce: 'penca',
+    roar: 'penca',
+    tail: 'penca',
+    scratch: 'penca',
+    slash: 'penca',
+    charge: 'penca',
+    leap: 'penca',
+    swoop: 'penca',
+    dive: 'penca',
+    peck: 'penca',
+    headbutt: 'penca',
+    armor: 'dikenli_zirh',
+    protect: 'dikenli_zirh',
+    shield: 'dikenli_zirh',
+    barrier: 'dikenli_zirh',
+    brace: 'dikenli_zirh',
+    spiky: 'dikenli_zirh',
+    speed: 'hiz',
+    dodge: 'hiz',
+    heal: 'heal',
+    regenerate: 'regen',
+    poison: 'poison',
+    paralyze: 'paralyze',
+    fire: 'penca',
+    inferno: 'penca',
+    burst: 'penca',
+    spit: 'penca',
+    wind: 'hiz',
+    tidal_wave: 'penca',
+    apocalypse: 'ultimate',
+    extinction: 'ultimate',
+    meteor: 'ultimate',
+    genesis: 'ultimate',
+    aura: 'heal',
+    bloodlust: 'penca',
+    frenzy: 'penca',
+    rage: 'penca',
+    savage: 'penca',
+    shake: 'penca',
+    stomp: 'penca',
+    tear: 'penca',
+  }
+
+  const iconId = ICON_NAME_MAP[iconName.toLowerCase()] || 'penca'
+  return ABILITY_ICONS[iconId] || ABILITY_ICONS.penca
+}
+
 export function getEffectIcon(effectId: string): SvgIcon | undefined {
   return EFFECT_ICONS[effectId.toLowerCase()] || ABILITY_ICONS[effectId.toLowerCase()]
 }
