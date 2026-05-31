@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useAuth } from '../lib/auth-context'
 import { Dino } from '../game/types'
 import { deleteDino, getDinos } from '../lib/supabase'
@@ -6,6 +7,7 @@ import { abilityDefinitionService } from '../lib/services'
 import AbilityIcon from './AbilityIcon'
 import MedallionIcon from './MedallionIcon'
 import SvgIcon from './SvgIcon'
+import DinoDetailModal from './DinoDetailModal'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 import { getClassIcon, getSpecIcon } from '../lib/icons'
 
@@ -19,6 +21,8 @@ interface DinoListProps {
 export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListProps) {
   const { user } = useAuth()
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [selectedDino, setSelectedDino] = useState<Dino | null>(null)
+  const [detailModalOpen, setDetailModalOpen] = useState(false)
 
   async function handleDelete(id: string) {
     if (!window.confirm('Silmek istediğine emin misin?')) return
@@ -32,6 +36,16 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
     } finally {
       setDeleting(null)
     }
+  }
+
+  function handleOpenDetail(dino: Dino) {
+    setSelectedDino(dino)
+    setDetailModalOpen(true)
+  }
+
+  function handleCloseDetail() {
+    setDetailModalOpen(false)
+    setSelectedDino(null)
   }
 
   return (
@@ -58,12 +72,33 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4 mt-6">
-            {dinos.map(dino => (
-              <div
-                key={dino.id}
-                className="glass-dark neon-border-cyan rounded-xl p-4"
-              >
-                <div className="text-4xl mb-2">🦖</div>
+            {dinos.map(dino => {
+              const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || dino.pendingRewards.pendingAbilityIds.length > 0)
+
+              return (
+                <motion.div
+                  key={dino.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleOpenDetail(dino)}
+                  className={`rounded-xl p-4 cursor-pointer transition relative border-2 ${
+                    hasPendingRewards
+                      ? 'border-yellow-500 bg-gradient-to-br from-slate-800/80 via-slate-800/60 to-yellow-900/20 shadow-lg shadow-yellow-500/30'
+                      : 'glass-dark neon-border-cyan'
+                  }`}
+                >
+                  {/* Level-up badge */}
+                  {hasPendingRewards && (
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      className="absolute -top-3 -right-3 bg-yellow-500 text-yellow-900 rounded-full w-12 h-12 flex items-center justify-center font-black text-lg shadow-lg"
+                    >
+                      ⚡
+                    </motion.div>
+                  )}
+
+                  <div className="text-4xl mb-2">🦖</div>
                 <h2 className="text-2xl font-bold text-neon-cyan mb-1">{dino.name}</h2>
                 <p className="text-sm text-neon-cyan/70 mb-3">
                   {dino.element && `${dino.element} • `}
@@ -166,11 +201,28 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                     {deleting === dino.id ? '⏳' : '🗑️'} Sil
                   </button>
                 </div>
-              </div>
-            ))}
+                </motion.div>
+              )
+            })}
           </div>
         )}
       </div>
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {detailModalOpen && selectedDino && (
+          <DinoDetailModal
+            dino={selectedDino}
+            isOpen={detailModalOpen}
+            onClose={handleCloseDetail}
+            onEdit={onEdit ? () => { onEdit(selectedDino); handleCloseDetail() } : undefined}
+            onSpendRewards={() => {
+              // TODO: Navigate to reward spending screen
+              console.log('Spend rewards for', selectedDino.id)
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
