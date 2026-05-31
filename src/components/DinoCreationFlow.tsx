@@ -108,6 +108,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
         atk: calculatedStats.atk,
         def: calculatedStats.def,
         spd: calculatedStats.spd,
+        hp_per_level_stat: calculatedStats.hpPerLevelStat,
         level: 1,
         xp: 0,
         ability_ids: abilityIds,
@@ -146,7 +147,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
-            className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+            className="px-4 py-2 bg-slate-800/60 border border-neon-cyan/40 rounded-lg font-bold text-neon-cyan hover:border-neon-cyan hover:shadow-neon-cyan transition"
           >
             ← Geri
           </button>
@@ -194,7 +195,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectClass(classAbs.id)}
-                    className="glass-dark neon-border-cyan rounded-xl p-6 text-left transition hover:shadow-neon-cyan flex items-center gap-4"
+                    className="bg-slate-800/60 border border-neon-cyan/40 rounded-xl p-6 text-left transition hover:border-neon-cyan hover:shadow-neon-cyan flex items-center gap-4"
                   >
                     <MedallionIcon id={classAbs.id} type="class" size="xl" />
                     <div>
@@ -230,8 +231,8 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     onClick={() => handleSelectClassAbility(ability.id)}
                     className={`p-4 rounded-lg transition ${
                       selectedClassAbilities.includes(ability.id)
-                        ? 'glass-dark neon-border-cyan border-2 shadow-neon-cyan'
-                        : 'glass-dark neon-border-cyan border hover:border-neon-cyan'
+                        ? 'bg-slate-800/80 border-2 border-neon-cyan shadow-neon-cyan'
+                        : 'bg-slate-800/60 border border-neon-cyan/40 hover:border-neon-cyan'
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -254,7 +255,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               <button
                 onClick={handleProceedToSpec}
                 disabled={selectedClassAbilities.length !== 2}
-                className="w-full px-6 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-3 bg-slate-800/60 border border-neon-cyan/40 rounded-lg font-bold text-neon-cyan hover:border-neon-cyan hover:shadow-neon-cyan transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Devam Et →
               </button>
@@ -282,7 +283,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectSpec(spec.id)}
-                    className="glass-dark neon-border-purple rounded-xl p-6 text-center transition hover:shadow-neon-purple flex flex-col items-center"
+                    className="bg-slate-800/60 border border-neon-purple/40 rounded-xl p-6 text-center transition hover:border-neon-purple hover:shadow-neon-purple flex flex-col items-center"
                   >
                     <MedallionIcon id={spec.id} type="spec" size="xl" className="mb-3" />
                     <h3 className="text-xl font-black text-neon-purple mb-1">{spec.name}</h3>
@@ -316,8 +317,8 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     onClick={() => handleSelectSpecAbility(ability.id)}
                     className={`p-4 rounded-lg transition ${
                       selectedSpecAbility === ability.id
-                        ? 'glass-dark neon-border-purple border-2 shadow-neon-purple'
-                        : 'glass-dark neon-border-purple border hover:border-neon-purple'
+                        ? 'bg-slate-800/80 border-2 border-neon-purple shadow-neon-purple'
+                        : 'bg-slate-800/60 border border-neon-purple/40 hover:border-neon-purple'
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -340,7 +341,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               <button
                 onClick={handleProceedToStats}
                 disabled={!selectedSpecAbility}
-                className="w-full px-6 py-3 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-3 bg-slate-800/60 border border-neon-purple/40 rounded-lg font-bold text-neon-purple hover:border-neon-purple hover:shadow-neon-purple transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Devam Et →
               </button>
@@ -361,7 +362,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 Dinozor Adı ve İstatistikleri
               </h2>
 
-              <div className="glass-dark neon-border-pink rounded-lg p-6 space-y-4">
+              <div className="bg-slate-800/60 border border-neon-pink/40 rounded-lg p-6 space-y-4">
                 {/* Name Input */}
                 <div>
                   <label className="block text-sm font-bold text-neon-pink mb-2">🦖 Dinozor Adı *</label>
@@ -384,23 +385,28 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                       {/* Stat Distribution Explanation */}
                       <div className="mt-6 space-y-3">
                         <div className="p-3 bg-gradient-to-r from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-lg">
-                          <p className="text-xs font-bold text-blue-400 mb-2">📊 SINIFINDAN GELEN STATLAR (8 puan):</p>
+                          <p className="text-xs font-bold text-blue-400 mb-2">📊 SINIFINDAN GELEN STATLAR:</p>
                           <div className="space-y-1 text-xs text-white/80">
                             {breakdown.classTheme && (
                               <>
+                                <p>Başlangıç Can: <span className="font-bold text-red-400">{breakdown.classTheme.baseHp}</span></p>
                                 <p>Saldırı: +{breakdown.classTheme.classDistribution.atk}</p>
                                 <p>Savunma: +{breakdown.classTheme.classDistribution.def}</p>
                                 <p>Hız: +{breakdown.classTheme.classDistribution.spd}</p>
+                                <p>Level Bonus: <span className="font-bold text-red-400">{breakdown.classTheme.hpPerLevelStat}x HP</span>/stat</p>
                               </>
                             )}
                           </div>
                         </div>
 
                         <div className="p-3 bg-gradient-to-r from-purple-500/10 to-purple-500/5 border border-purple-500/30 rounded-lg">
-                          <p className="text-xs font-bold text-purple-400 mb-2">⭐ ÖZELLESTIRMESINDEN GELEN STATLAR (2 puan):</p>
+                          <p className="text-xs font-bold text-purple-400 mb-2">⭐ ÖZELLESTIRMESINDEN GELEN BONUSLAR:</p>
                           <div className="space-y-1 text-xs text-white/80">
                             {breakdown.specTheme && (
                               <>
+                                {breakdown.specTheme.hpBonus && (
+                                  <p>Can Bonusu: <span className="font-bold text-red-400">+{breakdown.specTheme.hpBonus}</span></p>
+                                )}
                                 <p>Saldırı: +{breakdown.specTheme.specDistribution.atk}</p>
                                 <p>Savunma: +{breakdown.specTheme.specDistribution.def}</p>
                                 <p>Hız: +{breakdown.specTheme.specDistribution.spd}</p>
@@ -415,7 +421,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                         <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
                           <p className="text-xs font-bold text-red-400 mb-1">❤️ CAN</p>
                           <p className="text-2xl font-black text-red-300">{finalStats.maxHp}</p>
-                          <p className="text-xs text-red-400/70 mt-1">(sabit)</p>
+                          <p className="text-xs text-red-400/70 mt-1">{finalStats.hpPerLevelStat}x level bonus</p>
                         </div>
                         <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 text-center">
                           <p className="text-xs font-bold text-orange-400 mb-1">⚔️ SALDIRI</p>
@@ -451,7 +457,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 <button
                   onClick={handleCreateDino}
                   disabled={loading || !stats.name.trim()}
-                  className="w-full px-6 py-3 glass-dark neon-border-pink rounded-lg font-bold text-neon-pink hover:shadow-neon-pink transition disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                  className="w-full px-6 py-3 bg-gradient-to-r from-neon-pink/60 to-neon-purple/60 border border-neon-pink/40 rounded-lg font-bold text-neon-pink hover:from-neon-pink/80 hover:to-neon-purple/80 hover:border-neon-pink hover:shadow-neon-pink transition disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                 >
                   {loading ? '⏳ Dinozor Oluşturuluyor...' : '🎉 Dinozor Oluştur!'}
                 </button>
