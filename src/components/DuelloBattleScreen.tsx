@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice, calculateDamage, hasEffect, applyEffect } from '../game/engine'
 import { getEffectNameTR } from '../lib/effect-translations'
-import { getEffectDamage } from '../lib/effects'
+import { getEffectDamage, getEffectDuration } from '../lib/effects'
 import { supabase, addXpToDino, recordDuelloMatch, abandonDuelloSession } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
@@ -432,20 +432,22 @@ export default function DuelloBattleScreen({
         setShowEffectVisual(true)
         setTimeout(() => setShowEffectVisual(false), 1500)
 
+        const effectDuration = getEffectDuration(ability.effect, 1) || 2
+
         setOpponentChar(c => {
           const newEffects = [...c.effects]
           const existing = newEffects.findIndex(e => e.type === ability.effect)
 
           if (existing !== -1) {
             // Efekt zaten var, süresi resetle
-            newEffects[existing].duration = 2
+            newEffects[existing].duration = effectDuration
           } else if (newEffects.length < 2) {
             // Slot boş
-            newEffects.push({ type: ability.effect as any, duration: 2 })
+            newEffects.push({ type: ability.effect as any, duration: effectDuration })
           } else {
             // Max 2 efekt, en eskisini çıkar (FIFO)
             newEffects.shift()
-            newEffects.push({ type: ability.effect as any, duration: 2 })
+            newEffects.push({ type: ability.effect as any, duration: effectDuration })
           }
 
           return { ...c, effects: newEffects }
@@ -511,20 +513,22 @@ export default function DuelloBattleScreen({
       }))
 
       if (ability.effect !== 'none') {
+        const effectDuration = getEffectDuration(ability.effect, 1) || 2
+
         setPlayerChar(c => {
           const newEffects = [...c.effects]
           const existing = newEffects.findIndex(e => e.type === ability.effect)
 
           if (existing !== -1) {
             // Efekt zaten var, süresi resetle
-            newEffects[existing].duration = 2
+            newEffects[existing].duration = effectDuration
           } else if (newEffects.length < 2) {
             // Slot boş
-            newEffects.push({ type: ability.effect as any, duration: 2 })
+            newEffects.push({ type: ability.effect as any, duration: effectDuration })
           } else {
             // Max 2 efekt, en eskisini çıkar (FIFO)
             newEffects.shift()
-            newEffects.push({ type: ability.effect as any, duration: 2 })
+            newEffects.push({ type: ability.effect as any, duration: effectDuration })
           }
 
           return { ...c, effects: newEffects }
