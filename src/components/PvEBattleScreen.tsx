@@ -218,19 +218,21 @@ export default function PvEBattleScreen({
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Player */}
         <div>
-          <div className="glass-dark neon-border-cyan rounded-lg p-4 mb-3">
-            <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
-            <h2 className="text-lg font-black text-neon-cyan mb-2">{playerDino.name}</h2>
-            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-              <div
-                className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                style={{ width: `${Math.max(0, playerHpPercent)}%` }}
-              />
-            </div>
-            <p className="text-xs text-neon-cyan mb-3">{Math.max(0, battleState.player.currentHp)}/{battleState.player.dino.maxHp}</p>
+          <div className="hs-battle-frame hs-battle-frame-player mb-3">
+            <div className="glass-dark neon-border-cyan rounded-lg p-4">
+              <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
+              <h2 className="text-lg font-black text-neon-cyan mb-2">{playerDino.name}</h2>
+              <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
+                <div
+                  className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
+                  style={{ width: `${Math.max(0, playerHpPercent)}%` }}
+                />
+              </div>
+              <p className="text-xs text-neon-cyan mb-3">{Math.max(0, battleState.player.currentHp)}/{battleState.player.dino.maxHp}</p>
 
-            <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
-              <EffectsDisplay effects={battleState.player.effects} />
+              <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
+                <EffectsDisplay effects={battleState.player.effects} />
+              </div>
             </div>
           </div>
 
@@ -239,19 +241,21 @@ export default function PvEBattleScreen({
 
         {/* Opponent */}
         <div>
-          <div className="glass-dark neon-border-purple rounded-lg p-4 mb-3">
-            <p className="text-xs font-bold text-neon-purple mb-2">DÜŞMAN</p>
-            <h2 className="text-lg font-black text-neon-purple mb-2">{opponentDino.name}</h2>
-            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-              <div
-                className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                style={{ width: `${Math.max(0, opponentHpPercent)}%` }}
-              />
-            </div>
-            <p className="text-xs text-neon-purple mb-3">{Math.max(0, battleState.opponent.currentHp)}/{battleState.opponent.dino.maxHp}</p>
+          <div className="hs-battle-frame hs-battle-frame-opponent mb-3">
+            <div className="glass-dark neon-border-purple rounded-lg p-4">
+              <p className="text-xs font-bold text-neon-purple mb-2">DÜŞMAN</p>
+              <h2 className="text-lg font-black text-neon-purple mb-2">{opponentDino.name}</h2>
+              <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
+                <div
+                  className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
+                  style={{ width: `${Math.max(0, opponentHpPercent)}%` }}
+                />
+              </div>
+              <p className="text-xs text-neon-purple mb-3">{Math.max(0, battleState.opponent.currentHp)}/{battleState.opponent.dino.maxHp}</p>
 
-            <div className="mb-3 p-3 bg-neon-purple/5 rounded-lg border border-neon-purple/20">
-              <EffectsDisplay effects={battleState.opponent.effects} />
+              <div className="mb-3 p-3 bg-neon-purple/5 rounded-lg border border-neon-purple/20">
+                <EffectsDisplay effects={battleState.opponent.effects} />
+              </div>
             </div>
           </div>
 

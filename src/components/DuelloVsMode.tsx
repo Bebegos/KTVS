@@ -7,6 +7,7 @@ import { createDuelloSession, getDuelloSession, joinDuelloSession, subscribeToDu
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
 import DuelloBattleScreen from './DuelloBattleScreen'
+import DuelloLobbyView from './DuelloLobbyView'
 
 interface DuelloVsModeProps {
   selectedDino: Dino
@@ -486,105 +487,51 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
     )
   }
 
-  // Confirmation Screen (Onay)
+  // Confirmation Screen (Onay) — Hearthstone lobby view
   if (screen === 'confirmation' && sessionData) {
+    const isReady = sessionData.status === 'ready' && !!sessionData.guest_dino_id && !!sessionData.host_dino_id && !!opponentDino
+
+    async function handleStartDuello() {
+      // Mark session as in_progress so both players start together
+      try {
+        await supabase
+          .from('duello_sessions')
+          .update({ status: 'in_progress' })
+          .eq('session_id', sessionData!.session_id)
+        // Screen change will happen automatically via subscription
+      } catch (err) {
+        console.error('Düello başlatma hatası:', err)
+        alert('Düello başlatılamadı')
+      }
+    }
+
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
-        {/* Arka plan */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-        </div>
+      <>
+        <DuelloLobbyView
+          playerDino={selectedDino}
+          opponentDino={opponentDino || undefined}
+          waiting={!opponentDino}
+          sessionId={sessionData.session_id}
+          onStartBattle={isReady ? handleStartDuello : undefined}
+          onBack={() => {
+            setScreen('options')
+            if (subscriptionRef.current) {
+              subscriptionRef.current.unsubscribe()
+            }
+          }}
+        />
 
-        <div className="flex flex-col items-center gap-8 relative z-10 w-full max-w-2xl">
-          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple text-center">
-            Düello Başlamak Üzere
-          </h1>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-            {/* Current Player's Dino */}
-            <div className="glass-dark neon-border-cyan rounded-xl p-6 text-center">
-              <p className="text-xs font-bold text-neon-cyan mb-2">SEN</p>
-              <h2 className="text-2xl font-black text-neon-cyan mb-1">{selectedDino.name}</h2>
-              <p className="text-sm text-neon-cyan/80 mb-4">Lvl {selectedDino.level}</p>
-              <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                <div className="glass border border-red-500/30 p-2 rounded text-red-400">HP {selectedDino.maxHp}</div>
-                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">ATK {selectedDino.atk}</div>
-                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">DEF {selectedDino.def}</div>
-              </div>
-              <p className="text-xs text-neon-cyan/60 mt-3">Hazır</p>
-            </div>
-
-            {/* Opponent's Dino */}
-            <div className="glass-dark neon-border-purple rounded-xl p-6 text-center">
-              <p className="text-xs font-bold text-neon-purple mb-2">RAKİP</p>
-              {opponentDino ? (
-                <>
-                  <h2 className="text-2xl font-black text-neon-purple mb-1">{opponentDino.name}</h2>
-                  <p className="text-sm text-neon-purple/80 mb-4">Lvl {opponentDino.level}</p>
-                  <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                    <div className="glass border border-red-500/30 p-2 rounded text-red-400">HP {opponentDino.maxHp}</div>
-                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">ATK {opponentDino.atk}</div>
-                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">DEF {opponentDino.def}</div>
-                  </div>
-                  {sessionData.status === 'ready' && (
-                    <p className="text-xs text-neon-purple/60 mt-3">Hazır</p>
-                  )}
-                </>
-              ) : (
-                <p className="text-neon-purple/70 text-lg">Yükleniyor...</p>
-              )}
-            </div>
+        {/* Debug info - only in development */}
+        {import.meta.env.DEV && (
+          <div className="fixed bottom-2 left-2 z-50 text-xs text-neon-cyan/50 p-2 border border-neon-cyan/20 rounded bg-black/60">
+            <p>Status: {sessionData.status}</p>
+            <p>Guest dino: {sessionData.guest_dino_id || 'boş'}</p>
+            <p>Host dino: {sessionData.host_dino_id || 'boş'}</p>
+            <p>Opponent yüklendi: {opponentDino ? 'Evet' : 'Hayır'}</p>
+            <p>Oyuncu: {isHost ? 'Host' : 'Guest'}</p>
           </div>
-
-          {/* VS */}
-          <div className="text-4xl font-black text-neon-cyan">VS</div>
-
-          {sessionData.status === 'ready' && sessionData.guest_dino_id && sessionData.host_dino_id && opponentDino && (
-            <button
-              onClick={async () => {
-                // Mark session as in_progress so both players start together
-                try {
-                  await supabase
-                    .from('duello_sessions')
-                    .update({ status: 'in_progress' })
-                    .eq('session_id', sessionData.session_id)
-                  // Screen change will happen automatically via subscription
-                } catch (err) {
-                  console.error('Düello başlatma hatası:', err)
-                  alert('Düello başlatılamadı')
-                }
-              }}
-              className="hs-btn hs-btn-lg hs-btn-block"
-            >
-              DÜELLOYA BAŞLA
-            </button>
-          )}
-
-          {/* Debug info - only in development */}
-          {import.meta.env.DEV && (
-            <div className="w-full text-xs text-neon-cyan/50 mt-4 p-2 border border-neon-cyan/20 rounded">
-              <p>Status: {sessionData.status}</p>
-              <p>Guest dino: {sessionData.guest_dino_id || 'boş'}</p>
-              <p>Host dino: {sessionData.host_dino_id || 'boş'}</p>
-              <p>Opponent yüklendi: {opponentDino ? 'Evet' : 'Hayır'}</p>
-              <p>Oyuncu: {isHost ? 'Host' : 'Guest'}</p>
-            </div>
-          )}
-
-          <button
-            onClick={() => {
-              setScreen('options')
-              if (subscriptionRef.current) {
-                subscriptionRef.current.unsubscribe()
-              }
-            }}
-            className="hs-btn hs-btn-purple hs-btn-block"
-          >
-            ← Geri
-          </button>
-        </div>
-      </div>
+        )}
+      </>
     )
   }
 

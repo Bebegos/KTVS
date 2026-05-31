@@ -916,3 +916,61 @@
   border-radius: 6px;
   font-size: 12px;
 }
+
+/* ============================================ */
+/* BATTLE SCREEN HEARTHSTONE FRAME (visual-only) */
+/* Wraps existing battle panels with a rustic    */
+/* metal/gold frame without altering interior.   */
+/* ============================================ */
+.hs-battle-frame {
+  position: relative;
+  padding: 7px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #6b5536 0%, #4a3a22 45%, #2e2412 100%);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.55),
+    inset 0 1px 2px rgba(255, 224, 150, 0.35),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.5);
+  border: 2px solid #2a1f10;
+}
+
+/* Inner gold hairline border */
+.hs-battle-frame::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 12px;
+  border: 1.5px solid;
+  border-image: linear-gradient(135deg, #f5e1a4, #c9a227, #8b6914, #c9a227) 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Corner rivets */
+.hs-battle-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 14px 14px, #d4af37 0, #d4af37 2.5px, transparent 3px),
+    radial-gradient(circle at calc(100% - 14px) 14px, #d4af37 0, #d4af37 2.5px, transparent 3px),
+    radial-gradient(circle at 14px calc(100% - 14px), #d4af37 0, #d4af37 2.5px, transparent 3px),
+    radial-gradient(circle at calc(100% - 14px) calc(100% - 14px), #d4af37 0, #d4af37 2.5px, transparent 3px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Side-specific accent tint on the frame */
+.hs-battle-frame-player {
+  background: linear-gradient(145deg, #4a5536 0%, #2e3a22 45%, #1a2412 100%);
+}
+.hs-battle-frame-opponent {
+  background: linear-gradient(145deg, #553645 0%, #3a222e 45%, #24121a 100%);
+}
+
+/* Ensure interior content sits above the frame pseudo-elements */
+.hs-battle-frame > * {
+  position: relative;
+  z-index: 3;
+}
