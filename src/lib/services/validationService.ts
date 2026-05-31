@@ -154,7 +154,7 @@ class ValidationService {
       }
 
       // Validate it can be in this slot
-      const assignmentCheck = this.validateAbilityAssignment(dino, slot, ability.name)
+      const assignmentCheck = this.validateAbilityAssignment(dino, slot, abilityId)
       if (!assignmentCheck.valid) {
         results.push({
           valid: false,

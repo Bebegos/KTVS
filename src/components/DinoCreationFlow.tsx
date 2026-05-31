@@ -95,58 +95,8 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
 
     setLoading(true)
     try {
-      const abilities: DinoAbility[] = []
-
-      // Add 2 selected class abilities
-      for (const abilityId of selectedClassAbilities) {
-        const abilityDef = classAbilities.find(a => a.id === abilityId)
-        if (abilityDef) {
-          // Map ability kind to system kind: 'attack'/'debuff'/etc -> 'buff' or 'debuff'
-          const systemKind = abilityDef.kind === 'buff' ? 'buff' : 'debuff'
-          abilities.push({
-            name: abilityDef.name,
-            cd: 0,
-            kind: systemKind,
-            effects: (abilityDef.effects || []) as any[],
-            multiplier: abilityDef.damageMultiplier,
-            icon: abilityDef.icon,
-          })
-        }
-      }
-
-      // Add 1 selected spec ability
-      const specAbilityDef = specAbilities.find(a => a.id === selectedSpecAbility)
-      if (specAbilityDef) {
-        const systemKind = specAbilityDef.kind === 'buff' ? 'buff' : 'debuff'
-        abilities.push({
-          name: specAbilityDef.name,
-          cd: 0,
-          kind: systemKind,
-          effects: (specAbilityDef.effects || []) as any[],
-          multiplier: specAbilityDef.damageMultiplier,
-          icon: specAbilityDef.icon,
-        })
-      }
-
-      // Add 2 placeholder abilities for future leveling
-      abilities.push(
-        {
-          name: '[Seviye 2\'de Açılacak]',
-          cd: 0,
-          kind: 'debuff',
-          effects: [],
-          multiplier: 0,
-          icon: 'placeholder',
-        },
-        {
-          name: '[Seviye 3\'te Açılacak]',
-          cd: 0,
-          kind: 'debuff',
-          effects: [],
-          multiplier: 0,
-          icon: 'placeholder',
-        }
-      )
+      // Collect selected ability IDs (2 class + 1 spec)
+      const abilityIds = [...selectedClassAbilities, selectedSpecAbility]
 
       await createDino({
         name: stats.name,
@@ -156,11 +106,10 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
         spd: stats.spd,
         level: 1,
         xp: 0,
-        abilities,
+        ability_ids: abilityIds,
         owner_id: user?.id,
         class: selectedClass,
         spec: selectedSpec,
-        selected_ability_ids: [...selectedClassAbilities, selectedSpecAbility],
       })
 
       const updated = await getDinos(user?.id)
