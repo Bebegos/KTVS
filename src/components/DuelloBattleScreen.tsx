@@ -146,6 +146,12 @@ export default function DuelloBattleScreen({
 
     subscriptionRef.current = channel
 
+    // Wait a bit and check subscription status
+    setTimeout(() => {
+      const status = channel.state
+      addLog(`📊 Subscription state: ${status}`)
+    }, 500)
+
     // Handle page unload - mark as abandoned if battle not ended
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!battleEnded) {
