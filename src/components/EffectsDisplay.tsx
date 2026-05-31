@@ -37,7 +37,7 @@ export default function EffectsDisplay({ effects, battleCharacterMaxHp = 100 }: 
               title={definition.name}
             >
               <div className="cursor-help hover:scale-110 transition">
-                <SvgIcon id={effect.type} type="effect" size="md" fallback={definition.emoji} />
+                <SvgIcon id={effect.type} type="effect" size="md" fallback="" />
               </div>
               {/* Duration badge */}
               <div className="absolute -top-2 -right-2 bg-gradient-to-br from-gem-health to-gem-health-dark text-white text-xs font-black rounded-full w-5 h-5 flex items-center justify-center border border-gold/60 shadow-md">
@@ -75,7 +75,7 @@ export default function EffectsDisplay({ effects, battleCharacterMaxHp = 100 }: 
                       id={selectedEffect.effect.type}
                       type="effect"
                       size="xl"
-                      fallback={selectedEffect.definition.emoji}
+                      fallback=""
                     />
                     <div>
                       <h2 className="text-2xl font-black text-neon-cyan">
@@ -83,15 +83,15 @@ export default function EffectsDisplay({ effects, battleCharacterMaxHp = 100 }: 
                       </h2>
                       <p className="text-xs text-neon-cyan/70">
                         {selectedEffect.definition.type === 'buff'
-                          ? '📈 Buff'
-                          : '📉 Debuff'}
+                          ? 'Buff'
+                          : 'Debuff'}
                       </p>
                     </div>
                   </div>
 
                   <div className="mb-4 p-3 border border-neon-cyan/30 rounded-lg bg-neon-cyan/5">
                     <p className="text-sm text-neon-cyan font-bold">
-                      ⏱️ Kalan: {selectedEffect.effect.duration} tur
+                      Kalan: {selectedEffect.effect.duration} tur
                     </p>
                   </div>
 
@@ -107,7 +107,7 @@ export default function EffectsDisplay({ effects, battleCharacterMaxHp = 100 }: 
                     const levelData = selectedEffect.definition.levels[defaultLevel] || selectedEffect.definition.levels[1]
                     return levelData && (levelData.damage !== undefined || levelData.damagePercent !== undefined) ? (
                       <div className="mb-4 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                        <p className="text-xs font-bold text-orange-400 mb-2">⚡ HASAR DETAYLARI:</p>
+                        <p className="text-xs font-bold text-orange-400 mb-2">HASAR DETAYLARI</p>
                         <div className="space-y-1 text-xs text-white/80">
                           {levelData.damage !== undefined && (
                             <div className="flex justify-between">
@@ -137,7 +137,7 @@ export default function EffectsDisplay({ effects, battleCharacterMaxHp = 100 }: 
                     const levelData = selectedEffect.definition.levels[defaultLevel] || selectedEffect.definition.levels[1]
                     return levelData && levelData.statBonus ? (
                       <div className="mb-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                        <p className="text-xs font-bold text-blue-400 mb-2">📊 STAT BONUS:</p>
+                        <p className="text-xs font-bold text-blue-400 mb-2">STAT BONUS</p>
                         <div className="space-y-1 text-xs text-white/80">
                           {levelData.statBonus.atk !== undefined && (
                             <div className="flex justify-between">

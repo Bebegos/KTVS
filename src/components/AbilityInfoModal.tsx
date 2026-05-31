@@ -66,7 +66,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
             onClick={onClose}
             className="hs-btn hs-btn-xs"
           >
-            ✕
+            ×
           </button>
         </div>
 
@@ -77,7 +77,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
               ? 'bg-red-500/20 border border-red-500/50 text-red-400'
               : 'bg-green-500/20 border border-green-500/50 text-green-400'
           }`}>
-            {isCooling ? `⏳ Hazırlanıyor: ${cooldown} tur` : '✓ Hazır'}
+            {isCooling ? `Hazırlanıyor: ${cooldown} tur` : 'Hazır'}
           </div>
         )}
 
@@ -101,7 +101,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
               : 'bg-orange-500/10 border-orange-500/30'
           }`}>
             <p className="text-xs font-bold mb-1" style={{ color: valueType === 'heal' ? '#4ade80' : '#fb923c' }}>
-              {valueType === 'heal' ? '💚 İyileştirme Miktarı' : '⚡ Hasar Miktarı'}
+              {valueType === 'heal' ? 'İyileştirme Miktarı' : 'Hasar Miktarı'}
             </p>
             <p className="text-2xl font-black" style={{ color: valueType === 'heal' ? '#4ade80' : '#fb923c' }}>
               {baseValue}
@@ -123,7 +123,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
                     id={effectId}
                     type="effect"
                     size="sm"
-                    fallback={getEffectEmoji(effectId)}
+                    fallback=""
                   />
                   <span className={`font-bold ${isBuffEffect(effectId) ? 'text-green-400' : 'text-red-400'}`}>
                     {getEffectNameTR(effectId)}
@@ -152,13 +152,13 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
               ability.kind === 'ultimate' ? 'bg-yellow-500/30 text-yellow-300' :
               'bg-neon-cyan/30 text-neon-cyan'
             }`}>
-              {ability.kind === 'heal' ? '💚 İyileştirme' :
-               ability.kind === 'buff' ? '⬆️ Buff' :
-               ability.kind === 'debuff' ? '⬇️ Debuff' :
-               ability.kind === 'ultimate' ? '👑 Ultimate' :
-               ability.kind === 'attack' ? '⚔️ Saldırı' :
-               ability.kind === 'passive' ? '✨ Pasif' :
-               ability.kind === 'utility' ? '🛠️ Yardımcı' :
+              {ability.kind === 'heal' ? 'İyileştirme' :
+               ability.kind === 'buff' ? 'Buff' :
+               ability.kind === 'debuff' ? 'Debuff' :
+               ability.kind === 'ultimate' ? 'Ultimate' :
+               ability.kind === 'attack' ? 'Saldırı' :
+               ability.kind === 'passive' ? 'Pasif' :
+               ability.kind === 'utility' ? 'Yardımcı' :
                ability.kind}
             </span>
           </div>
@@ -169,7 +169,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
           onClick={onClose}
           className="hs-btn hs-btn-block"
         >
-          ← Kapat
+          Kapat
         </button>
       </motion.div>
     </motion.div>

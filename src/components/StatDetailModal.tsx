@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { StatKey, STAT_DEFINITIONS, calculateMaxHp } from '../lib/stat-system'
 import { Dino } from '../game/types'
 import SvgIcon from './SvgIcon'
+import StatIcon from './StatIcon'
 
 interface StatDetailModalProps {
   stat: StatKey
@@ -63,7 +64,7 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1">
-            <div className="text-3xl">{def.emoji}</div>
+            <StatIcon stat={stat as any} size="lg" />
             <div>
               <h1 className={`text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r ${def.gradient}`}>
                 {def.labelTr}
@@ -75,7 +76,7 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
             onClick={onClose}
             className="hs-btn hs-btn-sm"
           >
-            ✕
+            ×
           </button>
         </div>
 
@@ -103,7 +104,7 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
         {/* Bonus Info */}
         {bonusValue > 0 && (
           <div className="p-4 bg-yellow-500/10 border border-yellow-500/40 rounded-xl">
-            <p className="text-xs font-bold text-yellow-300 mb-2">⚡ Harcamaya Hazır Bonus</p>
+            <p className="text-xs font-bold text-yellow-300 mb-2">Harcamaya Hazır Bonus</p>
             <p className="text-2xl font-black text-yellow-200">+{bonusValue} puan</p>
           </div>
         )}

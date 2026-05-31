@@ -31,7 +31,7 @@ export default function BattleStatsCard({
   if (isPlayer) {
     return (
       <div className="glass-dark neon-border-cyan rounded-lg p-4 text-sm">
-        <p className="text-xs font-bold text-neon-cyan mb-3">📊 STAT BONUSLARI</p>
+        <p className="text-xs font-bold text-neon-cyan mb-3">STAT BONUSLARI</p>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -67,7 +67,7 @@ export default function BattleStatsCard({
 
         {hasBuffs && (
           <div className="mt-3 pt-3 border-t border-neon-cyan/20">
-            <p className="text-xs text-neon-cyan/60 font-bold">✨ Efekt Bonusları Aktif</p>
+            <p className="text-xs text-neon-cyan/60 font-bold">Efekt Bonusları Aktif</p>
           </div>
         )}
       </div>
@@ -76,7 +76,7 @@ export default function BattleStatsCard({
 
   return (
     <div className="glass-dark neon-border-purple rounded-lg p-4 text-sm">
-      <p className="text-xs font-bold text-neon-purple mb-3">📊 RAKİP STAT</p>
+      <p className="text-xs font-bold text-neon-purple mb-3">RAKİP STAT</p>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -112,7 +112,7 @@ export default function BattleStatsCard({
 
       {hasBuffs && (
         <div className="mt-3 pt-3 border-t border-neon-purple/20">
-          <p className="text-xs text-neon-purple/60 font-bold">✨ Efekt Bonusları Aktif</p>
+          <p className="text-xs text-neon-purple/60 font-bold">Efekt Bonusları Aktif</p>
         </div>
       )}
     </div>
