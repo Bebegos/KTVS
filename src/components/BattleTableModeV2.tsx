@@ -273,7 +273,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                       ) : (
                         <div
                           key={idx}
-                          className="p-4 rounded-lg glass-dark neon-border-cyan border-2 flex flex-col items-center justify-center gap-2 opacity-60 cursor-not-allowed"
+                          className="p-4 rounded-lg hs-card neon-border-cyan border-2 flex flex-col items-center justify-center gap-2 opacity-60 cursor-not-allowed"
                         >
                           <span className="text-2xl">🔒</span>
                           <p className="text-xs font-bold text-neon-cyan">Boş Slot</p>
@@ -432,8 +432,8 @@ function AbilityButton({
       whileTap={{ scale: disabled ? 1 : 0.95 }}
       className={`relative w-full p-4 rounded-lg font-bold transition flex items-start gap-3 ${
         isUlti
-          ? 'glass-dark neon-border-purple border-2'
-          : 'glass-dark neon-border-cyan border-2'
+          ? 'neon-border-purple border-2'
+          : 'hs-card neon-border-cyan border-2'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}`}
     >
       <div className="flex-shrink-0 pt-1">

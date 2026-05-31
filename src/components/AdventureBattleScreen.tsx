@@ -295,7 +295,7 @@ export default function AdventureBattleScreen({
                     key={idx}
                     onClick={() => {}}
                     disabled={true}
-                    className="p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[120px] glass border-2 border-dashed border-gray-500/30 text-gray-500 opacity-40 cursor-not-allowed"
+                    className="p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[120px] hs-card border-2 border-dashed border-gray-500/30 text-gray-500 opacity-40 cursor-not-allowed"
                   >
                     <span className="text-2xl">🔒</span>
                     <p className="text-xs">Boş Slot</p>
@@ -313,10 +313,10 @@ export default function AdventureBattleScreen({
                   disabled={selectedAbility !== null || !canUse || roundInProgress}
                   className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[120px] ${
                     isSelected
-                      ? 'neon-border-cyan glass-dark text-neon-cyan border-2 scale-105'
+                      ? 'neon-border-cyan hs-card text-neon-cyan border-2 scale-105'
                       : !canUse
                       ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
-                      : 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
+                      : 'hs-card neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
                   }`}
                 >
                   <div className="flex items-center gap-2 w-full">
