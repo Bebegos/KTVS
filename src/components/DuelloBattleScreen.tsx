@@ -4,11 +4,13 @@ import { Dino } from '../game/types'
 import { BattleEngine } from '../lib/battleEngine'
 import { getEffectNameTR } from '../lib/effect-translations'
 import { supabase, addXpToDino, recordDuelloMatch, abandonDuelloSession } from '../lib/supabase'
+import { slotService } from '../lib/services'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
 import EffectsDisplay from './EffectsDisplay'
 import BattleStatsCard from './BattleStatsCard'
 import HealthBar from './HealthBar'
+import PremiumAbilityButton from './PremiumAbilityButton'
 
 interface DuelloBattleScreenProps {
   playerDino: Dino
@@ -435,57 +437,28 @@ export default function DuelloBattleScreen({
       </div>
 
       <div className="mb-6">
-        <p className="text-xs font-bold text-neon-cyan mb-2">YETENEKLERİ SEÇ (Her turda 1)</p>
-        <div className="grid grid-cols-2 gap-3">
-          {battleState.player.abilities.map((ability, idx) => (
-            <motion.button
-              key={idx}
-              whileHover={{ scale: playerSelectedAbility === null && engine.canUseAbility('player', idx) ? 1.05 : 1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => selectAbility(idx)}
-              disabled={playerSelectedAbility !== null || !engine.canUseAbility('player', idx) || roundInProgress}
-              className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[140px] ${
-                playerSelectedAbility === idx
-                  ? 'neon-border-cyan glass-dark text-neon-cyan border-2 scale-105'
-                  : !engine.canUseAbility('player', idx)
-                  ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
-                  : 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
-              }`}
-            >
-              <div className="flex items-center gap-3 w-full">
-                <AbilityIcon iconId={ability.icon} size="lg" />
-                <div className="flex-1 text-left">
-                  <p className="font-black text-sm leading-tight">{ability.name}</p>
-                  <p className="text-xs font-bold text-red-400">SALDIRI</p>
-                </div>
-              </div>
+        <p className="text-xs font-bold text-neon-cyan mb-2 uppercase tracking-widest">⚔️ Yetenek Seç (1/Tur)</p>
+        <div className="grid grid-cols-2 gap-2">
+          {battleState.player.abilities.map((ability, idx) => {
+            const canUse = engine.canUseAbility('player', idx)
+            const isSelected = playerSelectedAbility === idx
+            const cooldown = battleState.player.cooldowns[idx] || 0
 
-              <div className="w-full text-left text-xs space-y-1">
-                <div className="flex justify-between">
-                  <span>Hasar Çarpanı:</span>
-                  <span className="font-black">×{ability.multiplier || 1}</span>
-                </div>
-                {ability.effects && ability.effects.length > 0 && (
-                  <div className="flex justify-between">
-                    <span>Efektler:</span>
-                    <span className="font-black">{ability.effects.map((e: string) => getEffectNameTR(e)).join(' + ')}</span>
-                  </div>
-                )}
-                {battleState.player.cooldowns[idx] > 0 && (
-                  <div className="flex justify-between text-red-400">
-                    <span>Hazır olmaya:</span>
-                    <span className="font-black">{battleState.player.cooldowns[idx]} tur</span>
-                  </div>
-                )}
-              </div>
-
-              {playerSelectedAbility === idx && (
-                <div className="w-full text-center mt-auto">
-                  <p className="text-xs font-black text-neon-cyan">✓ SEÇİLDİ</p>
-                </div>
-              )}
-            </motion.button>
-          ))}
+            return (
+              <PremiumAbilityButton
+                key={idx}
+                ability={ability}
+                index={idx}
+                isSelected={isSelected}
+                isLocked={false}
+                canUse={canUse}
+                cooldown={cooldown}
+                maxCooldown={ability.maxCd || 0}
+                disabled={playerSelectedAbility !== null || !canUse || roundInProgress}
+                onClick={() => selectAbility(idx)}
+              />
+            )
+          })}
         </div>
       </div>
 

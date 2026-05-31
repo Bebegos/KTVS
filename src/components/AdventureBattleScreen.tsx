@@ -5,7 +5,7 @@ import { Adventure, AdventureScene, AdventureEnemy } from '../lib/adventures'
 import { BattleEngine } from '../lib/battleEngine'
 import { supabase, addXpToDino, addCoinsToUser } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
-import { slotService } from '../lib/services'
+import { slotService, abilityDefinitionService } from '../lib/services'
 import BattleStatsCard from './BattleStatsCard'
 import EffectsDisplay from './EffectsDisplay'
 import AbilityIcon from './AbilityIcon'
@@ -13,6 +13,7 @@ import HealthBar from './HealthBar'
 import BattleEffectVisuals from './BattleEffectVisuals'
 import AbilityInfoModal from './AbilityInfoModal'
 import EffectInfoModal from './EffectInfoModal'
+import PremiumAbilityButton from './PremiumAbilityButton'
 import SvgIcon from './SvgIcon'
 import { getEffectNameTR } from '../lib/effect-translations'
 
@@ -321,134 +322,49 @@ export default function AdventureBattleScreen({
         </div>
 
         <div className="mb-6">
-          <p className="text-xs font-bold text-neon-cyan mb-2">YETENEKLERİ SEÇ</p>
-          <div className="grid grid-cols-2 gap-3 mb-3">
+          <p className="text-xs font-bold text-neon-cyan mb-2 uppercase tracking-widest">⚔️ Yetenek Seç</p>
+          <div className="grid grid-cols-2 gap-2 mb-3">
             {[0, 1, 2, 3, 4].map((idx) => {
               const ability = battleState.player.abilities[idx]
               const isLocked = slotService.isSlotLocked(playerDino, idx)
               const canUse = !isLocked && battleEngine?.canUseAbility('player', idx)
               const isSelected = selectedAbility === idx
-
-              if (isLocked) {
-                const requiredLevel = slotService.getSlotRequiredLevel(idx)
-                return (
-                  <motion.button
-                    key={idx}
-                    onClick={() => {}}
-                    disabled={true}
-                    className="p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[120px] hs-card border-2 border-dashed border-gray-500/30 text-gray-500 opacity-40 cursor-not-allowed"
-                  >
-                    <span className="text-2xl">🔒</span>
-                    <p className="text-xs">Boş Slot</p>
-                    <p className="text-xs text-gray-400">Seviye {requiredLevel}</p>
-                  </motion.button>
-                )
-              }
-
-              if (!ability) {
-                return (
-                  <motion.button
-                    key={idx}
-                    onClick={() => {}}
-                    disabled={true}
-                    className="p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[120px] hs-card border-2 border-dashed border-neon-cyan/30 text-neon-cyan/50 opacity-60 cursor-not-allowed"
-                  >
-                    <span className="text-2xl">➕</span>
-                    <p className="text-xs">Yetenek Ekle</p>
-                  </motion.button>
-                )
-              }
+              const cooldown = battleState.player.cooldowns[idx] || 0
 
               return (
-                <motion.button
+                <PremiumAbilityButton
                   key={idx}
-                  whileHover={{ scale: selectedAbility === null && canUse ? 1.05 : 1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => selectAbility(idx)}
+                  ability={ability || null}
+                  index={idx}
+                  isSelected={isSelected}
+                  isLocked={isLocked}
+                  canUse={canUse}
+                  cooldown={cooldown}
+                  maxCooldown={ability?.maxCd || 0}
                   disabled={selectedAbility !== null || !canUse || roundInProgress}
-                  className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[120px] relative ${
-                    isSelected
-                      ? 'neon-border-cyan hs-card text-neon-cyan border-2 scale-105'
-                      : !canUse
-                      ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
-                      : 'hs-card neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
-                  }`}
-                >
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      openAbilityInfo(battleState.player.abilityIds[idx], idx)
-                    }}
-                    className="absolute top-2 right-2 text-neon-cyan hover:text-neon-cyan/70 text-lg transition text-sm font-bold"
-                  >
-                    ℹ
-                  </button>
-                  <div className="flex items-center gap-2 w-full">
-                    <AbilityIcon iconId={ability.icon} size="md" />
-                    <p className="font-black text-sm">{ability.name}</p>
-                  </div>
-                  <div className="text-xs space-y-1 w-full">
-                    <div className="flex justify-between">
-                      <span>×{ability.multiplier || 1}</span>
-                    </div>
-                    {battleState.player.cooldowns[idx] > 0 && (
-                      <div className="text-red-400 font-bold">CD: {battleState.player.cooldowns[idx]}</div>
-                    )}
-                  </div>
-                </motion.button>
+                  onClick={() => selectAbility(idx)}
+                  onInfo={() => openAbilityInfo(battleState.player.abilityIds[idx], idx)}
+                  lockedLevel={isLocked ? slotService.getSlotRequiredLevel(idx) : undefined}
+                />
               )
             })}
           </div>
 
           {/* Ultimate Slot */}
-          {battleState.player.abilities[5] ? (
-            <motion.button
-              whileHover={{ scale: selectedAbility === null && battleEngine?.canUseAbility('player', 5) ? 1.05 : 1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => selectAbility(5)}
-              disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
-              className={`w-full p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[100px] relative bg-gradient-to-b from-yellow-600/40 via-purple-500/30 to-yellow-700/40 border-4 border-yellow-500/80 shadow-[0_0_30px_rgba(234,179,8,0.4)] ${
-                selectedAbility === 5
-                  ? 'scale-105'
-                  : !battleEngine?.canUseAbility('player', 5)
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:shadow-lg'
-              }`}
-            >
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 text-xs font-black text-yellow-300">ULT</div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  openAbilityInfo(battleState.player.abilityIds[5], 5)
-                }}
-                className="absolute top-2 right-2 text-yellow-300 hover:text-yellow-300/70 text-lg transition text-sm font-bold"
-              >
-                ℹ
-              </button>
-              <div className="flex items-center gap-2 w-full mt-4">
-                <AbilityIcon iconId={battleState.player.abilities[5].icon} size="md" />
-                <p className="font-black text-sm text-yellow-300">{battleState.player.abilities[5].name}</p>
-              </div>
-              <div className="text-xs space-y-1 w-full">
-                <p className="text-yellow-200 font-bold">ULTIMATE</p>
-                <div className="flex justify-between">
-                  <span className="text-yellow-100">×{battleState.player.abilities[5].multiplier || 1}</span>
-                </div>
-                {battleState.player.cooldowns[5] > 0 && (
-                  <div className="text-red-400 font-bold">CD: {battleState.player.cooldowns[5]}</div>
-                )}
-              </div>
-            </motion.button>
-          ) : (
-            <motion.button
-              disabled={true}
-              className="w-full p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[100px] bg-gradient-to-b from-slate-700/30 via-purple-900/30 to-slate-800/30 border-4 border-dashed border-yellow-600/40 opacity-50 cursor-not-allowed"
-            >
-              <div className="text-4xl">🔐</div>
-              <p className="text-sm font-black text-yellow-400">ULTIMATE SLOT</p>
-              <p className="text-xs text-yellow-300/70">Seviye {slotService.getSlotRequiredLevel(5)} açılır</p>
-            </motion.button>
-          )}
+          <PremiumAbilityButton
+            ability={battleState.player.abilities[5] || null}
+            index={5}
+            isUltimate={true}
+            isSelected={selectedAbility === 5}
+            isLocked={slotService.isSlotLocked(playerDino, 5)}
+            canUse={battleEngine?.canUseAbility('player', 5) || false}
+            cooldown={battleState.player.cooldowns[5] || 0}
+            maxCooldown={battleState.player.abilities[5]?.maxCd || 0}
+            disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
+            onClick={() => selectAbility(5)}
+            onInfo={() => openAbilityInfo(battleState.player.abilityIds[5], 5)}
+            lockedLevel={slotService.isSlotLocked(playerDino, 5) ? slotService.getSlotRequiredLevel(5) : undefined}
+          />
         </div>
 
         <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 flex-1 flex flex-col">
