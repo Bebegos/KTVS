@@ -87,7 +87,7 @@ function getUltimateReward(classId: string, specId: string, level: number): Leve
  * Converts an ability from library to DinoAbility for storage
  */
 export function abilityToDinoAbility(ability: any): DinoAbility {
-  return {
+  const dinoAbility: DinoAbility = {
     name: ability.name,
     cd: ability.cooldown || 0,
     kind: ability.kind,
@@ -95,6 +95,13 @@ export function abilityToDinoAbility(ability: any): DinoAbility {
     multiplier: ability.damageMultiplier || 0,
     icon: ability.icon,
   }
+
+  // Preserve vampiric flag for life steal abilities (Bloodlust, etc.)
+  if (ability.isVampiric) {
+    (dinoAbility as any).isVampiric = true
+  }
+
+  return dinoAbility
 }
 
 /**

@@ -259,7 +259,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                   <p className="font-black text-neon-cyan text-sm mb-4 text-center">⚡ YETENEKLER</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    {[0, 1, 2, 3].map((idx) => {
+                    {[0, 1, 2, 3, 4].map((idx) => {
                       const ability = battleState.player.abilities[idx]
                       return ability ? (
                         <AbilityButton
@@ -284,7 +284,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                   </div>
 
                   {/* Ultimate Slot - Legendary Card Design */}
-                  {battleState.player.abilities[4] ? (
+                  {battleState.player.abilities[5] ? (
                     <div className="mb-4 relative">
                       {/* Hearthstone Legendary Card Frame */}
                       <motion.div
@@ -305,23 +305,23 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                         {/* Content */}
                         <div className="relative flex gap-3">
                           <div className="flex-shrink-0 pt-2">
-                            <AbilityIcon iconId={battleState.player.abilities[4].icon} size="lg" />
+                            <AbilityIcon iconId={battleState.player.abilities[5].icon} size="lg" />
                           </div>
                           <div className="text-left flex-1">
                             <p className="text-sm font-black text-yellow-300 drop-shadow-lg">
-                              {battleState.player.abilities[4].name}
+                              {battleState.player.abilities[5].name}
                             </p>
                             <p className="text-xs text-yellow-200/80 font-bold mt-1">ULTIMATE</p>
                             <div className="text-xs space-y-1 mt-2">
-                              {battleState.player.abilities[4].effect === 'none' ? (
-                                <p className="text-yellow-100/70 font-bold">Saldırı • ×{battleState.player.abilities[4].multiplier || 1}</p>
+                              {battleState.player.abilities[5].effect === 'none' ? (
+                                <p className="text-yellow-100/70 font-bold">Saldırı • ×{battleState.player.abilities[5].multiplier || 1}</p>
                               ) : (
                                 <p className="text-yellow-100 font-bold">
-                                  ⚡ Efekt • ×{battleState.player.abilities[4].multiplier || 1}
+                                  ⚡ Efekt • ×{battleState.player.abilities[5].multiplier || 1}
                                 </p>
                               )}
-                              {battleState.player.cooldowns[4] > 0 && (
-                                <p className="text-red-400 font-bold">CD: {battleState.player.cooldowns[4]} tur</p>
+                              {battleState.player.cooldowns[5] > 0 && (
+                                <p className="text-red-400 font-bold">CD: {battleState.player.cooldowns[5]} tur</p>
                               )}
                             </div>
                           </div>
@@ -329,10 +329,10 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
 
                         {/* Button overlay */}
                         <button
-                          onClick={() => executeAbility(4)}
-                          disabled={!engine.canUseAbility('player', 4) || abilityUsedThisTurn}
+                          onClick={() => executeAbility(5)}
+                          disabled={!engine.canUseAbility('player', 5) || abilityUsedThisTurn}
                           className={`absolute inset-0 rounded-xl transition ${
-                            !engine.canUseAbility('player', 4) || abilityUsedThisTurn
+                            !engine.canUseAbility('player', 5) || abilityUsedThisTurn
                               ? 'opacity-0 cursor-not-allowed'
                               : 'opacity-0 hover:opacity-20 bg-yellow-400 cursor-pointer'
                           }`}

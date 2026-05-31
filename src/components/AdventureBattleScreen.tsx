@@ -283,37 +283,99 @@ export default function AdventureBattleScreen({
 
         <div className="mb-6">
           <p className="text-xs font-bold text-neon-cyan mb-2">⚔️ YETENEKLERİ SEÇ</p>
-          <div className="grid grid-cols-2 gap-3">
-            {battleState.player.abilities.map((ability: any, idx: number) => (
-              <motion.button
-                key={idx}
-                whileHover={{ scale: selectedAbility === null && battleEngine?.canUseAbility('player', idx) ? 1.05 : 1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => selectAbility(idx)}
-                disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', idx) || roundInProgress}
-                className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[120px] ${
-                  selectedAbility === idx
-                    ? 'neon-border-cyan glass-dark text-neon-cyan border-2 scale-105'
-                    : !battleEngine?.canUseAbility('player', idx)
-                    ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
-                    : 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
-                }`}
-              >
-                <div className="flex items-center gap-2 w-full">
-                  <AbilityIcon iconId={ability.icon} size="md" />
-                  <p className="font-black text-sm">{ability.name}</p>
-                </div>
-                <div className="text-xs space-y-1 w-full">
-                  <div className="flex justify-between">
-                    <span>×{ability.multiplier || 1}</span>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            {[0, 1, 2, 3, 4].map((idx) => {
+              const ability = battleState.player.abilities[idx]
+              const canUse = battleEngine?.canUseAbility('player', idx)
+              const isSelected = selectedAbility === idx
+
+              if (!ability) {
+                return (
+                  <motion.button
+                    key={idx}
+                    onClick={() => {}}
+                    disabled={true}
+                    className="p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[120px] glass border-2 border-dashed border-gray-500/30 text-gray-500 opacity-40 cursor-not-allowed"
+                  >
+                    <span className="text-2xl">🔒</span>
+                    <p className="text-xs">Boş Slot</p>
+                    <p className="text-xs text-gray-400">Seviye {(idx + 1) * 3}</p>
+                  </motion.button>
+                )
+              }
+
+              return (
+                <motion.button
+                  key={idx}
+                  whileHover={{ scale: selectedAbility === null && canUse ? 1.05 : 1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => selectAbility(idx)}
+                  disabled={selectedAbility !== null || !canUse || roundInProgress}
+                  className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[120px] ${
+                    isSelected
+                      ? 'neon-border-cyan glass-dark text-neon-cyan border-2 scale-105'
+                      : !canUse
+                      ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
+                      : 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <AbilityIcon iconId={ability.icon} size="md" />
+                    <p className="font-black text-sm">{ability.name}</p>
                   </div>
-                  {battleState.player.cooldowns[idx] > 0 && (
-                    <div className="text-red-400 font-bold">CD: {battleState.player.cooldowns[idx]}</div>
-                  )}
-                </div>
-              </motion.button>
-            ))}
+                  <div className="text-xs space-y-1 w-full">
+                    <div className="flex justify-between">
+                      <span>×{ability.multiplier || 1}</span>
+                    </div>
+                    {battleState.player.cooldowns[idx] > 0 && (
+                      <div className="text-red-400 font-bold">CD: {battleState.player.cooldowns[idx]}</div>
+                    )}
+                  </div>
+                </motion.button>
+              )
+            })}
           </div>
+
+          {/* Ultimate Slot */}
+          {battleState.player.abilities[5] ? (
+            <motion.button
+              whileHover={{ scale: selectedAbility === null && battleEngine?.canUseAbility('player', 5) ? 1.05 : 1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => selectAbility(5)}
+              disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
+              className={`w-full p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[100px] bg-gradient-to-b from-yellow-600/40 via-purple-500/30 to-yellow-700/40 border-4 border-yellow-500/80 shadow-[0_0_30px_rgba(234,179,8,0.4)] ${
+                selectedAbility === 5
+                  ? 'scale-105'
+                  : !battleEngine?.canUseAbility('player', 5)
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:shadow-lg'
+              }`}
+            >
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 text-2xl">👑</div>
+              <div className="flex items-center gap-2 w-full mt-4">
+                <AbilityIcon iconId={battleState.player.abilities[5].icon} size="md" />
+                <p className="font-black text-sm text-yellow-300">{battleState.player.abilities[5].name}</p>
+              </div>
+              <div className="text-xs space-y-1 w-full">
+                <p className="text-yellow-200 font-bold">ULTIMATE</p>
+                <div className="flex justify-between">
+                  <span className="text-yellow-100">×{battleState.player.abilities[5].multiplier || 1}</span>
+                </div>
+                {battleState.player.cooldowns[5] > 0 && (
+                  <div className="text-red-400 font-bold">CD: {battleState.player.cooldowns[5]}</div>
+                )}
+              </div>
+            </motion.button>
+          ) : (
+            <motion.button
+              disabled={true}
+              className="w-full p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[100px] bg-gradient-to-b from-slate-700/30 via-purple-900/30 to-slate-800/30 border-4 border-dashed border-yellow-600/40 opacity-50 cursor-not-allowed"
+            >
+              <div className="text-4xl">🔐</div>
+              <p className="text-sm font-black text-yellow-400">ULTIMATE SLOT</p>
+              <p className="text-xs text-yellow-300/70">Seviye 15 açılır</p>
+            </motion.button>
+          )}
         </div>
 
         <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 flex-1 flex flex-col">
