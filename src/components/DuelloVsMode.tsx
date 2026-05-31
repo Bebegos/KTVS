@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import jsQR from 'jsqr'
 import { Dino } from '../game/types'
 import { createDuelloSession, getDuelloSession, joinDuelloSession, subscribeToDuelloSession, getDino } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
 import DuelloBattleScreen from './DuelloBattleScreen'
 
