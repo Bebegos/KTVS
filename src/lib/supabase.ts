@@ -16,12 +16,14 @@ function mapDinoData(data: any): any {
   if (Array.isArray(data)) {
     return data.map(item => ({
       ...item,
-      maxHp: item.max_hp
+      maxHp: item.max_hp,
+      abilityIds: item.ability_ids || []
     }))
   }
   return {
     ...data,
-    maxHp: data.max_hp
+    maxHp: data.max_hp,
+    abilityIds: data.ability_ids || []
   }
 }
 
