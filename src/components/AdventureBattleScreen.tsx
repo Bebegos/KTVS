@@ -16,6 +16,9 @@ import EffectInfoModal from './EffectInfoModal'
 import PremiumAbilityButton from './PremiumAbilityButton'
 import BattleEffectOverlay from './battle-effects/BattleEffectOverlay'
 import FloatingDamageNumber from './battle-effects/FloatingDamageNumber'
+import BattleDinoHUD from './battle-effects/BattleDinoHUD'
+import TurnIndicator from './battle-effects/TurnIndicator'
+import EnhancedBattleLog from './battle-effects/EnhancedBattleLog'
 import SvgIcon from './SvgIcon'
 import { getEffectNameTR } from '../lib/effect-translations'
 
@@ -357,11 +360,10 @@ export default function AdventureBattleScreen({
 
         <BattleEffectVisuals effectType={currentEffectVisual} isVisible={showEffectVisual} />
 
-        <div className="mb-4 flex justify-between items-center">
-          <div className="glass-dark neon-border-cyan rounded-lg px-4 py-2">
-            <p className="text-sm font-bold text-neon-cyan">🔄 Tur {battleState.round}</p>
-          </div>
-        </div>
+        {/* Enhanced turn indicator */}
+        <AnimatePresence>
+          <TurnIndicator round={battleState.round} isPlayerTurn={battleState.round % 2 === 1} />
+        </AnimatePresence>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           {/* Player */}
@@ -369,14 +371,13 @@ export default function AdventureBattleScreen({
             <div className="hs-battle-frame hs-battle-frame-player mb-3">
               <div className="glass-dark neon-border-cyan rounded-lg p-4">
                 <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
-                <h2 className="text-lg font-black text-neon-cyan mb-2">{playerDino.name}</h2>
-                <div className="mb-3">
-                  <HealthBar current={playerCurrentHp} max={playerDino.maxHp} variant="player" />
-                </div>
-
-                <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
-                  <EffectsDisplay effects={battleState.player.effects} battleCharacterMaxHp={playerDino.maxHp} />
-                </div>
+                <BattleDinoHUD
+                  dinoName={playerDino.name}
+                  currentHp={playerCurrentHp}
+                  maxHp={playerDino.maxHp}
+                  effects={battleState.player.effects}
+                  isPlayer={true}
+                />
               </div>
             </div>
 
@@ -388,14 +389,13 @@ export default function AdventureBattleScreen({
             <div className="hs-battle-frame hs-battle-frame-opponent mb-3">
               <div className="glass-dark neon-border-purple rounded-lg p-4">
                 <p className="text-xs font-bold text-neon-purple mb-2">DÜŞMAN</p>
-                <h2 className="text-lg font-black text-neon-purple mb-2">{battleState.opponent.dino.name}</h2>
-                <div className="mb-3">
-                  <HealthBar current={battleState.opponent.currentHp} max={battleState.opponent.dino.maxHp} variant="enemy" />
-                </div>
-
-                <div className="mb-3 p-3 bg-neon-purple/5 rounded-lg border border-neon-purple/20">
-                  <EffectsDisplay effects={battleState.opponent.effects} />
-                </div>
+                <BattleDinoHUD
+                  dinoName={battleState.opponent.dino.name}
+                  currentHp={battleState.opponent.currentHp}
+                  maxHp={battleState.opponent.dino.maxHp}
+                  effects={battleState.opponent.effects}
+                  isPlayer={false}
+                />
               </div>
             </div>
 
@@ -449,20 +449,8 @@ export default function AdventureBattleScreen({
           />
         </div>
 
-        <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 flex-1 flex flex-col">
-          <p className="text-sm font-bold text-neon-purple mb-3">📋 SAVAŞ GÜNLÜĞÜ</p>
-          <div className="space-y-2 flex-1 overflow-y-auto text-sm">
-            {battleLog.map((log, idx) => (
-              <motion.p
-                key={idx}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="font-bold break-words text-neon-purple"
-              >
-                {log}
-              </motion.p>
-            ))}
-          </div>
+        <div className="flex-1">
+          <EnhancedBattleLog entries={battleLog} maxEntries={6} />
         </div>
 
         <AnimatePresence>

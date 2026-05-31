@@ -13,6 +13,9 @@ import HealthBar from './HealthBar'
 import PremiumAbilityButton from './PremiumAbilityButton'
 import BattleEffectOverlay from './battle-effects/BattleEffectOverlay'
 import FloatingDamageNumber from './battle-effects/FloatingDamageNumber'
+import BattleDinoHUD from './battle-effects/BattleDinoHUD'
+import TurnIndicator from './battle-effects/TurnIndicator'
+import EnhancedBattleLog from './battle-effects/EnhancedBattleLog'
 
 interface DuelloBattleScreenProps {
   playerDino: Dino
@@ -459,26 +462,23 @@ export default function DuelloBattleScreen({
         </button>
       </div>
 
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex-1" />
-        <div className="glass-dark border border-neon-pink/50 rounded-lg px-4 py-2 text-center">
-          <p className="text-lg font-black text-neon-pink">🔄 Tur {battleState.round}</p>
-        </div>
-      </div>
+      {/* Enhanced turn indicator */}
+      <AnimatePresence>
+        <TurnIndicator round={battleState.round} isPlayerTurn={battleState.round % 2 === 1} />
+      </AnimatePresence>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
           <div className="hs-battle-frame hs-battle-frame-player mb-3">
             <div className="glass-dark neon-border-cyan rounded-lg p-4">
               <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
-              <h2 className="text-lg font-black text-neon-cyan mb-2">{playerDino.name}</h2>
-              <div className="mb-3">
-                <HealthBar current={battleState.player.currentHp} max={battleState.player.dino.maxHp} variant="player" />
-              </div>
-
-              <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
-                <EffectsDisplay effects={battleState.player.effects} />
-              </div>
+              <BattleDinoHUD
+                dinoName={playerDino.name}
+                currentHp={battleState.player.currentHp}
+                maxHp={battleState.player.dino.maxHp}
+                effects={battleState.player.effects}
+                isPlayer={true}
+              />
             </div>
           </div>
 
@@ -489,14 +489,13 @@ export default function DuelloBattleScreen({
           <div className="hs-battle-frame hs-battle-frame-opponent mb-3">
             <div className="glass-dark neon-border-purple rounded-lg p-4">
               <p className="text-xs font-bold text-neon-purple mb-2">RAKİP</p>
-              <h2 className="text-lg font-black text-neon-purple mb-2">{opponentDino.name}</h2>
-              <div className="mb-3">
-                <HealthBar current={battleState.opponent.currentHp} max={battleState.opponent.dino.maxHp} variant="enemy" />
-              </div>
-
-              <div className="mb-3 p-3 bg-neon-purple/5 rounded-lg border border-neon-purple/20">
-                <EffectsDisplay effects={battleState.opponent.effects} />
-              </div>
+              <BattleDinoHUD
+                dinoName={opponentDino.name}
+                currentHp={battleState.opponent.currentHp}
+                maxHp={battleState.opponent.dino.maxHp}
+                effects={battleState.opponent.effects}
+                isPlayer={false}
+              />
             </div>
           </div>
 
@@ -540,35 +539,48 @@ export default function DuelloBattleScreen({
         </p>
       </div>
 
-      <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 min-h-64 flex flex-col">
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-sm font-bold text-neon-purple">
-            {showDebug ? '🔧 DEBUG PANELI' : '📋 SAVAŞ GÜNLÜĞÜ'}
-          </p>
-          <button
-            onClick={() => setShowDebug(!showDebug)}
-            className="hs-btn hs-btn-sm"
-          >
-            {showDebug ? '📋 Değiştir' : '🔧 Değiştir'}
-          </button>
-        </div>
-
-        <div className="space-y-2 flex-1 overflow-y-auto text-sm">
-          {(showDebug ? debugLogs : battleState.battleLog).map((log, idx) => (
-            <motion.p
-              key={idx}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className={`font-bold break-words ${showDebug ? 'text-neon-cyan' : 'text-neon-purple'}`}
+      {showDebug ? (
+        <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 min-h-64 flex flex-col mb-6">
+          <div className="flex justify-between items-center mb-3">
+            <p className="text-sm font-bold text-neon-purple">🔧 DEBUG PANELI</p>
+            <button
+              onClick={() => setShowDebug(!showDebug)}
+              className="hs-btn hs-btn-sm"
             >
-              {log}
-            </motion.p>
-          ))}
-          {(showDebug ? debugLogs : battleState.battleLog).length === 0 && (
-            <p className="text-neon-cyan/50 italic">Henüz log yok...</p>
-          )}
+              📋 Değiştir
+            </button>
+          </div>
+
+          <div className="space-y-2 flex-1 overflow-y-auto text-sm">
+            {debugLogs.map((log, idx) => (
+              <motion.p
+                key={idx}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="font-bold break-words text-neon-cyan"
+              >
+                {log}
+              </motion.p>
+            ))}
+            {debugLogs.length === 0 && (
+              <p className="text-neon-cyan/50 italic">Henüz log yok...</p>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex-1 flex flex-col mb-6">
+          <div className="flex justify-between items-center mb-3">
+            <p className="text-sm font-bold text-neon-purple">📋 SAVAŞ GÜNLÜĞÜ</p>
+            <button
+              onClick={() => setShowDebug(!showDebug)}
+              className="hs-btn hs-btn-sm"
+            >
+              🔧 Değiştir
+            </button>
+          </div>
+          <EnhancedBattleLog entries={battleState.battleLog} maxEntries={6} />
+        </div>
+      )}
     </div>
   )
 }
