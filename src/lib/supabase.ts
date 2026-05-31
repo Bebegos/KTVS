@@ -198,7 +198,7 @@ export async function subscribeToDuelloSession(sessionId: string, callback: (ses
 export async function addXpToDino(dinoId: string, xpAmount: number) {
   const { data: dino, error: fetchError } = await supabase
     .from('dinos')
-    .select('xp, level')
+    .select('*')
     .eq('id', dinoId)
     .single()
 
@@ -207,10 +207,16 @@ export async function addXpToDino(dinoId: string, xpAmount: number) {
   let newXp = (dino.xp || 0) + xpAmount
   let newLevel = dino.level || 1
 
-  // Level up when XP reaches 100
-  while (newXp >= 100) {
-    newLevel += 1
-    newXp -= 100
+  // Check for level ups with dynamic XP requirements
+  // XP needed = 100 * level^1.5
+  while (true) {
+    const xpNeeded = Math.floor(100 * Math.pow(newLevel, 1.5))
+    if (newXp >= xpNeeded) {
+      newLevel += 1
+      newXp -= xpNeeded
+    } else {
+      break
+    }
   }
 
   const { error: updateError } = await supabase
