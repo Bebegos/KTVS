@@ -36,6 +36,12 @@ export interface Dino {
   abilities: DinoAbility[]
   familyCode: string
   createdAt?: string
+
+  // New class and spec system
+  class?: string // 'big_carnivore', 'raptor', 'giant_herbivore', 'flying_carnivore'
+  spec?: string // Specialization within the class
+  selectedAbilityIds?: string[] // IDs of selected abilities from library
+  ultimateId?: string // ID of the selected ultimate ability
 }
 
 export interface ActiveEffect {
