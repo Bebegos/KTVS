@@ -94,6 +94,7 @@ export default function DuelloBattleScreen({
   const [opponentHpPercent, setOpponentHpPercent] = useState(0)
   const [debugLogs, setDebugLogs] = useState<string[]>(['Battle başladı'])
   const [showDebug, setShowDebug] = useState(true)
+  const [showAbandonModal, setShowAbandonModal] = useState(false)
   const subscriptionRef = useRef<any>(null)
 
   // Update HP percentages
@@ -144,11 +145,24 @@ export default function DuelloBattleScreen({
       })
 
     subscriptionRef.current = channel
+
+    // Handle page unload - mark as abandoned if battle not ended
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!battleEnded) {
+        addLog('⚠️ Sayfa kapatılıyor, düello terk ediliyor')
+        e.preventDefault()
+        e.returnValue = 'Düello devam ediyor! Terk ederseniz kaybedeceksiniz.'
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
     return () => {
       addLog('🧹 Subscription temizleniyor')
       channel.unsubscribe()
+      window.removeEventListener('beforeunload', handleBeforeUnload)
     }
-  }, [sessionId, playerId])
+  }, [sessionId, playerId, battleEnded])
 
   // When both players have selected, execute their actions
   useEffect(() => {
@@ -406,6 +420,28 @@ export default function DuelloBattleScreen({
     }
   }
 
+  async function handleAbandonBattle() {
+    addLog('⚠️ Düello terk ediliyor...')
+    try {
+      // Record that player abandoned
+      await supabase.from('battle_actions').insert({
+        session_id: sessionId,
+        player_id: playerId,
+        ability_index: -1, // Special code for abandon
+        dice_result: 0,
+        timestamp: Date.now(),
+      })
+      addLog('✅ Terk işlemi kaydedildi')
+    } catch (err) {
+      addLog(`❌ Kayıt hatası: ${err instanceof Error ? err.message : String(err)}`)
+      console.error(err)
+    }
+
+    setWinner('opponent')
+    setBattleEnded(true)
+    onBattleEnd('opponent')
+  }
+
   if (battleEnded) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800">
@@ -429,10 +465,54 @@ export default function DuelloBattleScreen({
     )
   }
 
+  // Abandon modal
+  if (showAbandonModal) {
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative bg-gradient-to-br from-slate-900 to-slate-800">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="glass-dark neon-border-cyan rounded-xl p-8 max-w-sm text-center"
+        >
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-black text-neon-cyan mb-4">Düelloyu Terk Et?</h2>
+          <p className="text-neon-cyan/80 mb-6">
+            Eğer çıkarsan <span className="font-black text-red-400">KAYBEDECEKSIN</span> ve rakip XP kazanacak.
+          </p>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowAbandonModal(false)}
+              className="flex-1 px-4 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+            >
+              ← Devam Et
+            </button>
+            <button
+              onClick={handleAbandonBattle}
+              className="flex-1 px-4 py-3 glass-dark border border-red-500/50 rounded-lg font-bold text-red-400 hover:shadow-red-500/50 transition"
+            >
+              💀 Terk Et
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 p-4 overflow-y-auto relative">
       {/* Battle effect visuals */}
       <BattleEffectVisuals effectType={currentEffectVisual} isVisible={showEffectVisual} />
+
+      {/* Abandon button */}
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() => setShowAbandonModal(true)}
+          className="px-4 py-2 glass border border-red-500/50 rounded-lg font-bold text-sm text-red-400 hover:shadow-red-500/50 transition"
+        >
+          🚪 Terk Et
+        </button>
+      </div>
 
       {/* Header with stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
@@ -536,30 +616,33 @@ export default function DuelloBattleScreen({
       </div>
 
       {/* Battle log / Debug Panel */}
-      <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 flex-1 overflow-y-auto flex flex-col">
+      <div className="glass-dark border border-neon-purple/30 rounded-lg p-4 min-h-64 flex flex-col">
         <div className="flex justify-between items-center mb-3">
-          <p className="text-xs font-bold text-neon-purple/70">
-            {showDebug ? '🔧 DEBUG' : '📋 SAVAŞ GÜNLÜĞÜ'}
+          <p className="text-sm font-bold text-neon-purple">
+            {showDebug ? '🔧 DEBUG PANELI' : '📋 SAVAŞ GÜNLÜĞÜ'}
           </p>
           <button
             onClick={() => setShowDebug(!showDebug)}
-            className="text-xs px-2 py-1 glass neon-border-cyan rounded text-neon-cyan hover:shadow-neon-cyan transition"
+            className="text-xs px-3 py-1 glass neon-border-cyan rounded text-neon-cyan hover:shadow-neon-cyan transition font-bold"
           >
-            {showDebug ? '📋 Günlük' : '🔧 Debug'}
+            {showDebug ? '📋 Değiştir' : '🔧 Değiştir'}
           </button>
         </div>
 
-        <div className="space-y-1 flex-1 overflow-y-auto text-xs">
+        <div className="space-y-2 flex-1 overflow-y-auto text-sm">
           {(showDebug ? debugLogs : battleLog).map((log, idx) => (
             <motion.p
               key={idx}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className={`font-bold ${showDebug ? 'text-neon-cyan/80' : 'text-neon-purple'}`}
+              className={`font-bold break-words ${showDebug ? 'text-neon-cyan' : 'text-neon-purple'}`}
             >
               {log}
             </motion.p>
           ))}
+          {(showDebug ? debugLogs : battleLog).length === 0 && (
+            <p className="text-neon-cyan/50 italic">Henüz log yok...</p>
+          )}
         </div>
       </div>
     </div>
