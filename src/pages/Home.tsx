@@ -5,7 +5,7 @@ import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
 import { APP_VERSION } from '../config/version'
 import DinoList from '../components/DinoList'
-import DinoForm from '../components/DinoForm'
+import DinoCreationFlow from '../components/DinoCreationFlow'
 import BattleTable from '../components/BattleTable'
 import BattleTableModeV2 from '../components/BattleTableModeV2'
 import DuelloVsMode from '../components/DuelloVsMode'
@@ -171,7 +171,7 @@ export default function Home() {
 
   if (page === 'dino-form') {
     return (
-      <DinoForm
+      <DinoCreationFlow
         onBack={() => setPage('home')}
         onRefresh={(newDinos) => {
           setDinos(newDinos)
