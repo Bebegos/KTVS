@@ -6,6 +6,7 @@ import { Dino } from '../game/types'
 import { APP_VERSION } from '../config/version'
 import { Adventure } from '../lib/adventures'
 import DinoList from '../components/DinoList'
+import DinoCard from '../components/DinoCard'
 import DinoCreationFlow from '../components/DinoCreationFlow'
 import DinoDetailPage from '../components/DinoDetailPage'
 import BattleTable from '../components/BattleTable'
@@ -356,7 +357,7 @@ function DuelloVsSelectDino({
         onClick={onBack}
         className="hs-btn absolute top-4 left-4 z-10"
       >
-        ← Geri
+        <span>Geri</span>
       </button>
 
       <div className="text-center mb-8 relative z-10 mt-8 md:mt-0">
@@ -374,28 +375,18 @@ function DuelloVsSelectDino({
             onClick={onBack}
             className="hs-btn hs-btn-purple hs-btn-lg"
           >
-            Geri Dön
+            <span>Geri Dön</span>
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl relative z-10 pb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl relative z-10 pb-8">
           {dinos.map(dino => (
-            <motion.button
+            <DinoCard
               key={dino.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              dino={dino}
+              mode="selection"
               onClick={() => onSelect(dino)}
-              className="p-6 glass-dark neon-border-purple rounded-xl hover:shadow-neon-purple transition"
-            >
-              <div className="text-5xl mb-3">🦖</div>
-              <h2 className="text-2xl font-black text-neon-purple mb-1">{dino.name}</h2>
-              <p className="text-sm text-neon-purple/80 font-bold mb-4">Lvl {dino.level ?? 1}</p>
-              <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp ?? 30}</div>
-                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk ?? 5}</div>
-                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def ?? 5}</div>
-              </div>
-            </motion.button>
+            />
           ))}
         </div>
       )}
@@ -424,7 +415,7 @@ function OfflineSelectDino({
         onClick={onBack}
         className="hs-btn absolute top-4 left-4 z-10"
       >
-        ← Geri
+        <span>Geri</span>
       </button>
 
       <div className="text-center mb-8 relative z-10 mt-8 md:mt-0">
@@ -442,28 +433,18 @@ function OfflineSelectDino({
             onClick={onBack}
             className="hs-btn hs-btn-purple hs-btn-lg"
           >
-            Geri Dön
+            <span>Geri Dön</span>
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl relative z-10 pb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl relative z-10 pb-8">
           {dinos.map(dino => (
-            <motion.button
+            <DinoCard
               key={dino.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              dino={dino}
+              mode="selection"
               onClick={() => onSelect(dino)}
-              className="p-6 glass-dark neon-border-cyan rounded-xl hover:shadow-neon-cyan transition"
-            >
-              <div className="text-5xl mb-3">🦖</div>
-              <h2 className="text-2xl font-black text-neon-cyan mb-1">{dino.name}</h2>
-              <p className="text-sm text-neon-cyan/80 font-bold mb-4">Lvl {dino.level ?? 1}</p>
-              <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp ?? 30}</div>
-                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk ?? 5}</div>
-                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def ?? 5}</div>
-              </div>
-            </motion.button>
+            />
           ))}
         </div>
       )}

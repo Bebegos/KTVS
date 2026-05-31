@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Dino } from '../game/types'
 import { Adventure, getAdventuresByLevel, getTotalEnemyCount } from '../lib/adventures'
-import StatIcon from './StatIcon'
+import DinoCard from './DinoCard'
 
 interface AdventureSelectScreenProps {
   dinos: Dino[]
@@ -31,7 +31,7 @@ export default function AdventureSelectScreen({
         onClick={onBack}
         className="hs-btn absolute top-4 left-4 z-10"
       >
-        Geri
+        <span>Geri</span>
       </button>
 
       {!selectedDino ? (
@@ -49,36 +49,14 @@ export default function AdventureSelectScreen({
               <p className="text-xl text-neon-cyan">Dinozor yok!</p>
             </div>
           ) : (
-            <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {dinos.map((dino) => (
-                <motion.button
+                <DinoCard
                   key={dino.id}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  dino={dino}
+                  mode="selection"
                   onClick={() => setSelectedDino(dino)}
-                  className="glass-dark neon-border-cyan rounded-xl p-6 text-left hover:shadow-neon-cyan transition"
-                >
-                  <h2 className="text-2xl font-black text-neon-cyan">{dino.name}</h2>
-                  <p className="text-sm text-neon-cyan/70 mb-4">Seviye {dino.level}</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs font-bold">
-                    <div className="glass border border-red-500/30 p-2 rounded text-red-400 flex items-center gap-2">
-                      <StatIcon stat="hp" size="xs" />
-                      {dino.maxHp}
-                    </div>
-                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400 flex items-center gap-2">
-                      <StatIcon stat="atk" size="xs" />
-                      {dino.atk}
-                    </div>
-                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400 flex items-center gap-2">
-                      <StatIcon stat="def" size="xs" />
-                      {dino.def}
-                    </div>
-                    <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400 flex items-center gap-2">
-                      <StatIcon stat="spd" size="xs" />
-                      {dino.spd}
-                    </div>
-                  </div>
-                </motion.button>
+                />
               ))}
             </div>
           )}
@@ -91,7 +69,7 @@ export default function AdventureSelectScreen({
               onClick={() => setSelectedDino(null)}
               className="hs-btn hs-btn-purple"
             >
-              Dino Değiştir
+              <span>Dino Değiştir</span>
             </button>
             <div className="flex-1 glass-dark neon-border-cyan rounded-lg p-4 text-center">
               <p className="text-sm text-neon-cyan/70">Seçili Dino</p>
