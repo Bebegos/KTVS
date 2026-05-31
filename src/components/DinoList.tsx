@@ -205,14 +205,14 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                   </button>
                   {onEdit && (
                     <button
-                      onClick={() => onEdit(dino)}
+                      onClick={(e) => { e.stopPropagation(); onEdit(dino) }}
                       className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-900/60 to-purple-900/40 hover:from-purple-800/80 hover:to-purple-800/60 border border-purple-600/50 text-purple-200 font-bold rounded-lg transition active:scale-95"
                     >
                       ✏️ Düzen
                     </button>
                   )}
                   <button
-                    onClick={() => handleDelete(dino.id)}
+                    onClick={(e) => { e.stopPropagation(); handleDelete(dino.id) }}
                     disabled={deleting === dino.id}
                     className="flex-1 px-4 py-2 bg-gradient-to-r from-red-900/60 to-red-900/40 hover:from-red-800/80 hover:to-red-800/60 border border-red-600/50 text-red-300 font-bold rounded-lg disabled:opacity-50 transition active:scale-95"
                   >
