@@ -63,6 +63,7 @@ export interface BattleCharacter {
   spd: number
   abilities: Ability[]
   effects: ActiveEffect[]
+  cooldowns: number[] // Current cooldown for each ability
   round: number
 }
 
@@ -74,6 +75,16 @@ export interface BattleState {
   log: BattleLogEntry[]
   finished: boolean
   winner?: 'p1' | 'p2'
+}
+
+// New service layer battle state (replaces BattleState in future)
+export interface ServiceBattleState {
+  player: BattleCharacter
+  opponent: BattleCharacter
+  round: number
+  battleLog: string[]
+  battleEnded: boolean
+  winner?: 'player' | 'opponent' | null
 }
 
 export interface BattleLogEntry {
@@ -90,4 +101,43 @@ export interface DiceResult {
   value: number
   isCrit: boolean
   isMiss: boolean
+}
+
+// ============= NEW TYPES FOR SERVICE LAYER =============
+
+export type SlotStatus = 'locked' | 'unlocked_empty' | 'filled'
+
+export interface SlotState {
+  slot: number // 0-5 (0-4 regular, 5 ultimate)
+  status: SlotStatus
+  abilityId?: string // If 'filled', the ability in this slot
+  requiredLevel: number // Level needed to unlock
+  isClickable: boolean // Computed from dino level + status
+}
+
+export interface BattleAbility {
+  abilityId: string
+  name: string
+  kind: AbilityType
+  effect: EffectKind
+  multiplier?: number
+  icon?: string
+  description?: string
+  isVampiric?: boolean
+  cd: number // Current cooldown (decrements)
+  maxCd: number // Max cooldown from definition
+  isAvailable: boolean // Computed: cooldown === 0 && not stunned
+}
+
+export interface ValidationResult {
+  valid: boolean
+  reason?: string
+  code?: string
+}
+
+export interface AbilityExecutionContext {
+  damageMultiplier: number
+  effect: EffectKind
+  isVampiric: boolean
+  isHealAbility: boolean
 }

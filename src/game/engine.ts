@@ -197,6 +197,7 @@ function dinoToCharacter(dino: Dino): BattleCharacter {
     spd: dino.spd,
     abilities,
     effects: [],
+    cooldowns: new Array(abilities.length).fill(0),
     round: 0,
   }
 }
