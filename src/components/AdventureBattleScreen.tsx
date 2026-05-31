@@ -434,7 +434,7 @@ export default function AdventureBattleScreen({
             >
               <div className="text-4xl">🔐</div>
               <p className="text-sm font-black text-yellow-400">ULTIMATE SLOT</p>
-              <p className="text-xs text-yellow-300/70">Seviye 15 açılır</p>
+              <p className="text-xs text-yellow-300/70">Seviye {slotService.getSlotRequiredLevel(5)} açılır</p>
             </motion.button>
           )}
         </div>

@@ -384,7 +384,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                       </div>
                       <div className="relative flex flex-col items-center justify-center gap-2 py-8 text-center opacity-60">
                         <p className="text-sm font-black text-yellow-400">ULTIMATE SLOT</p>
-                        <p className="text-xs text-yellow-300/70">Seviye 15 açılır</p>
+                        <p className="text-xs text-yellow-300/70">Seviye {slotService.getSlotRequiredLevel(5)} açılır</p>
                         <p className="text-xs text-purple-300/50 mt-2">Efsanevi yeteneğini keşfet!</p>
                       </div>
                     </div>

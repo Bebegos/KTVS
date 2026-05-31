@@ -23,7 +23,9 @@ class SlotService {
       console.warn(`Invalid slot number: ${slot}`)
       return Infinity
     }
-    return SLOT_UNLOCK_LEVELS[slot as keyof typeof SLOT_UNLOCK_LEVELS] || Infinity
+    const level = SLOT_UNLOCK_LEVELS[slot as keyof typeof SLOT_UNLOCK_LEVELS]
+    console.debug(`[SlotService] getSlotRequiredLevel(${slot}) -> ${level} (from constant: ${JSON.stringify(SLOT_UNLOCK_LEVELS)})`)
+    return level ?? Infinity
   }
 
   /**
