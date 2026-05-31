@@ -198,6 +198,10 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
         if (newSession.status === 'ready' && newSession.guest_dino_id) {
           setScreen('confirmation')
         }
+        // Auto-start battle when both players click start button
+        if (newSession.status === 'in_progress') {
+          setScreen('battle')
+        }
       })
 
       setScreen('host')
@@ -229,6 +233,10 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
         setSessionData(newSession)
         if (newSession.status === 'ready') {
           setScreen('confirmation')
+        }
+        // Auto-start battle when both players click start button
+        if (newSession.status === 'in_progress') {
+          setScreen('battle')
         }
       })
 
@@ -540,7 +548,19 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
           {sessionData.status === 'ready' && sessionData.guest_dino_id && sessionData.host_dino_id && opponentDino && (
             <button
-              onClick={() => setScreen('battle')}
+              onClick={async () => {
+                // Mark session as in_progress so both players start together
+                try {
+                  await supabase
+                    .from('duello_sessions')
+                    .update({ status: 'in_progress' })
+                    .eq('session_id', sessionData.session_id)
+                  // Screen change will happen automatically via subscription
+                } catch (err) {
+                  console.error('Düello başlatma hatası:', err)
+                  alert('Düello başlatılamadı')
+                }
+              }}
               className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-lg font-bold text-lg text-neon-cyan hover:shadow-neon-cyan transition"
             >
               ⚔️ DÜELLOYA BAŞLA

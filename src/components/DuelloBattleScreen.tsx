@@ -95,6 +95,8 @@ export default function DuelloBattleScreen({
   const [debugLogs, setDebugLogs] = useState<string[]>(['Battle başladı'])
   const [showDebug, setShowDebug] = useState(true)
   const [showAbandonModal, setShowAbandonModal] = useState(false)
+  const [matchRecordingDone, setMatchRecordingDone] = useState(false)
+  const [matchRecordingError, setMatchRecordingError] = useState<string | null>(null)
   const subscriptionRef = useRef<any>(null)
 
   // Update HP percentages
@@ -206,14 +208,23 @@ export default function DuelloBattleScreen({
           .update({ status: 'completed' })
           .eq('session_id', sessionId)
         addLog('✅ Oturum tamamlandı')
+
+        setMatchRecordingDone(true)
+
+        // Auto-close after 3 seconds
+        setTimeout(() => {
+          onBack()
+        }, 3000)
       } catch (err) {
-        addLog(`❌ Kayıt hatası: ${err instanceof Error ? err.message : String(err)}`)
+        const errorMsg = err instanceof Error ? err.message : String(err)
+        addLog(`❌ Kayıt hatası: ${errorMsg}`)
         console.error('Match recording error:', err)
+        setMatchRecordingError(errorMsg)
       }
     }
 
     recordMatchResult()
-  }, [battleEnded, winner, playerDino.id, opponentDino.id, sessionId])
+  }, [battleEnded, winner, playerDino.id, opponentDino.id, sessionId, onBack])
 
   async function selectAbility(abilityIdx: number) {
     if (roundInProgress || playerSelectedAbility !== null) {
@@ -503,20 +514,51 @@ export default function DuelloBattleScreen({
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800">
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="text-center"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="glass-dark neon-border-cyan rounded-2xl p-12 text-center max-w-md"
         >
-          <div className="text-8xl mb-4">{winner === 'player' ? '🎉' : '💀'}</div>
-          <h1 className="text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
+          <div className="text-9xl mb-6">{winner === 'player' ? '🎉' : '💀'}</div>
+
+          <h1 className="text-5xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
             {winner === 'player' ? 'KAZANDINIZ!' : 'YENİLDİNİZ!'}
           </h1>
-          <button
-            onClick={onBack}
-            className="mt-8 px-8 py-4 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan"
-          >
-            Geri Dön
-          </button>
+
+          {matchRecordingDone ? (
+            <>
+              <div className="mb-6 space-y-3">
+                <p className="text-xl font-bold text-green-400">✅ 20 XP Kazandı</p>
+                <p className="text-lg font-bold text-neon-cyan">✅ Maç Kaydedildi</p>
+              </div>
+              <p className="text-sm text-neon-cyan/70 mb-6">
+                Ana ekrana yönlendiriliyorsun...
+              </p>
+            </>
+          ) : matchRecordingError ? (
+            <>
+              <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+                <p className="text-red-400 font-bold text-sm mb-2">❌ Hata oluştu:</p>
+                <p className="text-red-300 text-xs">{matchRecordingError}</p>
+              </div>
+              <button
+                onClick={onBack}
+                className="w-full px-6 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+              >
+                Ana Ekrana Dön
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="mb-6 space-y-2">
+                <p className="text-neon-cyan font-bold">⏳ İşleniyor...</p>
+                <div className="flex gap-2 justify-center">
+                  <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse delay-100"></div>
+                  <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse delay-200"></div>
+                </div>
+              </div>
+            </>
+          )}
         </motion.div>
       </div>
     )
