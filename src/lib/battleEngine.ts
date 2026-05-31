@@ -348,7 +348,7 @@ export class BattleEngine {
       return {
         playerAction,
         opponentAction,
-        effectDamage: { playerDamage, opponentDamage: opponentEffectDamage },
+        effectDamage: { playerDamage: playerEffectDamage, opponentDamage: opponentEffectDamage },
         battleEnded: true,
         winner: 'opponent',
       }
@@ -361,7 +361,7 @@ export class BattleEngine {
       return {
         playerAction,
         opponentAction,
-        effectDamage: { playerDamage, opponentDamage: opponentEffectDamage },
+        effectDamage: { playerDamage: playerEffectDamage, opponentDamage: opponentEffectDamage },
         battleEnded: true,
         winner: 'player',
       }
@@ -374,7 +374,7 @@ export class BattleEngine {
     return {
       playerAction,
       opponentAction,
-      effectDamage: { playerDamage, opponentDamage: opponentEffectDamage },
+      effectDamage: { playerDamage: playerEffectDamage, opponentDamage: opponentEffectDamage },
       battleEnded: false,
       winner: null,
     }

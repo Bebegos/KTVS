@@ -345,8 +345,7 @@ function generateOpponent(playerDino: Dino, difficulty: 'easy' | 'normal' | 'har
   return {
     id: 'opponent-' + Date.now(),
     name: getDifficultyName(difficulty),
-    owner_id: '',
-    family_code: '',
+    familyCode: '',
     class: playerDino.class || 'big_carnivore',
     spec: playerDino.spec || 'armored',
     level: playerDino.level,

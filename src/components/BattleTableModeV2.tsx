@@ -19,8 +19,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   const opponentDino: Dino = {
     id: 'training-dummy-' + Date.now(),
     name: 'Eğitim Kukası',
-    owner_id: '',
-    family_code: '',
+    familyCode: '',
     class: 'big_carnivore',
     spec: 'armored',
     level: dino.level,
