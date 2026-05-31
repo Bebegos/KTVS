@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino } from '../game/types'
-import { abilityDefinitionService } from '../lib/services'
+import { abilityDefinitionService, discoveryService } from '../lib/services'
 import DinoCard from './DinoCard'
 import AbilityIcon from './AbilityIcon'
 import SvgIcon from './SvgIcon'
@@ -25,7 +25,9 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
   const [showBonusAllocator, setShowBonusAllocator] = useState(false)
   const [showAbilityDiscovery, setShowAbilityDiscovery] = useState(false)
 
-  const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || dino.pendingRewards.pendingAbilityIds.length > 0)
+  const statPoints = dino.pendingRewards?.unspentStatPoints || 0
+  const discoveryCount = discoveryService.getDiscoveries(dino).length
+  const hasPendingRewards = statPoints > 0 || discoveryCount > 0
 
   function handleRewardSpent(updatedDino: Dino) {
     onRefresh([updatedDino])
@@ -52,13 +54,39 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
         {/* Main Dinosaur Card */}
         <div className="mb-6 max-w-2xl">
           <DinoCard dino={dino} mode="display" />
+
+          {/* Level-up reward call to action */}
           {hasPendingRewards && (
-            <button
-              onClick={() => setRewardModalOpen(true)}
-              className="hs-btn hs-btn-green hs-btn-block mt-3"
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="premium-reward-banner mt-3 rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/15 via-yellow-600/10 to-amber-500/15 p-4 space-y-3"
             >
-              <span>Ödülü Kullan</span>
-            </button>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl animate-pulse">⚡</span>
+                <h3 className="text-lg font-black text-amber-200">SEVİYE ÖDÜLLERİ HAZIR!</h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Stat distribution button */}
+                <button
+                  onClick={() => setShowBonusAllocator(true)}
+                  disabled={statPoints <= 0}
+                  className="hs-btn hs-btn-green disabled:opacity-40"
+                >
+                  <span>📊 Stat Dağıt{statPoints > 0 ? ` (${statPoints})` : ''}</span>
+                </button>
+
+                {/* Ability discovery button (premium amber glow) */}
+                <button
+                  onClick={() => setShowAbilityDiscovery(true)}
+                  disabled={discoveryCount <= 0}
+                  className="hs-btn hs-btn-premium disabled:opacity-40 disabled:animate-none"
+                >
+                  <span>✦ Yetenek Aç{discoveryCount > 0 ? ` (${discoveryCount})` : ''} ✦</span>
+                </button>
+              </div>
+            </motion.div>
           )}
         </div>
 
@@ -303,10 +331,9 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
             onConfirm={handleRewardSpent}
           />
         )}
-        {showAbilityDiscovery && dino.pendingRewards && (
+        {showAbilityDiscovery && (
           <AbilityDiscoveryModal
             dino={dino}
-            abilityCount={dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__')).length}
             isOpen={showAbilityDiscovery}
             onClose={() => setShowAbilityDiscovery(false)}
             onComplete={(updatedDino) => {

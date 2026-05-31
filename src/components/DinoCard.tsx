@@ -1,5 +1,5 @@
 import { Dino } from '../game/types'
-import { abilityDefinitionService } from '../lib/services'
+import { abilityDefinitionService, discoveryService } from '../lib/services'
 import HearthstoneCard, { CardMode } from './HearthstoneCard'
 import MedallionIcon from './MedallionIcon'
 import AbilityIcon from './AbilityIcon'
@@ -32,7 +32,7 @@ export default function DinoCard({
   const hasPendingRewards =
     dino.pendingRewards &&
     (dino.pendingRewards.unspentStatPoints > 0 ||
-      dino.pendingRewards.pendingAbilityIds.length > 0)
+      discoveryService.getDiscoveries(dino).length > 0)
 
   // Determine button actions based on mode
   const actions = []

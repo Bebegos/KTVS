@@ -7,6 +7,7 @@ import SvgIcon from './SvgIcon'
 import { getEffectEmoji } from '../lib/effect-translations'
 import RewardSpendingModal from './RewardSpendingModal'
 import DinoCard from './DinoCard'
+import { discoveryService } from '../lib/services'
 
 interface DinoDetailModalProps {
   dino: Dino
@@ -21,7 +22,7 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
 
   if (!isOpen) return null
 
-  const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || dino.pendingRewards.pendingAbilityIds.length > 0)
+  const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || discoveryService.getDiscoveries(dino).length > 0)
 
   return (
     <motion.div

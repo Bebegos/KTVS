@@ -43,12 +43,12 @@ class PendingRewardsService {
   }
 
   /**
-   * Spend stat points on a dino
+   * Spend stat points on a dino (supports stamina too)
    */
-  spendStatPoints(dino: Dino, atk: number, def: number, spd: number): boolean {
+  spendStatPoints(dino: Dino, atk: number, def: number, spd: number, sta: number = 0): boolean {
     if (!dino.pendingRewards) return false
 
-    const totalSpent = atk + def + spd
+    const totalSpent = atk + def + spd + sta
     if (totalSpent > dino.pendingRewards.unspentStatPoints) {
       console.warn(`Cannot spend ${totalSpent} points, only ${dino.pendingRewards.unspentStatPoints} available`)
       return false
@@ -57,6 +57,7 @@ class PendingRewardsService {
     dino.atk += atk
     dino.def += def
     dino.spd += spd
+    if (sta) dino.sta = (dino.sta || 0) + sta
     dino.pendingRewards.unspentStatPoints -= totalSpent
 
     return true

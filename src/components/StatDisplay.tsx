@@ -27,9 +27,16 @@ export default function StatDisplay({
   const [detailOpen, setDetailOpen] = useState(false)
   const def = STAT_DEFINITIONS[stat]
 
-  const displayValue = stat === 'sta' && dino.staminaToHpMultiplier
+  // Stamina shows its own value as the primary number; the derived max HP is
+  // shown as a secondary line (previously the HP value replaced stamina, which
+  // made stamina look like maxHp).
+  const isStamina = stat === 'sta'
+  const derivedHp = isStamina && dino.staminaToHpMultiplier
     ? calculateMaxHp(value, dino.staminaToHpMultiplier)
-    : value
+    : isStamina
+      ? dino.maxHp
+      : null
+  const displayValue = value
 
   const sizeClasses = {
     sm: 'p-2 text-xs',
@@ -67,6 +74,9 @@ export default function StatDisplay({
               <p className={`font-black ${def.textColor} ${size === 'sm' ? 'text-sm' : 'text-lg'}`}>
                 {displayValue}
               </p>
+              {isStamina && derivedHp != null && (
+                <p className="text-red-300/90 font-bold text-[10px] leading-none mt-0.5">❤ {derivedHp} HP</p>
+              )}
               {showBonus && bonus > 0 && (
                 <p className="text-yellow-300 font-bold text-xs">+{bonus}</p>
               )}

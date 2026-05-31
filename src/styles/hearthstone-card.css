@@ -974,3 +974,73 @@
   position: relative;
   z-index: 3;
 }
+
+/* ============================================ */
+/* PREMIUM AMBER-GLOW BUTTON (ability discovery) */
+/* Layers an animated amber glow on top of hs-btn */
+/* ============================================ */
+.hs-btn-premium {
+  position: relative;
+  isolation: isolate;
+  animation: hs-premium-pulse 2.4s ease-in-out infinite;
+}
+
+.hs-btn-premium::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: linear-gradient(120deg, #fde68a, #f59e0b, #fbbf24, #f59e0b, #fde68a);
+  background-size: 300% 300%;
+  filter: blur(7px);
+  opacity: 0.85;
+  z-index: -1;
+  animation: hs-premium-sheen 3s linear infinite;
+}
+
+@keyframes hs-premium-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 rgba(245, 158, 11, 0),
+      0 6px 16px rgba(0, 0, 0, 0.5);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow:
+      0 0 22px rgba(251, 191, 36, 0.75),
+      0 0 44px rgba(245, 158, 11, 0.45),
+      0 6px 16px rgba(0, 0, 0, 0.5);
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes hs-premium-sheen {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* Premium glow shimmer for the call-to-action card on the detail page */
+.premium-reward-banner {
+  position: relative;
+  overflow: hidden;
+}
+.premium-reward-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(110deg, transparent, rgba(255, 240, 190, 0.45), transparent);
+  transform: skewX(-18deg);
+  animation: premium-banner-shine 3.4s ease-in-out infinite;
+}
+@keyframes premium-banner-shine {
+  0% { left: -60%; }
+  55%, 100% { left: 130%; }
+}
+
+/* Discovery option card subtle float idle */
+.discovery-card {
+  will-change: transform;
+}

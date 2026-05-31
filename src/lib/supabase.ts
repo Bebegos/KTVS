@@ -24,6 +24,14 @@ function mapDinoData(data: any): any {
       unspentStatPoints: item.pending_rewards.unspent_stat_points || 0,
       pendingAbilityIds: item.pending_rewards.pending_ability_ids || [],
       pendingAbilitySlot: item.pending_rewards.pending_ability_slot,
+      pendingDiscoveries: Array.isArray(item.pending_rewards.pending_discoveries)
+        ? item.pending_rewards.pending_discoveries.map((d: any) => ({
+            id: d.id,
+            category: d.category,
+            level: d.level,
+            optionIds: d.option_ids || [],
+          }))
+        : undefined,
     } : undefined,
   })
 
@@ -216,6 +224,8 @@ export async function addXpToDino(dinoId: string, xpAmount: number) {
   let newLevel = dino.level || 1
   let levelsGained = 0
 
+  const startLevel = dino.level || 1
+
   // Check for level ups with dynamic XP requirements
   // XP needed = 100 * level^1.5
   while (true) {
@@ -229,19 +239,32 @@ export async function addXpToDino(dinoId: string, xpAmount: number) {
     }
   }
 
-  // If level-ups occurred, add pending rewards (5 stat points per level + 1 ability per level)
-  const pendingRewards = dino.pending_rewards ? {
-    unspent_stat_points: (dino.pending_rewards.unspent_stat_points || 0) + (levelsGained * 5),
-    pending_ability_ids: dino.pending_rewards.pending_ability_ids || [],
-  } : {
-    unspent_stat_points: levelsGained * 5,
-    pending_ability_ids: [],
+  // Build new ability-discovery events for each level gained.
+  // Rule: every level -> class discovery, every 5 -> spec, every 10 -> ultimate.
+  // optionIds are left EMPTY here; the actual ability options are generated and
+  // persisted the first time the player opens the discovery modal.
+  function makeDiscoveryId(level: number, category: string, n: number): string {
+    return `disc_${level}_${category}_${Date.now().toString(36)}_${n}_${Math.random().toString(36).slice(2, 7)}`
   }
 
-  // Pending ability IDs are filled in the client (BattleScreen component) with actual class abilities
-  // We just mark how many abilities need to be selected (one per level gained)
-  for (let i = 0; i < levelsGained; i++) {
-    pendingRewards.pending_ability_ids.push(`__level_up_ability_${i}__`)
+  const newDiscoveries: any[] = []
+  let discCounter = 0
+  for (let lvl = startLevel + 1; lvl <= newLevel; lvl++) {
+    newDiscoveries.push({ id: makeDiscoveryId(lvl, 'class', discCounter++), category: 'class', level: lvl, option_ids: [] })
+    if (lvl % 5 === 0) {
+      newDiscoveries.push({ id: makeDiscoveryId(lvl, 'spec', discCounter++), category: 'spec', level: lvl, option_ids: [] })
+    }
+    if (lvl % 10 === 0) {
+      newDiscoveries.push({ id: makeDiscoveryId(lvl, 'ultimate', discCounter++), category: 'ultimate', level: lvl, option_ids: [] })
+    }
+  }
+
+  // If level-ups occurred, add pending rewards (5 stat points per level + discoveries)
+  const existing = dino.pending_rewards || {}
+  const pendingRewards = {
+    unspent_stat_points: (existing.unspent_stat_points || 0) + (levelsGained * 5),
+    pending_ability_ids: existing.pending_ability_ids || [],
+    pending_discoveries: [...(existing.pending_discoveries || []), ...newDiscoveries],
   }
 
   const updateData: any = {

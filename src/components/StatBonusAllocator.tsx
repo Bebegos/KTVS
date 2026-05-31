@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Dino } from '../game/types'
 import { STAT_DEFINITIONS, StatKey, getStatOrder } from '../lib/stat-system'
-import { pendingRewardsService } from '../lib/services'
+import { discoveryService } from '../lib/services'
 import { updateDino } from '../lib/supabase'
-import SvgIcon from './SvgIcon'
 import StatIcon from './StatIcon'
 
 interface StatBonusAllocatorProps {
@@ -27,6 +26,7 @@ export default function StatBonusAllocator({
     spd: 0,
   })
   const [saving, setSaving] = useState(false)
+  const [infoStat, setInfoStat] = useState<StatKey | null>(null)
 
   const allocated = Object.values(allocation).reduce((a, b) => a + b, 0)
   const remaining = bonusPoints - allocated
@@ -64,11 +64,14 @@ export default function StatBonusAllocator({
       if (allocation.def > 0) updatedDino.def += allocation.def
       if (allocation.spd > 0) updatedDino.spd += allocation.spd
 
-      // Clear stat bonus from pending
-      if (updatedDino.pendingRewards) {
-        updatedDino.pendingRewards.unspentStatPoints = 0
-        pendingRewardsService.clearPendingRewards(updatedDino)
-      }
+      // Spend the stat points but PRESERVE pending ability discoveries.
+      const remainingPending = updatedDino.pendingRewards
+        ? {
+            ...updatedDino.pendingRewards,
+            unspentStatPoints: Math.max(0, updatedDino.pendingRewards.unspentStatPoints - bonusPoints),
+          }
+        : undefined
+      updatedDino.pendingRewards = remainingPending
 
       // Save to database
       const dbUpdates: any = {
@@ -76,15 +79,7 @@ export default function StatBonusAllocator({
         atk: updatedDino.atk,
         def: updatedDino.def,
         spd: updatedDino.spd,
-      }
-
-      if (updatedDino.pendingRewards) {
-        dbUpdates.pending_rewards = {
-          unspent_stat_points: updatedDino.pendingRewards.unspentStatPoints,
-          pending_ability_ids: updatedDino.pendingRewards.pendingAbilityIds,
-        }
-      } else {
-        dbUpdates.pending_rewards = null
+        pending_rewards: discoveryService.serialize(remainingPending),
       }
 
       await updateDino(dino.id, dbUpdates)
@@ -127,7 +122,22 @@ export default function StatBonusAllocator({
                 <div className="flex items-center gap-2">
                   <StatIcon stat={statKey as any} size="lg" />
                   <div>
-                    <p className="font-black text-sm text-slate-100">{def.labelTr}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-black text-sm text-slate-100">{def.labelTr}</p>
+                      <button
+                        type="button"
+                        onClick={() => setInfoStat(infoStat === statKey ? null : statKey)}
+                        className={`w-5 h-5 rounded-full border text-[11px] font-black leading-none flex items-center justify-center transition ${
+                          infoStat === statKey
+                            ? 'bg-gold-light text-slate-900 border-gold-light'
+                            : 'border-slate-400/50 text-slate-300 hover:border-gold-light hover:text-gold-light'
+                        }`}
+                        title="Bu stat ne işe yarar?"
+                        aria-label={`${def.labelTr} bilgisi`}
+                      >
+                        ?
+                      </button>
+                    </div>
                     <p className={`text-xs ${def.textColor}`}>{current} → {current + allocated}</p>
                   </div>
                 </div>
@@ -135,6 +145,27 @@ export default function StatBonusAllocator({
                   +{allocated}
                 </p>
               </div>
+
+              {/* Stat info panel (toggle via ? button) */}
+              <AnimatePresence>
+                {infoStat === statKey && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="text-xs text-slate-200/90 bg-black/30 border border-slate-500/30 rounded-lg p-3 leading-relaxed">
+                      {def.descriptionTr}
+                      {statKey === 'sta' && (
+                        <span className="block mt-1 text-red-300/90 font-bold">
+                          1 Dayanıklılık ≈ {Math.round((dino.staminaToHpMultiplier || 1) * 10)} HP
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Slider & Buttons */}
               <div className="flex items-center gap-2">

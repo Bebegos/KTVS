@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino } from '../game/types'
-import { pendingRewardsService } from '../lib/services'
+import { pendingRewardsService, discoveryService } from '../lib/services'
 import { abilityDefinitionService } from '../lib/services/abilityDefinitionService'
 import { updateDino } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
@@ -73,14 +73,8 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
         ability_ids: updatedDino.abilityIds,
       }
 
-      if (updatedDino.pendingRewards) {
-        dbUpdates.pending_rewards = {
-          unspent_stat_points: updatedDino.pendingRewards.unspentStatPoints,
-          pending_ability_ids: updatedDino.pendingRewards.pendingAbilityIds,
-        }
-      } else {
-        dbUpdates.pending_rewards = null
-      }
+      // Preserve any pending ability discoveries when saving.
+      dbUpdates.pending_rewards = discoveryService.serialize(updatedDino.pendingRewards)
 
       await updateDino(dino.id, dbUpdates)
 

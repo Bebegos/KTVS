@@ -15,8 +15,23 @@ export interface Ability {
 
 export interface PendingRewards {
   unspentStatPoints: number // Points earned from level-ups, not yet spent
-  pendingAbilityIds: string[] // Ability IDs earned but not yet assigned to slots
+  pendingAbilityIds: string[] // LEGACY: Ability IDs earned but not yet assigned to slots
   pendingAbilitySlot?: number // Which slot is being filled (0-5)
+  pendingDiscoveries?: PendingDiscovery[] // NEW: ability discovery events (chest openings)
+}
+
+// Category of an ability discovery, decided at level-up time
+export type DiscoveryCategory = 'class' | 'spec' | 'ultimate'
+
+// A single ability-discovery "chest". Earned on level-up.
+// optionIds is EMPTY until the player first opens the discovery modal,
+// at which point the 3 options are generated and persisted so re-opening
+// shows the exact same cards.
+export interface PendingDiscovery {
+  id: string // unique id for this discovery event
+  category: DiscoveryCategory
+  level: number // the level at which this discovery was earned
+  optionIds: string[] // generated ability options (empty until first revealed)
 }
 
 export interface Dino {
