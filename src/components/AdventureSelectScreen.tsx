@@ -121,7 +121,7 @@ export default function AdventureSelectScreen({
                       <h2 className="text-2xl font-black mb-2">{adventure.name}</h2>
                       <p className="text-neon-cyan/70 mb-3">{adventure.description}</p>
 
-                      <div className="flex gap-4 text-sm font-bold">
+                      <div className="flex gap-4 text-sm font-bold flex-wrap">
                         <div className="glass-dark border border-neon-cyan/30 rounded px-3 py-1">
                           {adventure.difficulty === 'easy' ? '🟢' : adventure.difficulty === 'normal' ? '🟡' : '🔴'}{' '}
                           {adventure.difficulty === 'easy'
@@ -135,6 +135,9 @@ export default function AdventureSelectScreen({
                         </div>
                         <div className="glass-dark border border-yellow-500/30 rounded px-3 py-1 text-yellow-400">
                           ✨ {adventure.xpReward} XP
+                        </div>
+                        <div className="glass-dark border border-orange-500/30 rounded px-3 py-1 text-orange-400">
+                          💰 {adventure.coinReward} DinoCoin
                         </div>
                       </div>
                     </div>

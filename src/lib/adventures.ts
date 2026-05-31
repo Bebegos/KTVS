@@ -27,6 +27,7 @@ export interface Adventure {
   description: string
   scenes: AdventureScene[]
   xpReward: number
+  coinReward: number // DinoCoin ödülü
   difficulty: 'easy' | 'normal' | 'hard'
 }
 
@@ -42,6 +43,7 @@ export const ADVENTURES: Record<string, Adventure> = {
     description: 'Küçük ormanda av arayarak hayatta kalın',
     difficulty: 'easy',
     xpReward: 30,
+    coinReward: 50,
     scenes: [
       {
         order: 1,
@@ -105,6 +107,7 @@ export const ADVENTURES: Record<string, Adventure> = {
     description: 'Yüksek dağlarda hız ve dayanıklılığını test et',
     difficulty: 'easy',
     xpReward: 30,
+    coinReward: 50,
     scenes: [
       {
         order: 1,
@@ -169,6 +172,7 @@ export const ADVENTURES: Record<string, Adventure> = {
     description: 'Sisli bataklıklarda tehlikeli yaratıkları ara',
     difficulty: 'normal',
     xpReward: 50,
+    coinReward: 100,
     scenes: [
       {
         order: 1,
@@ -232,6 +236,7 @@ export const ADVENTURES: Record<string, Adventure> = {
     description: 'Ateş ve lavın ortasında güçünü kanıtla',
     difficulty: 'normal',
     xpReward: 50,
+    coinReward: 100,
     scenes: [
       {
         order: 1,

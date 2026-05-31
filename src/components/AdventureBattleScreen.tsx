@@ -3,7 +3,8 @@ import { motion } from 'framer-motion'
 import { Dino } from '../game/types'
 import { Adventure, AdventureScene, AdventureEnemy } from '../lib/adventures'
 import { BattleEngine } from '../lib/battleEngine'
-import { supabase, addXpToDino } from '../lib/supabase'
+import { supabase, addXpToDino, addCoinsToUser } from '../lib/supabase'
+import { useAuth } from '../lib/auth-context'
 import BattleStatsCard from './BattleStatsCard'
 import EffectsDisplay from './EffectsDisplay'
 import AbilityIcon from './AbilityIcon'
@@ -23,6 +24,7 @@ export default function AdventureBattleScreen({
   onComplete,
   onBack,
 }: AdventureBattleScreenProps) {
+  const { user } = useAuth()
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0)
   const [currentEnemyIdx, setCurrentEnemyIdx] = useState(0)
   const [inBattle, setInBattle] = useState(false)
@@ -37,6 +39,8 @@ export default function AdventureBattleScreen({
   const [adventureEnded, setAdventureEnded] = useState(false)
   const [adventureWon, setAdventureWon] = useState(false)
   const [recordingMatch, setRecordingMatch] = useState(false)
+  const [totalXpGained, setTotalXpGained] = useState(0)
+  const [totalCoinsGained, setTotalCoinsGained] = useState(0)
 
   const currentScene = adventure.scenes[currentSceneIdx]
   const currentEnemyData = currentScene?.enemies[currentEnemyIdx]
@@ -117,7 +121,7 @@ export default function AdventureBattleScreen({
     }, 800)
   }
 
-  function handleBattleEnd(playerWon: boolean) {
+  async function handleBattleEnd(playerWon: boolean) {
     if (!battleEngine) return
 
     if (!playerWon) {
@@ -127,7 +131,23 @@ export default function AdventureBattleScreen({
       return
     }
 
-    // Player won - save HP and move to next enemy or scene
+    // Player won - give XP and coins for this enemy
+    const enemyXpReward = Math.floor(adventure.xpReward / adventure.scenes.length)
+    const enemyCoinReward = Math.floor(adventure.coinReward / adventure.scenes.length)
+
+    try {
+      await addXpToDino(playerDino.id, enemyXpReward)
+      if (user?.id) {
+        await addCoinsToUser(user.id, enemyCoinReward)
+      }
+
+      setTotalXpGained(prev => prev + enemyXpReward)
+      setTotalCoinsGained(prev => prev + enemyCoinReward)
+    } catch (err) {
+      console.error('Error giving rewards:', err)
+    }
+
+    // Save HP and move to next enemy or scene
     const newHp = battleEngine.getState().player.currentHp
     setPlayerCurrentHp(newHp)
 
@@ -150,20 +170,25 @@ export default function AdventureBattleScreen({
       // Adventure complete!
       setAdventureEnded(true)
       setAdventureWon(true)
-      saveAdventureResult()
+      // Give final bonus (remaining XP/coins)
+      const finalXpBonus = adventure.xpReward - totalXpGained
+      const finalCoinBonus = adventure.coinReward - totalCoinsGained
+
+      try {
+        if (finalXpBonus > 0) {
+          await addXpToDino(playerDino.id, finalXpBonus)
+          setTotalXpGained(prev => prev + finalXpBonus)
+        }
+        if (finalCoinBonus > 0 && user?.id) {
+          await addCoinsToUser(user.id, finalCoinBonus)
+          setTotalCoinsGained(prev => prev + finalCoinBonus)
+        }
+      } catch (err) {
+        console.error('Error giving final rewards:', err)
+      }
     }
   }
 
-  async function saveAdventureResult() {
-    try {
-      setRecordingMatch(true)
-      await addXpToDino(playerDino.id, adventure.xpReward)
-      setRecordingMatch(false)
-    } catch (err) {
-      console.error('Error saving adventure:', err)
-      setRecordingMatch(false)
-    }
-  }
 
   const playerHpPercent = (playerCurrentHp / playerDino.maxHp) * 100
 
@@ -184,28 +209,24 @@ export default function AdventureBattleScreen({
 
           {adventureWon && (
             <div className="mb-6 space-y-3">
-              <p className="text-xl font-bold text-green-400">✅ {adventure.xpReward} XP Kazandı</p>
-              <p className="text-lg font-bold text-neon-cyan">✅ Macera Tamamlandı!</p>
+              <div className="glass-dark neon-border-cyan rounded-lg p-4 space-y-2">
+                <p className="text-xl font-bold text-green-400">✅ {totalXpGained} XP Kazandı</p>
+                <p className="text-xl font-bold text-yellow-400">✨ {totalCoinsGained} DinoCoin Kazandı</p>
+              </div>
+              <p className="text-lg font-bold text-neon-cyan">🎉 Macera Tamamlandı!</p>
             </div>
           )}
 
-          {recordingMatch ? (
-            <div className="mb-6 space-y-2">
-              <p className="text-neon-cyan font-bold">⏳ Kaydediliyor...</p>
-              <div className="flex gap-2 justify-center">
-                <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse delay-100"></div>
-                <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse delay-200"></div>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => onComplete(adventureWon, adventureWon ? adventure.xpReward : 0)}
-              className="w-full px-6 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
-            >
-              {adventureWon ? '✨ Sonraki Macera' : '← Geri Dön'}
-            </button>
+          {!adventureWon && (
+            <p className="text-lg font-bold text-red-400 mb-6">😔 Maceradan Başarısız Oldun</p>
           )}
+
+          <button
+            onClick={() => onComplete(adventureWon, totalXpGained)}
+            className="w-full px-6 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+          >
+            {adventureWon ? '✨ Sonraki Macera' : '← Geri Dön'}
+          </button>
         </motion.div>
       </div>
     )

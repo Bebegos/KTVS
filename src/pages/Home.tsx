@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../lib/auth-context'
-import { getDinos } from '../lib/supabase'
+import { getDinos, getUserCoins } from '../lib/supabase'
 import { Dino } from '../game/types'
 import { APP_VERSION } from '../config/version'
 import { Adventure } from '../lib/adventures'
@@ -24,6 +24,7 @@ export default function Home() {
   const [selectedDuelloDino, setSelectedDuelloDino] = useState<Dino | null>(null)
   const [selectedAdventureDino, setSelectedAdventureDino] = useState<Dino | null>(null)
   const [selectedAdventure, setSelectedAdventure] = useState<Adventure | null>(null)
+  const [userCoins, setUserCoins] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -40,11 +41,14 @@ export default function Home() {
     setLoading(true)
     try {
       if (user?.id) {
-        const data = await getDinos(user.id)
-        setDinos(data as Dino[])
+        const dinosData = await getDinos(user.id)
+        setDinos(dinosData as Dino[])
+
+        const coinsData = await getUserCoins(user.id)
+        setUserCoins(coinsData)
       }
     } catch (err) {
-      console.error('Dinozorlar yüklenemedi:', err)
+      console.error('Veri yüklenemedi:', err)
     } finally {
       setLoading(false)
     }
@@ -88,6 +92,9 @@ export default function Home() {
 
         {/* Üst Bar */}
         <div className="absolute top-4 right-4 flex gap-3 items-center z-10">
+          <div className="glass px-4 py-2 rounded-lg">
+            <p className="text-sm font-bold text-yellow-400">💰 {userCoins} DinoCoin</p>
+          </div>
           <div className="glass px-4 py-2 rounded-lg">
             <p className="text-sm font-bold text-neon-cyan">👤 {user?.username || user?.email}</p>
           </div>

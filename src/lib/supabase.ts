@@ -262,3 +262,60 @@ export async function abandonDuelloSession(sessionId: string) {
 
   if (error) throw error
 }
+
+// ===== DINO COIN SYSTEM =====
+
+export async function getUserCoins(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from('user_coins')
+    .select('coins')
+    .eq('user_id', userId)
+    .single()
+
+  if (error) {
+    // If no record exists, create one with 0 coins
+    if (error.code === 'PGRST116') {
+      const { data: newRecord, error: createError } = await supabase
+        .from('user_coins')
+        .insert([{ user_id: userId, coins: 0 }])
+        .select()
+        .single()
+
+      if (createError) throw createError
+      return newRecord?.coins ?? 0
+    }
+    throw error
+  }
+
+  return data?.coins ?? 0
+}
+
+export async function addCoinsToUser(userId: string, coinsAmount: number): Promise<number> {
+  const currentCoins = await getUserCoins(userId)
+  const newTotal = currentCoins + coinsAmount
+
+  const { data, error } = await supabase
+    .from('user_coins')
+    .update({ coins: newTotal })
+    .eq('user_id', userId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data?.coins ?? newTotal
+}
+
+export async function subtractCoinsFromUser(userId: string, coinsAmount: number): Promise<number> {
+  const currentCoins = await getUserCoins(userId)
+  const newTotal = Math.max(0, currentCoins - coinsAmount)
+
+  const { data, error } = await supabase
+    .from('user_coins')
+    .update({ coins: newTotal })
+    .eq('user_id', userId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data?.coins ?? newTotal
+}
