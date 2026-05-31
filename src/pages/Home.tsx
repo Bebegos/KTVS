@@ -65,10 +65,10 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-dino-100 to-blue-100">
+      <div className="flex items-center justify-center w-full h-full">
         <div className="text-center">
-          <div className="text-6xl mb-4">🦖</div>
-          <p className="text-xl font-bold text-dino-700">Yükleniyor...</p>
+          <div className="text-6xl mb-4 float-animation">🦖</div>
+          <p className="text-xl font-bold hs-text-gold">Yükleniyor...</p>
         </div>
       </div>
     )
@@ -78,10 +78,10 @@ export default function Home() {
   if (page === 'home') {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-6 relative overflow-y-auto">
-        {/* Arka plan efekti */}
+        {/* Arka plan efekti - sıcak meşale ışıltıları */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-72 h-72 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-gold opacity-10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-72 h-72 bg-gem-attack opacity-10 rounded-full blur-3xl"></div>
         </div>
 
         {/* Versiyon Göstergesi */}
@@ -115,23 +115,22 @@ export default function Home() {
         {/* Başlık - md+ ekranlarda mt-0, sm ekranlarda mt-8 (top bar'dan uzak olması için) */}
         <div className="text-center mb-8 z-10 mt-8 md:mt-0">
           <div className="text-8xl mb-4 float-animation">🦖</div>
-          <h1 className="text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink mb-2">
+          <h1 className="text-6xl font-black hs-text-gold mb-2 font-display tracking-wide">
             Dino-RP
           </h1>
-          <p className="text-lg text-neon-cyan opacity-80">Dinozor Savaş ve Gelişim Oyunu</p>
+          <p className="text-lg hs-text-bronze opacity-90">Dinozor Savaş ve Gelişim Oyunu</p>
         </div>
 
         {/* Butonlar */}
         <div className="w-full max-w-sm flex flex-col gap-3 z-10 pb-8">
           {/* Düello VS - En Üstte */}
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setPage('duello-vs-select')}
-            className="w-full px-6 py-5 glass-dark neon-border-purple rounded-xl font-black text-xl text-neon-purple hover:shadow-neon-purple active:scale-95 transition duration-300 relative overflow-hidden"
+            className="hs-button w-full px-6 py-5 rounded-xl text-xl"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-neon-purple/20 to-transparent"></div>
-            <span className="relative">⚔️ DÜELLO VS</span>
+            ⚔️ DÜELLO VS
           </motion.button>
 
           {/* Masada Oyna - Offline Mode */}
@@ -144,7 +143,7 @@ export default function Home() {
                 setPage('offline-select')
               }
             }}
-            className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-xl font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition duration-300"
+            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
           >
             🎲 Masada Oyna
           </button>
@@ -152,28 +151,28 @@ export default function Home() {
           {/* Maceralar - Adventure Mode */}
           <button
             onClick={() => setPage('adventure-select')}
-            className="w-full px-6 py-4 glass-dark neon-border-pink rounded-xl font-bold text-lg text-neon-pink hover:shadow-neon-pink active:scale-95 transition duration-300"
+            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
           >
             🗺️ Maceralar
           </button>
 
           <button
             onClick={() => setPage('dino-list')}
-            className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-xl font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition duration-300"
+            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
           >
             🦖 Dinozorlarım
           </button>
 
           <button
             onClick={() => setPage('match-log')}
-            className="w-full px-6 py-4 glass-dark border border-blue-500/30 rounded-xl font-bold text-lg text-blue-400 hover:shadow-blue-500/50 active:scale-95 transition duration-300"
+            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
           >
             📋 Maç Günlüğü
           </button>
 
           <button
             onClick={() => setPage('dino-form')}
-            className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-xl font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition duration-300"
+            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
           >
             ✨ Yeni Dinozor
           </button>

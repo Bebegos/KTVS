@@ -13,6 +13,7 @@ import {
 } from '../lib/abilities'
 import { getClassIcon, getSpecIcon, getAbilityIcon } from '../lib/icons'
 import SvgIcon from './SvgIcon'
+import MedallionIcon from './MedallionIcon'
 
 interface DinoCreationFlowProps {
   onBack: () => void
@@ -234,18 +235,19 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               </h2>
 
               {classes.map(classAbs => {
-                const icon = getClassIcon(classAbs.id)
                 return (
                   <motion.button
                     key={classAbs.id}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectClass(classAbs.id)}
-                    className="glass-dark neon-border-cyan rounded-xl p-6 text-left transition hover:shadow-neon-cyan"
+                    className="glass-dark neon-border-cyan rounded-xl p-6 text-left transition hover:shadow-neon-cyan flex items-center gap-4"
                   >
-                    <p className="text-5xl mb-3">{icon?.emoji || '❓'}</p>
-                    <h3 className="text-xl font-black text-neon-cyan mb-1">{classAbs.name}</h3>
-                    <p className="text-sm text-neon-cyan/70">{classAbs.description}</p>
+                    <MedallionIcon id={classAbs.id} type="class" size="xl" />
+                    <div>
+                      <h3 className="text-xl font-black text-neon-cyan mb-1">{classAbs.name}</h3>
+                      <p className="text-sm text-neon-cyan/70">{classAbs.description}</p>
+                    </div>
                   </motion.button>
                 )
               })}
@@ -321,16 +323,15 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               </h2>
 
               {specs.map(spec => {
-                const icon = getSpecIcon(spec.id)
                 return (
                   <motion.button
                     key={spec.id}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectSpec(spec.id)}
-                    className="glass-dark neon-border-purple rounded-xl p-6 text-left transition hover:shadow-neon-purple"
+                    className="glass-dark neon-border-purple rounded-xl p-6 text-center transition hover:shadow-neon-purple flex flex-col items-center"
                   >
-                    <p className="text-5xl mb-3">{icon?.emoji || '❓'}</p>
+                    <MedallionIcon id={spec.id} type="spec" size="xl" className="mb-3" />
                     <h3 className="text-xl font-black text-neon-purple mb-1">{spec.name}</h3>
                     <p className="text-sm text-neon-purple/70">{spec.description}</p>
                   </motion.button>

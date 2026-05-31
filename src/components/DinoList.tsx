@@ -3,6 +3,8 @@ import { useAuth } from '../lib/auth-context'
 import { Dino } from '../game/types'
 import { deleteDino, getDinos } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
+import MedallionIcon from './MedallionIcon'
+import SvgIcon from './SvgIcon'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 import { getClassIcon, getSpecIcon } from '../lib/icons'
 
@@ -71,14 +73,14 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                 {(dino.class || dino.spec) && (
                   <div className="flex gap-2 mb-3 flex-wrap">
                     {dino.class && (
-                      <div className="glass-dark border border-neon-cyan/30 rounded-lg px-3 py-1 flex items-center gap-1">
-                        <span className="text-lg">{getClassIcon(dino.class)?.emoji || '❓'}</span>
+                      <div className="glass-dark border border-neon-cyan/30 rounded-lg px-2 py-1 flex items-center gap-2">
+                        <MedallionIcon id={dino.class} type="class" size="sm" />
                         <span className="text-xs font-bold text-neon-cyan">{getClassIcon(dino.class)?.label || 'Unknown'}</span>
                       </div>
                     )}
                     {dino.spec && (
-                      <div className="glass-dark border border-neon-purple/30 rounded-lg px-3 py-1 flex items-center gap-1">
-                        <span className="text-lg">{getSpecIcon(dino.spec)?.emoji || '❓'}</span>
+                      <div className="glass-dark border border-neon-purple/30 rounded-lg px-2 py-1 flex items-center gap-2">
+                        <MedallionIcon id={dino.spec} type="spec" size="sm" />
                         <span className="text-xs font-bold text-neon-purple">{getSpecIcon(dino.spec)?.label || 'Unknown'}</span>
                       </div>
                     )}
@@ -86,10 +88,10 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                 )}
 
                 <div className="grid grid-cols-2 gap-2 mb-4 text-sm font-bold">
-                  <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp ?? 30}</div>
-                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk ?? 5}</div>
-                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def ?? 5}</div>
-                  <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400">⚡ {dino.spd ?? 5}</div>
+                  <div className="glass border border-red-500/30 p-2 rounded text-red-400 flex items-center gap-1"><SvgIcon id="hp" type="stat" size="xs" /> {dino.maxHp ?? 30}</div>
+                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400 flex items-center gap-1"><SvgIcon id="atk" type="stat" size="xs" /> {dino.atk ?? 5}</div>
+                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400 flex items-center gap-1"><SvgIcon id="def" type="stat" size="xs" /> {dino.def ?? 5}</div>
+                  <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400 flex items-center gap-1"><SvgIcon id="spd" type="stat" size="xs" /> {dino.spd ?? 5}</div>
                 </div>
 
                 <div className="mb-3">

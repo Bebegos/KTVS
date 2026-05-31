@@ -43,19 +43,19 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Arka plan efekti */}
+      {/* Arka plan efekti - sıcak meşale ışıltıları */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gold opacity-10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gem-attack opacity-10 rounded-full blur-3xl"></div>
       </div>
 
       {/* Başlık */}
       <div className="text-center mb-8 relative z-10">
         <div className="text-8xl mb-4 float-animation">🦖</div>
-        <h1 className="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink mb-2">
+        <h1 className="text-5xl font-black hs-text-gold mb-2 font-display tracking-wide">
           Dino-RP
         </h1>
-        <p className="text-lg text-neon-cyan opacity-80">Dinozor Savaş ve Gelişim Oyunu</p>
+        <p className="text-lg hs-text-bronze opacity-90">Dinozor Savaş ve Gelişim Oyunu</p>
       </div>
 
       {/* Form Kartı */}
