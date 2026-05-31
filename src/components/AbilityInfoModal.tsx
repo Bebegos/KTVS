@@ -49,7 +49,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         onClick={e => e.stopPropagation()}
-        className="glass-dark neon-border-cyan rounded-xl p-6 max-w-md w-full border-2"
+        className="rounded-xl p-6 max-w-md w-full border-2 border-neon-cyan bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-lg"
       >
         {/* Header */}
         <div className="flex items-start gap-3 mb-4">
@@ -83,19 +83,38 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-slate-700/40 rounded-lg p-3 text-center">
+          <div className="bg-gradient-to-br from-neon-cyan/10 to-neon-cyan/5 rounded-lg p-3 text-center border border-neon-cyan/20">
             <p className="text-xs text-neon-cyan/70 font-bold mb-1">Hasar Çarpanı</p>
             <p className="text-xl font-black text-neon-cyan">×{ability.damageMultiplier || 1}</p>
           </div>
-          <div className="bg-slate-700/40 rounded-lg p-3 text-center">
-            <p className="text-xs text-neon-cyan/70 font-bold mb-1">Cooldown</p>
-            <p className="text-xl font-black text-neon-cyan">{ability.cooldown}T</p>
+          <div className="bg-gradient-to-br from-neon-purple/10 to-neon-purple/5 rounded-lg p-3 text-center border border-neon-purple/20">
+            <p className="text-xs text-neon-purple/70 font-bold mb-1">Cooldown</p>
+            <p className="text-xl font-black text-neon-purple">{ability.cooldown}T</p>
           </div>
         </div>
 
+        {/* Actual Damage/Healing Value */}
+        {baseValue > 0 && (
+          <div className={`mb-4 p-3 rounded-lg border ${
+            valueType === 'heal'
+              ? 'bg-green-500/10 border-green-500/30'
+              : 'bg-orange-500/10 border-orange-500/30'
+          }`}>
+            <p className="text-xs font-bold mb-1" style={{ color: valueType === 'heal' ? '#4ade80' : '#fb923c' }}>
+              {valueType === 'heal' ? '💚 İyileştirme Miktarı' : '⚡ Hasar Miktarı'}
+            </p>
+            <p className="text-2xl font-black" style={{ color: valueType === 'heal' ? '#4ade80' : '#fb923c' }}>
+              {baseValue}
+            </p>
+            <p className="text-xs mt-1" style={{ color: valueType === 'heal' ? '#86efac' : '#fdba74' }}>
+              {dino.name} için şu anki statlarla
+            </p>
+          </div>
+        )}
+
         {/* Effect Info */}
         {ability.effects && ability.effects.length > 0 && (
-          <div className="mb-4 p-3 rounded-lg bg-slate-700/40 border border-neon-purple/30">
+          <div className="mb-4 p-3 rounded-lg bg-gradient-to-br from-neon-purple/10 to-neon-purple/5 border border-neon-purple/30">
             <p className="text-xs font-bold text-neon-purple mb-2">EFEKTLER:</p>
             <div className="space-y-2">
               {ability.effects.map((effectId, idx) => (
@@ -117,13 +136,13 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
 
         {/* Description */}
         {ability.description && (
-          <div className="mb-4 p-3 rounded-lg bg-slate-700/40">
+          <div className="mb-4 p-3 rounded-lg bg-gradient-to-br from-neon-cyan/10 to-neon-cyan/5 border border-neon-cyan/20">
             <p className="text-sm text-neon-cyan/90">{ability.description}</p>
           </div>
         )}
 
         {/* Kind Info */}
-        <div className="mb-4 p-3 rounded-lg bg-slate-700/40 border border-neon-cyan/30">
+        <div className="mb-4 p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30">
           <p className="text-xs font-bold text-neon-cyan/70 mb-1">TÜR:</p>
           <div className="flex flex-wrap gap-2">
             <span className={`px-2 py-1 rounded text-xs font-bold ${

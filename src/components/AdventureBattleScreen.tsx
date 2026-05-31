@@ -110,9 +110,17 @@ export default function AdventureBattleScreen({
   function executeRound(playerAbilityIdx: number) {
     if (!battleEngine) return
 
-    const availableAbilities = battleState.opponent.abilities
+    let availableAbilities = battleState.opponent.abilities
       .map((_: any, idx: number) => idx)
       .filter((idx: number) => battleEngine.canUseAbility('opponent', idx))
+
+    // In adventures up to level 10, enemies cannot use abilities with effects
+    if (currentScene && adventure.minLevel <= 10) {
+      availableAbilities = availableAbilities.filter((idx: number) => {
+        const ability = battleState.opponent.abilities[idx]
+        return !ability.effects || ability.effects.length === 0
+      })
+    }
 
     const opponentAbilityIdx =
       availableAbilities.length > 0

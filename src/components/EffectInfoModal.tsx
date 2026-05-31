@@ -31,10 +31,10 @@ export default function EffectInfoModal({ effect, isOpen, onClose }: EffectInfoM
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         onClick={e => e.stopPropagation()}
-        className={`glass-dark rounded-xl p-6 max-w-md w-full border-2 ${
+        className={`rounded-xl p-6 max-w-md w-full border-2 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-lg ${
           isBuffEffect(effect.type)
-            ? 'neon-border-cyan'
-            : 'neon-border-pink'
+            ? 'border-neon-cyan'
+            : 'border-red-500'
         }`}
       >
         {/* Header */}
@@ -86,12 +86,20 @@ export default function EffectInfoModal({ effect, isOpen, onClose }: EffectInfoM
         </div>
 
         {/* Description */}
-        <div className="mb-4 p-3 rounded-lg bg-slate-700/40">
-          <p className="text-sm text-neon-cyan/90 leading-relaxed">{effectDef.fullDescription}</p>
+        <div className={`mb-4 p-3 rounded-lg border ${
+          isBuffEffect(effect.type)
+            ? 'bg-green-500/10 border-green-500/20'
+            : 'bg-red-500/10 border-red-500/20'
+        }`}>
+          <p className="text-sm text-white/80 leading-relaxed">{effectDef.fullDescription}</p>
         </div>
 
         {/* Effect Type */}
-        <div className="mb-4 p-3 rounded-lg bg-slate-700/40 border border-neon-cyan/30">
+        <div className={`mb-4 p-3 rounded-lg border ${
+          isBuffEffect(effect.type)
+            ? 'bg-green-500/10 border-green-500/20'
+            : 'bg-red-500/10 border-red-500/20'
+        }`}>
           <p className="text-xs font-bold text-neon-cyan/70 mb-2">ETKİ TÜRü:</p>
           <span className={`inline-block px-3 py-1 rounded text-xs font-bold ${
             isBuffEffect(effect.type)
@@ -103,7 +111,11 @@ export default function EffectInfoModal({ effect, isOpen, onClose }: EffectInfoM
         </div>
 
         {/* Color Info */}
-        <div className="mb-4 flex gap-2 items-center justify-center p-2 rounded-lg bg-slate-700/40">
+        <div className={`mb-4 flex gap-2 items-center justify-center p-2 rounded-lg border ${
+          isBuffEffect(effect.type)
+            ? 'bg-green-500/10 border-green-500/20'
+            : 'bg-red-500/10 border-red-500/20'
+        }`}>
           <div className={`w-6 h-6 rounded border-2 ${
             isBuffEffect(effect.type)
               ? 'bg-green-500/30 border-green-500'
