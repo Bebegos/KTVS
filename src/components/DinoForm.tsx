@@ -1,21 +1,12 @@
 import { useState } from 'react'
 import { useAuth } from '../lib/auth-context'
-import { Dino, DinoAbility } from '../game/types'
+import { Dino } from '../game/types'
 import { createDino, getDinos } from '../lib/supabase'
-import AttackIconPickerModal from './AttackIconPickerModal'
 
 interface DinoFormProps {
   onBack: () => void
   onRefresh: (dinos: Dino[]) => void
 }
-
-const DEFAULT_ABILITIES: DinoAbility[] = [
-  { name: 'Pençe Saldırısı', cd: 0, kind: 'debuff', effects: [], multiplier: 1, icon: 'claw' },
-  { name: 'Zehirli Isırık', cd: 2, kind: 'debuff', effects: ['poison'], multiplier: 1, icon: 'venom' },
-  { name: 'Güçlendirme', cd: 3, kind: 'buff', effects: ['power'], multiplier: 1, icon: 'aura' },
-  { name: 'Hızlı Koşu', cd: 2, kind: 'buff', effects: ['speed'], multiplier: 1, icon: 'wind' },
-  { name: 'ULTI: Meteor', cd: 4, kind: 'debuff', effects: ['stop'], multiplier: 2, icon: 'meteor' },
-]
 
 export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
   const { user } = useAuth()
@@ -27,11 +18,9 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
     atk: 5,
     def: 5,
     spd: 5,
-    abilities: DEFAULT_ABILITIES,
   })
 
   const [loading, setLoading] = useState(false)
-  const [editingAbility, setEditingAbility] = useState<number | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -52,7 +41,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
         spd: form.spd,
         level: 1,
         xp: 0,
-        abilities: form.abilities,
+        ability_ids: [], // Start with no abilities, they're earned through leveling
         owner_id: user?.id,
       })
 
@@ -65,12 +54,6 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
     } finally {
       setLoading(false)
     }
-  }
-
-  function updateAbility(idx: number, field: string, value: any) {
-    const newAbilities = [...form.abilities]
-    ;(newAbilities[idx] as any)[field] = value
-    setForm({ ...form, abilities: newAbilities })
   }
 
   return (
@@ -157,110 +140,11 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
             </div>
           </div>
 
-          {/* Yetenekler */}
-          <div className="glass-dark neon-border-cyan rounded-lg p-4 overflow-visible relative z-20">
-            <h2 className="text-xl font-bold text-neon-cyan mb-3">Yetenekler (maksimum 5)</h2>
-
-            <div className="flex flex-col gap-3 relative">
-              {form.abilities.map((ability, idx) => (
-                <div key={idx} className="glass border border-neon-cyan/30 rounded p-3 relative z-10">
-                  {editingAbility === idx ? (
-                    <>
-                      <div className="mb-2">
-                        <label className="block text-sm font-bold text-neon-cyan mb-1">Ad</label>
-                        <input
-                          type="text"
-                          value={ability.name}
-                          onChange={e => updateAbility(idx, 'name', e.target.value)}
-                          className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan placeholder-neon-cyan/40"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2 mb-2">
-                        <div>
-                          <label className="block text-xs font-bold text-neon-cyan mb-1">CD</label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={ability.cd}
-                            onChange={e => updateAbility(idx, 'cd', parseInt(e.target.value))}
-                            className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-neon-cyan mb-1">Tür</label>
-                          <select
-                            value={ability.kind}
-                            onChange={e => updateAbility(idx, 'kind', e.target.value)}
-                            className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan"
-                          >
-                            <option value="buff">Buff</option>
-                            <option value="debuff">Debuff</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-neon-cyan mb-1">Efekt</label>
-                          <select
-                            value={ability.effects}
-                            onChange={e => updateAbility(idx, 'effect', e.target.value)}
-                            className="w-full px-2 py-1 bg-slate-800 border border-neon-cyan/30 rounded text-sm text-neon-cyan"
-                          >
-                            <option value="none">Yok</option>
-                            <option value="poison">Zehir</option>
-                            <option value="stun">Sersem</option>
-                            <option value="stop">Dur</option>
-                            <option value="power">Güç+</option>
-                            <option value="speed">Hız+</option>
-                            <option value="shield">Kalkan+</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="mb-2">
-                        <label className="block text-xs font-bold text-neon-purple mb-1">Hasar Çarpanı (×)</label>
-                        <input
-                          type="number"
-                          min="0.5"
-                          step="0.5"
-                          value={ability.multiplier || 1}
-                          onChange={e => updateAbility(idx, 'multiplier', parseFloat(e.target.value))}
-                          className="w-full px-2 py-1 bg-slate-800 border border-neon-purple/30 rounded text-sm text-neon-purple"
-                        />
-                      </div>
-
-                      <div className="mb-2">
-                        <label className="block text-xs font-bold text-neon-cyan mb-1">Saldırı İkonu</label>
-                        <AttackIconPickerModal
-                          selectedId={(ability as any).icon}
-                          onSelect={icon => updateAbility(idx, 'icon', icon)}
-                        />
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => setEditingAbility(null)}
-                        className="w-full px-2 py-1 glass-dark neon-border-purple rounded text-sm font-bold text-neon-purple hover:shadow-neon-purple transition"
-                      >
-                        Tamam
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setEditingAbility(idx)}
-                      className="w-full text-left p-2 hover:bg-slate-700/50 rounded transition"
-                    >
-                      <p className="font-bold text-neon-cyan">{ability.name}</p>
-                      <p className="text-xs text-neon-cyan/70">
-                        CD: {ability.cd} • {ability.kind} • {ability.effects?.join(', ') || 'Yok'} • ×{ability.multiplier || 1}
-                      </p>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+          {/* Note about abilities */}
+          <div className="glass-dark neon-border-cyan rounded-lg p-4">
+            <p className="text-sm text-neon-cyan/80">
+              💡 Yetenekler dinozor seviyelendirildiğinde kazanılır. Seviyelendir ve yeni yetenekleri kilit aç!
+            </p>
           </div>
 
           <button
