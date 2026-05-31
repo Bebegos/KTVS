@@ -1,0 +1,156 @@
+/* ============================================================
+   HEARTHSTONE STAT ICONS - Professional Game Quality Icons
+   SVG-based stat icons matching WoW/Hearthstone aesthetic
+   Replaces emoticon-based indicators with authentic icons
+   ============================================================ */
+
+/* Icon container base styles */
+.hs-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  font-size: 0;
+  line-height: 0;
+}
+
+/* Size modifiers for icons */
+.hs-icon-xs {
+  width: 16px;
+  height: 16px;
+}
+
+.hs-icon-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.hs-icon-md {
+  width: 24px;
+  height: 24px;
+}
+
+.hs-icon-lg {
+  width: 32px;
+  height: 32px;
+}
+
+.hs-icon-xl {
+  width: 40px;
+  height: 40px;
+}
+
+/* ============================================================
+   STAMINA / HP ICON
+   Red/crimson health heart with gem-like quality
+   ============================================================ */
+.hs-icon-sta,
+.hs-icon-hp {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="staMetal" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23ff6b6b;stop-opacity:1"/><stop offset="50%" style="stop-color:%23e63946;stop-opacity:1"/><stop offset="100%" style="stop-color:%23a4161a;stop-opacity:1"/></linearGradient><radialGradient id="staGlow" cx="50%" cy="30%"><stop offset="0%" style="stop-color:%23ff9999;stop-opacity:0.8"/><stop offset="100%" style="stop-color:%23cc0000;stop-opacity:0"/></radialGradient><filter id="staGemShine"><feGaussianBlur in="SourceGraphic" stdDeviation="1"/><feComponentTransfer><feFuncA type="linear" slope="0.8"/></feComponentTransfer></filter></defs><!-- Outer glow --><circle cx="32" cy="32" r="30" fill="url(%23staGlow)" opacity="0.6"/><!-- Main heart shape --><path d="M32,52 C32,52 12,38 12,26 C12,18 18,12 24,12 C28,12 32,15 32,15 C32,15 36,12 40,12 C46,12 52,18 52,26 C52,38 32,52 32,52 Z" fill="url(%23staMetal)" stroke="%23701c1c" stroke-width="1.5" stroke-linejoin="round"/><!-- Highlight for gem effect --><ellipse cx="28" cy="24" rx="6" ry="8" fill="rgba(255,255,255,0.35)" filter="url(%23staGemShine)"/><!-- Inner light --><path d="M32,50 C32,50 14,38 14,27 C14,20 19,15 25,15 C28.5,15 31.5,17 32,18.5" fill="rgba(255,200,200,0.2)"/></svg>');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ============================================================
+   ATTACK / STR ICON
+   Blazing sword with fire effect
+   ============================================================ */
+.hs-icon-atk {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="atkBlade" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23ffd700;stop-opacity:1"/><stop offset="40%" style="stop-color:%23ffed4e;stop-opacity:1"/><stop offset="100%" style="stop-color:%23cc8800;stop-opacity:1"/></linearGradient><linearGradient id="atkFire" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" style="stop-color:%23ff2400;stop-opacity:1"/><stop offset="50%" style="stop-color:%23ff8800;stop-opacity:0.9"/><stop offset="100%" style="stop-color:%23ffdd00;stop-opacity:0.6"/></linearGradient><filter id="atkGlow"><feGaussianBlur in="SourceGraphic" stdDeviation="2"/></filter></defs><!-- Fire aura --><ellipse cx="32" cy="25" rx="14" ry="18" fill="url(%23atkFire)" opacity="0.7" filter="url(%23atkGlow)"/><!-- Sword blade --><path d="M32,8 L38,28 L36,48 L28,48 L26,28 Z" fill="url(%23atkBlade)" stroke="%23884400" stroke-width="1" stroke-linejoin="round"/><!-- Blade shine --><path d="M30,12 L32,22 L32,40" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="none" stroke-linecap="round"/><!-- Hilt --><ellipse cx="32" cy="52" rx="8" ry="4" fill="%23654321" stroke="%233d2817" stroke-width="1"/><!-- Guard --><rect x="24" y="46" width="16" height="4" fill="%23d4af37" stroke="%238b7500" stroke-width="1" rx="1"/></svg>');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ============================================================
+   DEFENSE / ARMOR ICON
+   Shield with metallic sheen
+   ============================================================ */
+.hs-icon-def {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="defShield" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%236b9bd1;stop-opacity:1"/><stop offset="50%" style="stop-color:%234a7ab5;stop-opacity:1"/><stop offset="100%" style="stop-color:%232d5a8c;stop-opacity:1"/></linearGradient><linearGradient id="defMetal" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:%23e8e8e8;stop-opacity:1"/><stop offset="50%" style="stop-color:%23b0b0b0;stop-opacity:1"/><stop offset="100%" style="stop-color:%238a8a8a;stop-opacity:1"/></linearGradient><filter id="defMetalShine"><feGaussianBlur in="SourceGraphic" stdDeviation="1.5"/></filter></defs><!-- Shield outer edge --><path d="M32,8 C24,14 20,22 20,32 C20,44 32,56 32,56 C32,56 44,44 44,32 C44,22 40,14 32,8 Z" fill="url(%23defShield)" stroke="%23154360" stroke-width="2" stroke-linejoin="round"/><!-- Shield shine --><ellipse cx="28" cy="22" rx="10" ry="12" fill="rgba(255,255,255,0.25)"/><!-- Metal accent band --><rect x="18" y="26" width="28" height="3" fill="url(%23defMetal)" stroke="%23505050" stroke-width="0.5" rx="1"/><!-- Center cross detail --><path d="M32,20 L32,44 M24,32 L40,32" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ============================================================
+   SPEED / HASTE ICON
+   Lightning bolt with energy
+   ============================================================ */
+.hs-icon-spd {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="spdBolt" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" style="stop-color:%23ffff00;stop-opacity:1"/><stop offset="40%" style="stop-color:%23ffdd00;stop-opacity:1"/><stop offset="100%" style="stop-color:%23ffaa00;stop-opacity:1"/></linearGradient><radialGradient id="spdEnergy" cx="50%" cy="30%"><stop offset="0%" style="stop-color:%23ffff88;stop-opacity:0.8"/><stop offset="100%" style="stop-color:%23ffff00;stop-opacity:0"/></radialGradient><filter id="spdGlow"><feGaussianBlur in="SourceGraphic" stdDeviation="2.5"/><feComponentTransfer><feFuncA type="linear" slope="0.7"/></feComponentTransfer></filter></defs><!-- Energy aura --><circle cx="32" cy="32" r="26" fill="url(%23spdEnergy)" filter="url(%23spdGlow)"/><!-- Lightning bolt --><path d="M32,8 L26,24 L36,28 L20,56 L30,36 L22,32 Z" fill="url(%23spdBolt)" stroke="%23cc8800" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><!-- Inner light --><path d="M28,16 L24,28 L32,32 L22,48" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none" stroke-linecap="round"/><!-- Speed lines --><path d="M8,30 L18,30" stroke="%23ffff00" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/><path d="M6,36 L14,36" stroke="%23ffff00" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/><path d="M46,28 L56,28" stroke="%23ffff00" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/><path d="M50,38 L58,38" stroke="%23ffff00" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/></svg>');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Icon hover/focus effects */
+.hs-icon {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.hs-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.15) drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));
+}
+
+.hs-icon:active {
+  transform: scale(0.95);
+}
+
+/* Inline usage - icon next to text */
+.hs-icon-inline {
+  margin: 0 4px;
+  vertical-align: text-bottom;
+}
+
+/* Icon in buttons */
+.hs-btn .hs-icon {
+  margin-right: 6px;
+  margin-left: -4px;
+}
+
+.hs-btn .hs-icon:last-child {
+  margin-right: -4px;
+  margin-left: 6px;
+}
+
+/* Stat display label styling */
+.hs-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.hs-stat-label .hs-icon {
+  flex-shrink: 0;
+}
+
+/* Stat value styling */
+.hs-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0e0c0;
+  margin-left: 4px;
+}
+
+/* Color coding for stat values */
+.hs-sta-value,
+.hs-hp-value {
+  color: #ff6b6b;
+}
+
+.hs-atk-value {
+  color: #ffd700;
+}
+
+.hs-def-value {
+  color: #6b9bd1;
+}
+
+.hs-spd-value {
+  color: #ffdd00;
+}

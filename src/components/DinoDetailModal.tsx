@@ -6,6 +6,7 @@ import { getClassIcon, getSpecIcon } from '../lib/icons'
 import AbilityIcon from './AbilityIcon'
 import MedallionIcon from './MedallionIcon'
 import SvgIcon from './SvgIcon'
+import StatIcon from './StatIcon'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 import RewardSpendingModal from './RewardSpendingModal'
 
@@ -85,19 +86,31 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
           <h2 className="text-lg font-bold text-neon-cyan mb-3">📊 İstatistikler</h2>
           <div className="grid grid-cols-4 gap-3">
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
-              <p className="text-xs text-red-400 font-bold mb-1">❤️ CAN</p>
+              <div className="flex items-center justify-center mb-2">
+                <StatIcon stat="hp" size="md" />
+              </div>
+              <p className="text-xs text-red-400 font-bold mb-1">CAN</p>
               <p className="text-2xl font-black text-red-300">{dino.maxHp}</p>
             </div>
             <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 text-center">
-              <p className="text-xs text-orange-400 font-bold mb-1">⚔️ SALDIRI</p>
+              <div className="flex items-center justify-center mb-2">
+                <StatIcon stat="atk" size="md" />
+              </div>
+              <p className="text-xs text-orange-400 font-bold mb-1">SALDIRI</p>
               <p className="text-2xl font-black text-orange-300">{dino.atk}</p>
             </div>
             <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-center">
-              <p className="text-xs text-blue-400 font-bold mb-1">🛡️ SAVUNMA</p>
+              <div className="flex items-center justify-center mb-2">
+                <StatIcon stat="def" size="md" />
+              </div>
+              <p className="text-xs text-blue-400 font-bold mb-1">SAVUNMA</p>
               <p className="text-2xl font-black text-blue-300">{dino.def}</p>
             </div>
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-center">
-              <p className="text-xs text-yellow-400 font-bold mb-1">⚡ HIZ</p>
+              <div className="flex items-center justify-center mb-2">
+                <StatIcon stat="spd" size="md" />
+              </div>
+              <p className="text-xs text-yellow-400 font-bold mb-1">HIZ</p>
               <p className="text-2xl font-black text-yellow-300">{dino.spd}</p>
             </div>
           </div>

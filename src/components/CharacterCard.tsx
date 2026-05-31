@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Dino, Ability } from '../game/types'
 import HealthBar from './HealthBar'
+import StatIcon from './StatIcon'
 
 interface CharacterCardProps {
   dino: Dino
@@ -77,15 +78,24 @@ export default function CharacterCard({
       {/* Statlar */}
       <div className="grid grid-cols-3 gap-2 glass border border-neon-cyan/30 rounded-lg p-3">
         <div className="text-center">
-          <p className="text-xs font-bold text-orange-400">⚔️ ATK</p>
+          <div className="flex items-center justify-center mb-2">
+            <StatIcon stat="atk" size="md" />
+          </div>
+          <p className="text-xs font-bold text-orange-400">ATK</p>
           <p className="text-xl font-black text-orange-400">{dino.atk}</p>
         </div>
         <div className="text-center border-x border-slate-600">
-          <p className="text-xs font-bold text-blue-400">🛡️ DEF</p>
+          <div className="flex items-center justify-center mb-2">
+            <StatIcon stat="def" size="md" />
+          </div>
+          <p className="text-xs font-bold text-blue-400">DEF</p>
           <p className="text-xl font-black text-blue-400">{dino.def}</p>
         </div>
         <div className="text-center">
-          <p className="text-xs font-bold text-yellow-400">⚡ SPD</p>
+          <div className="flex items-center justify-center mb-2">
+            <StatIcon stat="spd" size="md" />
+          </div>
+          <p className="text-xs font-bold text-yellow-400">SPD</p>
           <p className="text-xl font-black text-yellow-400">{dino.spd}</p>
         </div>
       </div>

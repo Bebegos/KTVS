@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Dino } from '../game/types'
 import { Adventure, getAdventuresByLevel, getTotalEnemyCount } from '../lib/adventures'
+import StatIcon from './StatIcon'
 
 interface AdventureSelectScreenProps {
   dinos: Dino[]
@@ -62,10 +63,22 @@ export default function AdventureSelectScreen({
                   <h2 className="text-2xl font-black text-neon-cyan">{dino.name}</h2>
                   <p className="text-sm text-neon-cyan/70 mb-4">Seviye {dino.level}</p>
                   <div className="grid grid-cols-2 gap-2 text-xs font-bold">
-                    <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp}</div>
-                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk}</div>
-                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def}</div>
-                    <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400">⚡ {dino.spd}</div>
+                    <div className="glass border border-red-500/30 p-2 rounded text-red-400 flex items-center gap-2">
+                      <StatIcon stat="hp" size="xs" />
+                      {dino.maxHp}
+                    </div>
+                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400 flex items-center gap-2">
+                      <StatIcon stat="atk" size="xs" />
+                      {dino.atk}
+                    </div>
+                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400 flex items-center gap-2">
+                      <StatIcon stat="def" size="xs" />
+                      {dino.def}
+                    </div>
+                    <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400 flex items-center gap-2">
+                      <StatIcon stat="spd" size="xs" />
+                      {dino.spd}
+                    </div>
                   </div>
                 </motion.button>
               ))}

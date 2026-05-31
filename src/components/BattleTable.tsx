@@ -5,6 +5,7 @@ import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
 import BattleTableModeV2 from './BattleTableModeV2'
 import DuelloVsMode from './DuelloVsMode'
+import StatIcon from './StatIcon'
 
 interface BattleTableProps {
   onBack: () => void
@@ -166,9 +167,18 @@ export default function BattleTable({ onBack, onRefresh, selectedDino: propSelec
                 <h2 className="text-2xl font-black text-neon-cyan mb-1">{dino.name}</h2>
                 <p className="text-sm text-neon-cyan/80 font-bold mb-4">Lvl {dino.level}</p>
                 <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                  <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {dino.maxHp}</div>
-                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {dino.atk}</div>
-                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {dino.def}</div>
+                  <div className="glass border border-red-500/30 p-2 rounded text-red-400 flex items-center gap-2">
+                    <StatIcon stat="hp" size="xs" />
+                    {dino.maxHp}
+                  </div>
+                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400 flex items-center gap-2">
+                    <StatIcon stat="atk" size="xs" />
+                    {dino.atk}
+                  </div>
+                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400 flex items-center gap-2">
+                    <StatIcon stat="def" size="xs" />
+                    {dino.def}
+                  </div>
                 </div>
               </motion.button>
             ))}
