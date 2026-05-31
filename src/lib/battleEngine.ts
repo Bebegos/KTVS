@@ -27,6 +27,7 @@ export interface BattleCharacter {
   currentHp: number
   effects: ActiveEffect[]
   abilities: any[] // Ability definitions loaded from library
+  abilityIds: string[] // Corresponding ability IDs for each ability
   cooldowns: number[] // Cooldown for each ability by index
 }
 
@@ -78,15 +79,25 @@ export class BattleEngine {
 
   private initializeBattleCharacter(dino: Dino): BattleCharacter {
     // Load ability definitions from library using abilityIds
-    const abilities = dino.abilityIds
-      .map(id => (id ? abilityDefinitionService.getAbility(id) : null))
-      .filter((ability): ability is any => ability !== null)
+    const abilityIds: string[] = []
+    const abilities: any[] = []
+
+    for (const id of dino.abilityIds) {
+      if (id) {
+        const ability = abilityDefinitionService.getAbility(id)
+        if (ability) {
+          abilityIds.push(id)
+          abilities.push(ability)
+        }
+      }
+    }
 
     return {
       dino,
       currentHp: dino.maxHp,
       effects: [],
       abilities,
+      abilityIds,
       cooldowns: new Array(abilities.length).fill(0),
     }
   }

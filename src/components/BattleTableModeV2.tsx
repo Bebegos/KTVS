@@ -33,7 +33,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
     def: Math.floor((dino.def ?? 5) * 0.7),
     spd: Math.floor((dino.spd ?? 5) * 0.9),
     element: dino.element,
-    abilities: dino.abilities,
+    abilityIds: dino.abilityIds,
   }
 
   const [engine] = useState(() => new BattleEngine(dino, opponentDino))
@@ -45,8 +45,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   const [abilityInfoOpen, setAbilityInfoOpen] = useState(false)
   const [selectedAbilityInfo, setSelectedAbilityInfo] = useState<any>(null)
 
-  const openAbilityInfo = (ability: any, idx: number) => {
-    setSelectedAbilityInfo({ ...ability, idx })
+  const openAbilityInfo = (abilityId: string, idx: number) => {
+    setSelectedAbilityInfo({ abilityId, idx })
     setAbilityInfoOpen(true)
   }
 
@@ -295,7 +295,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                           disabled={!engine.canUseAbility('player', idx) || abilityUsedThisTurn}
                           onClick={() => executeAbility(idx)}
                           cooldown={battleState.player.cooldowns[idx]}
-                          onInfoClick={openAbilityInfo}
+                          onInfoClick={(_, abilityIdx) => openAbilityInfo(battleState.player.abilityIds[abilityIdx], abilityIdx)}
                         />
                       ) : (
                         <div
@@ -326,7 +326,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
-                            openAbilityInfo(battleState.player.abilities[5], 5)
+                            openAbilityInfo(battleState.player.abilityIds[5], 5)
                           }}
                           className="absolute top-2 right-2 text-yellow-300 hover:text-yellow-300/70 text-lg transition"
                         >
@@ -441,7 +441,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       <AnimatePresence>
         {abilityInfoOpen && selectedAbilityInfo && (
           <AbilityInfoModal
-            ability={selectedAbilityInfo}
+            abilityId={selectedAbilityInfo.abilityId}
+            dino={dino}
             cooldown={battleState.player.cooldowns[selectedAbilityInfo.idx] || 0}
             isOpen={abilityInfoOpen}
             onClose={() => setAbilityInfoOpen(false)}

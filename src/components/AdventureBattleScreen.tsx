@@ -55,8 +55,8 @@ export default function AdventureBattleScreen({
   const currentEnemyData = currentScene?.enemies[currentEnemyIdx]
 
   // Helper functions for modals
-  const openAbilityInfo = (ability: any, idx: number) => {
-    setSelectedAbilityInfo({ ...ability, idx })
+  const openAbilityInfo = (abilityId: string, idx: number) => {
+    setSelectedAbilityInfo({ abilityId, idx })
     setAbilityInfoOpen(true)
   }
 
@@ -365,7 +365,7 @@ export default function AdventureBattleScreen({
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
-                      openAbilityInfo(ability, idx)
+                      openAbilityInfo(battleState.player.abilityIds[idx], idx)
                     }}
                     className="absolute top-2 right-2 text-neon-cyan hover:text-neon-cyan/70 text-lg transition"
                   >
@@ -407,7 +407,7 @@ export default function AdventureBattleScreen({
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  openAbilityInfo(battleState.player.abilities[5], 5)
+                  openAbilityInfo(battleState.player.abilityIds[5], 5)
                 }}
                 className="absolute top-2 right-2 text-yellow-300 hover:text-yellow-300/70 text-lg transition"
               >
@@ -458,7 +458,8 @@ export default function AdventureBattleScreen({
         <AnimatePresence>
           {abilityInfoOpen && selectedAbilityInfo && (
             <AbilityInfoModal
-              ability={selectedAbilityInfo}
+              abilityId={selectedAbilityInfo.abilityId}
+              dino={playerDino}
               cooldown={battleState.player.cooldowns[selectedAbilityInfo.idx] || 0}
               isOpen={abilityInfoOpen}
               onClose={() => setAbilityInfoOpen(false)}
@@ -534,19 +535,10 @@ export default function AdventureBattleScreen({
   )
 }
 
-// Debuff effects that enemies should NOT inflict before level 10
-const ENEMY_DEBUFFS = ['poison', 'bleeding', 'stun', 'stop', 'paralyze', 'defense_down']
-
 function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): Dino {
-  // Nerf: under level 10, enemies can't apply debuffs to the player.
-  // Their attacks still hit, but lose any debuff rider (e.g. bite won't bleed).
-  const sanitizedAbilities =
-    enemyData.level < 10
-      ? playerDino.abilities.map(a => {
-          const hasDebuff = a.effects && a.effects.some(e => ENEMY_DEBUFFS.includes(e))
-          return hasDebuff ? { ...a, effects: [] } : a
-        })
-      : playerDino.abilities
+  // Create opponent with same abilities as player dino
+  // Note: In the library-based system, ability modifications happen at the library level,
+  // not per-instance. Balance is controlled via ability definitions, not sanitization here.
 
   return {
     id: 'adventure-enemy-' + Date.now(),
@@ -559,6 +551,6 @@ function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): 
     def: Math.floor((playerDino.def ?? 5) * enemyData.defMultiplier),
     spd: Math.floor((playerDino.spd ?? 5) * enemyData.spdMultiplier),
     element: playerDino.element,
-    abilities: sanitizedAbilities,
+    abilityIds: playerDino.abilityIds,
   }
 }
