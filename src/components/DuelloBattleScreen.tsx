@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice, calculateDamage, hasEffect, applyEffect } from '../game/engine'
 import { getEffectNameTR } from '../lib/effect-translations'
-import { supabase } from '../lib/supabase'
+import { supabase, addXpToDino, recordDuelloMatch, abandonDuelloSession } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
 
@@ -171,6 +171,43 @@ export default function DuelloBattleScreen({
       executeRound()
     }
   }, [playerSelectedAbility, opponentSelectedAbility])
+
+  // Record match result when battle ends
+  useEffect(() => {
+    if (!battleEnded || !winner) return
+
+    const recordMatchResult = async () => {
+      try {
+        const winnerDinoId = winner === 'player' ? playerDino.id : opponentDino.id
+        const xpReward = 20 // Base XP for winning
+
+        addLog('📊 Maç sonuçlandırılıyor...')
+
+        // Give XP to winner
+        addLog(`🎁 ${xpReward} XP veriliyor...`)
+        await addXpToDino(winnerDinoId, xpReward)
+        addLog('✅ XP verildi')
+
+        // Record the match
+        addLog('📝 Maç günlüğüne yazılıyor...')
+        await recordDuelloMatch(sessionId, playerDino.id, opponentDino.id, winnerDinoId)
+        addLog('✅ Maç kaydedildi')
+
+        // Update session status
+        addLog('🔄 Oturum tamamlanıyor...')
+        await supabase
+          .from('duello_sessions')
+          .update({ status: 'completed' })
+          .eq('session_id', sessionId)
+        addLog('✅ Oturum tamamlandı')
+      } catch (err) {
+        addLog(`❌ Kayıt hatası: ${err instanceof Error ? err.message : String(err)}`)
+        console.error('Match recording error:', err)
+      }
+    }
+
+    recordMatchResult()
+  }, [battleEnded, winner, playerDino.id, opponentDino.id, sessionId])
 
   async function selectAbility(abilityIdx: number) {
     if (roundInProgress || playerSelectedAbility !== null) {
@@ -432,8 +469,22 @@ export default function DuelloBattleScreen({
         timestamp: Date.now(),
       })
       addLog('✅ Terk işlemi kaydedildi')
+
+      // Mark session as abandoned
+      await abandonDuelloSession(sessionId)
+      addLog('📝 Oturum terk etme olarak işaretlendi')
+
+      // Give opponent XP (10 XP for winning by abandon)
+      addLog('🎁 Rakip XP veriliyor...')
+      await addXpToDino(opponentDino.id, 10)
+      addLog('✅ Rakip 10 XP aldı')
+
+      // Record the match
+      addLog('📊 Maç günlüğüne yazılıyor...')
+      await recordDuelloMatch(sessionId, playerDino.id, opponentDino.id, opponentDino.id)
+      addLog('✅ Maç kaydedildi')
     } catch (err) {
-      addLog(`❌ Kayıt hatası: ${err instanceof Error ? err.message : String(err)}`)
+      addLog(`❌ Hata: ${err instanceof Error ? err.message : String(err)}`)
       console.error(err)
     }
 

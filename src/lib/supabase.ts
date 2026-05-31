@@ -193,3 +193,66 @@ export async function subscribeToDuelloSession(sessionId: string, callback: (ses
 
   return subscription
 }
+
+// Add XP to dino
+export async function addXpToDino(dinoId: string, xpAmount: number) {
+  const { data: dino, error: fetchError } = await supabase
+    .from('dinos')
+    .select('xp, level')
+    .eq('id', dinoId)
+    .single()
+
+  if (fetchError) throw fetchError
+
+  let newXp = (dino.xp || 0) + xpAmount
+  let newLevel = dino.level || 1
+
+  // Level up when XP reaches 100
+  while (newXp >= 100) {
+    newLevel += 1
+    newXp -= 100
+  }
+
+  const { error: updateError } = await supabase
+    .from('dinos')
+    .update({ xp: newXp, level: newLevel })
+    .eq('id', dinoId)
+
+  if (updateError) throw updateError
+
+  return { newLevel, newXp }
+}
+
+// Record Düello VS match result
+export async function recordDuelloMatch(
+  sessionId: string,
+  hostDinoId: string,
+  guestDinoId: string,
+  winnerDinoId: string
+) {
+  const familyCode = await getFamilyCode()
+
+  const { error } = await supabase
+    .from('matches')
+    .insert([{
+      session_id: sessionId,
+      dino_1_id: hostDinoId,
+      dino_2_id: guestDinoId,
+      winner_id: winnerDinoId,
+      match_type: 'duello_vs',
+      family_code: familyCode,
+      created_at: new Date().toISOString()
+    }])
+
+  if (error) throw error
+}
+
+// Mark session as abandoned
+export async function abandonDuelloSession(sessionId: string) {
+  const { error } = await supabase
+    .from('duello_sessions')
+    .update({ status: 'abandoned' })
+    .eq('session_id', sessionId)
+
+  if (error) throw error
+}
