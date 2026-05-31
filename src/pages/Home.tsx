@@ -13,6 +13,7 @@ import DuelloVsMode from '../components/DuelloVsMode'
 import MatchLog from '../components/MatchLog'
 import AdventureSelectScreen from '../components/AdventureSelectScreen'
 import AdventureBattleScreen from '../components/AdventureBattleScreen'
+import DinoCoinsDisplay from '../components/DinoCoinsDisplay'
 
 type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs' | 'adventure-select' | 'adventure-battle'
 
@@ -90,20 +91,25 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Üst Bar */}
+        {/* Üst Bar - Hearthstone Tarzı */}
         <div className="absolute top-4 right-4 flex gap-3 items-center z-10">
-          <div className="glass px-4 py-2 rounded-lg">
-            <p className="text-sm font-bold text-yellow-400">💰 {userCoins} DinoCoin</p>
+          {/* DinoCoin Display */}
+          <DinoCoinsDisplay coins={userCoins} size="md" />
+
+          {/* User Info */}
+          <div className="glass-dark px-4 py-2 rounded-lg border border-neon-cyan/50 backdrop-blur-md">
+            <p className="text-sm font-bold text-neon-cyan">👤 {user?.username || user?.email?.split('@')[0]}</p>
           </div>
-          <div className="glass px-4 py-2 rounded-lg">
-            <p className="text-sm font-bold text-neon-cyan">👤 {user?.username || user?.email}</p>
-          </div>
-          <button
+
+          {/* Logout Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleSignOut}
-            className="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg font-bold text-sm backdrop-blur-md border border-red-500/30 transition"
+            className="px-4 py-2 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold text-sm backdrop-blur-md border border-red-500/50 transition shadow-lg"
           >
             🚪 Çıkış
-          </button>
+          </motion.button>
         </div>
 
         {/* Başlık - md+ ekranlarda mt-0, sm ekranlarda mt-8 (top bar'dan uzak olması için) */}

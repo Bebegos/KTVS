@@ -12,6 +12,7 @@ import {
   SPEC_ABILITIES,
 } from '../lib/abilities'
 import { getClassIcon, getSpecIcon, getAbilityIcon } from '../lib/icons'
+import SvgIcon from './SvgIcon'
 
 interface DinoCreationFlowProps {
   onBack: () => void
@@ -279,7 +280,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <p className="text-3xl">{ability.emoji}</p>
+                      <SvgIcon id={ability.id} type="ability" size="lg" fallback={ability.emoji} />
                       <div className="flex-1 text-left">
                         <h4 className="font-black text-neon-cyan mb-1">{ability.name}</h4>
                         <p className="text-sm text-neon-cyan/70 mb-1">{ability.description}</p>
@@ -366,7 +367,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <p className="text-3xl">{ability.emoji}</p>
+                      <SvgIcon id={ability.id} type="ability" size="lg" fallback={ability.emoji} />
                       <div className="flex-1 text-left">
                         <h4 className="font-black text-neon-purple mb-1">{ability.name}</h4>
                         <p className="text-sm text-neon-purple/70 mb-1">{ability.description}</p>
