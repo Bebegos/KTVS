@@ -93,7 +93,7 @@ export default function DuelloBattleScreen({
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!battleState.battleEnded) {
-        addLog('⚠️ Sayfa kapatılıyor, düello terk ediliyor')
+        addLog('Sayfa kapatılıyor, düello terk ediliyor')
         e.preventDefault()
         e.returnValue = 'Düello devam ediyor! Terk ederseniz kaybedeceksiniz.'
       }
@@ -257,7 +257,7 @@ export default function DuelloBattleScreen({
   }
 
   async function handleAbandonBattle() {
-    addLog('⚠️ Düello terk ediliyor...')
+    addLog('Düello terk ediliyor...')
     try {
       await supabase.from('battle_actions').insert({
         session_id: sessionId,
@@ -351,7 +351,7 @@ export default function DuelloBattleScreen({
           animate={{ scale: 1, opacity: 1 }}
           className="glass-dark neon-border-cyan rounded-xl p-8 max-w-sm text-center"
         >
-          <div className="text-6xl mb-4">⚠️</div>
+          <div className="text-3xl font-black text-red-500 mb-4">!</div>
           <h2 className="text-2xl font-black text-neon-cyan mb-4">Düelloyu Terk Et?</h2>
           <p className="text-neon-cyan/80 mb-6">
             Eğer çıkarsan <span className="font-black text-red-400">KAYBEDECEKSIN</span> ve rakip XP kazanacak.
@@ -431,7 +431,7 @@ export default function DuelloBattleScreen({
       </div>
 
       <div className="mb-6">
-        <p className="text-xs font-bold text-neon-cyan mb-2">⚔️ YETENEKLERİ SEÇ (Her turda 1)</p>
+        <p className="text-xs font-bold text-neon-cyan mb-2">YETENEKLERİ SEÇ (Her turda 1)</p>
         <div className="grid grid-cols-2 gap-3">
           {battleState.player.abilities.map((ability, idx) => (
             <motion.button
@@ -452,7 +452,7 @@ export default function DuelloBattleScreen({
                 <AbilityIcon iconId={ability.icon} size="lg" />
                 <div className="flex-1 text-left">
                   <p className="font-black text-sm leading-tight">{ability.name}</p>
-                  <p className="text-xs font-bold text-red-400">⬇️ SALDIRI</p>
+                  <p className="text-xs font-bold text-red-400">SALDIRI</p>
                 </div>
               </div>
 
@@ -488,10 +488,10 @@ export default function DuelloBattleScreen({
       <div className="glass-dark border border-neon-cyan/30 rounded-lg p-4 mb-6 text-center">
         <p className="text-neon-cyan font-bold">
           {playerSelectedAbility !== null && opponentSelectedAbility === null
-            ? '⏳ Rakip beklemede...'
+            ? 'Rakip beklemede...'
             : playerSelectedAbility === null && opponentSelectedAbility === null
-            ? '👉 Yetenek seç'
-            : '⚔️ Savaş başlamak üzere...'}
+            ? 'Yetenek seç'
+            : 'Savaş başlamak üzere...'}
         </p>
       </div>
 

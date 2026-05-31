@@ -262,11 +262,10 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           onClick={onBack}
           className="hs-btn absolute top-4 left-4 z-10"
         >
-          ← Geri
+          Geri
         </button>
 
         <div className="text-center mb-8 relative z-10">
-          <div className="text-6xl mb-4">⚔️</div>
           <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-pink mb-2">
             Düello Vs
           </h1>
@@ -499,39 +498,37 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
         <div className="flex flex-col items-center gap-8 relative z-10 w-full max-w-2xl">
           <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple text-center">
-            ⚔️ Düello Başlamak Üzere
+            Düello Başlamak Üzere
           </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
             {/* Current Player's Dino */}
             <div className="glass-dark neon-border-cyan rounded-xl p-6 text-center">
               <p className="text-xs font-bold text-neon-cyan mb-2">SEN</p>
-              <div className="text-5xl mb-3">🦖</div>
               <h2 className="text-2xl font-black text-neon-cyan mb-1">{selectedDino.name}</h2>
               <p className="text-sm text-neon-cyan/80 mb-4">Lvl {selectedDino.level}</p>
               <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {selectedDino.maxHp}</div>
-                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {selectedDino.atk}</div>
-                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {selectedDino.def}</div>
+                <div className="glass border border-red-500/30 p-2 rounded text-red-400">HP {selectedDino.maxHp}</div>
+                <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">ATK {selectedDino.atk}</div>
+                <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">DEF {selectedDino.def}</div>
               </div>
-              <p className="text-xs text-neon-cyan/60 mt-3">✓ Hazır</p>
+              <p className="text-xs text-neon-cyan/60 mt-3">Hazır</p>
             </div>
 
             {/* Opponent's Dino */}
             <div className="glass-dark neon-border-purple rounded-xl p-6 text-center">
               <p className="text-xs font-bold text-neon-purple mb-2">RAKİP</p>
-              <div className="text-5xl mb-3">🦖</div>
               {opponentDino ? (
                 <>
                   <h2 className="text-2xl font-black text-neon-purple mb-1">{opponentDino.name}</h2>
                   <p className="text-sm text-neon-purple/80 mb-4">Lvl {opponentDino.level}</p>
                   <div className="grid grid-cols-3 gap-2 text-xs font-bold">
-                    <div className="glass border border-red-500/30 p-2 rounded text-red-400">❤️ {opponentDino.maxHp}</div>
-                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">⚔️ {opponentDino.atk}</div>
-                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">🛡️ {opponentDino.def}</div>
+                    <div className="glass border border-red-500/30 p-2 rounded text-red-400">HP {opponentDino.maxHp}</div>
+                    <div className="glass border border-orange-500/30 p-2 rounded text-orange-400">ATK {opponentDino.atk}</div>
+                    <div className="glass border border-blue-500/30 p-2 rounded text-blue-400">DEF {opponentDino.def}</div>
                   </div>
                   {sessionData.status === 'ready' && (
-                    <p className="text-xs text-neon-purple/60 mt-3">✓ Hazır</p>
+                    <p className="text-xs text-neon-purple/60 mt-3">Hazır</p>
                   )}
                 </>
               ) : (
@@ -560,7 +557,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
               }}
               className="hs-btn hs-btn-lg hs-btn-block"
             >
-              ⚔️ DÜELLOYA BAŞLA
+              DÜELLOYA BAŞLA
             </button>
           )}
 

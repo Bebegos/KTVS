@@ -195,10 +195,10 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
           onClick={onBack}
           className="hs-btn hs-btn-red"
         >
-          🚪 Çık
+          Çık
         </button>
         <p className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
-          ⚔️ TUR {battleState.round}
+          TUR {battleState.round}
         </p>
         <div className="px-4 py-2 glass-dark neon-border-cyan rounded-lg">
           <p className="font-black text-neon-cyan">SAVAŞ</p>
@@ -332,7 +332,7 @@ function LevelUpScreen({
           {(['atk', 'def', 'spd'] as const).map(stat => (
             <div key={stat} className="flex items-center gap-3">
               <span className="font-black text-sm min-w-24 text-neon-cyan">
-                {stat === 'atk' ? '⚔️ ATK' : stat === 'def' ? '🛡️ DEF' : '⚡ SPD'}
+                {stat === 'atk' ? 'ATK' : stat === 'def' ? 'DEF' : 'SPD'}
               </span>
               <button
                 onClick={() =>
