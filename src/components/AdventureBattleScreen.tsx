@@ -5,6 +5,7 @@ import { Adventure, AdventureScene, AdventureEnemy } from '../lib/adventures'
 import { BattleEngine } from '../lib/battleEngine'
 import { supabase, addXpToDino, addCoinsToUser } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
+import { slotService } from '../lib/services'
 import BattleStatsCard from './BattleStatsCard'
 import EffectsDisplay from './EffectsDisplay'
 import AbilityIcon from './AbilityIcon'
@@ -89,6 +90,14 @@ export default function AdventureBattleScreen({
 
   function selectAbility(abilityIdx: number) {
     if (roundInProgress || selectedAbility !== null || !battleEngine) return
+
+    // CRITICAL: Check if slot is locked before allowing execution
+    if (slotService.isSlotLocked(playerDino, abilityIdx)) {
+      const requiredLevel = slotService.getSlotRequiredLevel(abilityIdx)
+      console.warn(`Slot ${abilityIdx} is locked. Requires level ${requiredLevel}`)
+      return
+    }
+
     if (!battleEngine.canUseAbility('player', abilityIdx)) return
 
     setSelectedAbility(abilityIdx)
@@ -304,10 +313,12 @@ export default function AdventureBattleScreen({
           <div className="grid grid-cols-2 gap-3 mb-3">
             {[0, 1, 2, 3, 4].map((idx) => {
               const ability = battleState.player.abilities[idx]
-              const canUse = battleEngine?.canUseAbility('player', idx)
+              const isLocked = slotService.isSlotLocked(playerDino, idx)
+              const canUse = !isLocked && battleEngine?.canUseAbility('player', idx)
               const isSelected = selectedAbility === idx
 
-              if (!ability) {
+              if (isLocked) {
+                const requiredLevel = slotService.getSlotRequiredLevel(idx)
                 return (
                   <motion.button
                     key={idx}
@@ -317,7 +328,21 @@ export default function AdventureBattleScreen({
                   >
                     <span className="text-2xl">🔒</span>
                     <p className="text-xs">Boş Slot</p>
-                    <p className="text-xs text-gray-400">Seviye {(idx + 1) * 3}</p>
+                    <p className="text-xs text-gray-400">Seviye {requiredLevel}</p>
+                  </motion.button>
+                )
+              }
+
+              if (!ability) {
+                return (
+                  <motion.button
+                    key={idx}
+                    onClick={() => {}}
+                    disabled={true}
+                    className="p-4 rounded-xl font-bold transition flex flex-col items-center justify-center gap-2 min-h-[120px] hs-card border-2 border-dashed border-neon-cyan/30 text-neon-cyan/50 opacity-60 cursor-not-allowed"
+                  >
+                    <span className="text-2xl">➕</span>
+                    <p className="text-xs">Yetenek Ekle</p>
                   </motion.button>
                 )
               }

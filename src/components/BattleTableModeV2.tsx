@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, ActiveEffect } from '../game/types'
 import { BattleEngine } from '../lib/battleEngine'
+import { slotService } from '../lib/services'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 import AbilityIcon from './AbilityIcon'
 import AbilityInfoModal from './AbilityInfoModal'
@@ -269,6 +270,23 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     {[0, 1, 2, 3, 4].map((idx) => {
                       const ability = battleState.player.abilities[idx]
+                      const isLocked = slotService.isSlotLocked(dino, idx)
+
+                      // Locked slots are never clickable
+                      if (isLocked) {
+                        const requiredLevel = slotService.getSlotRequiredLevel(idx)
+                        return (
+                          <div
+                            key={idx}
+                            className="p-4 rounded-lg hs-card border-2 border-dashed border-gray-500/30 flex flex-col items-center justify-center gap-2 opacity-40 cursor-not-allowed text-gray-500"
+                          >
+                            <span className="text-2xl">🔒</span>
+                            <p className="text-xs font-bold">Boş Slot</p>
+                            <p className="text-xs">Seviye {requiredLevel} açılır</p>
+                          </div>
+                        )
+                      }
+
                       return ability ? (
                         <AbilityButton
                           key={idx}
@@ -284,9 +302,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                           key={idx}
                           className="p-4 rounded-lg hs-card neon-border-cyan border-2 flex flex-col items-center justify-center gap-2 opacity-60 cursor-not-allowed"
                         >
-                          <span className="text-2xl">🔒</span>
-                          <p className="text-xs font-bold text-neon-cyan">Boş Slot</p>
-                          <p className="text-xs text-neon-cyan/70">Seviye {(idx + 1) * 3} açılır</p>
+                          <span className="text-2xl">➕</span>
+                          <p className="text-xs font-bold text-neon-cyan">Yetenek Ekle</p>
                         </div>
                       )
                     })}
