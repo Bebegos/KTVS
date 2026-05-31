@@ -130,9 +130,9 @@ class ValidationService {
     const results: ValidationResult[] = []
 
     for (let slot = 0; slot <= 5; slot++) {
-      const ability = dino.abilities[slot]
+      const abilityId = dino.abilityIds[slot]
 
-      if (!ability || !ability.name) {
+      if (!abilityId) {
         // Empty slot is okay if unlocked
         if (!slotService.isSlotLocked(dino, slot)) {
           results.push({
@@ -143,8 +143,8 @@ class ValidationService {
         continue
       }
 
-      // Validate ability exists
-      const abilityCheck = this.validateAbilityExists(ability.name)
+      // Validate ability exists in library
+      const abilityCheck = this.validateAbilityExists(abilityId)
       if (!abilityCheck.valid) {
         results.push({
           valid: false,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Dino, DinoAbility } from '../game/types'
+import { Dino } from '../game/types'
 import { BattleEngine } from '../lib/battleEngine'
 import { getEffectNameTR } from '../lib/effect-translations'
 import { supabase, addXpToDino } from '../lib/supabase'
@@ -355,7 +355,7 @@ function generateOpponent(playerDino: Dino, difficulty: 'easy' | 'normal' | 'har
     def: Math.floor(baseDef * statMultiplier),
     spd: Math.floor(baseSpd * statMultiplier),
     element: playerDino.element,
-    abilities: playerDino.abilities,
+    abilityIds: playerDino.abilityIds,
   }
 }
 

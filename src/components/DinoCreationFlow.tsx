@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../lib/auth-context'
-import { Dino, DinoAbility } from '../game/types'
+import { Dino } from '../game/types'
 import { createDino, getDinos } from '../lib/supabase'
 import {
   getAllClasses,

@@ -40,7 +40,7 @@ class SlotService {
     // Ultimate slot (5) is special - unlocks at level 3 AND when ultimate is obtained
     if (slot === 5) {
       const requiredLevel = this.getSlotRequiredLevel(5)
-      const hasUltimate = dino.abilities[5] && dino.abilities[5].name
+      const hasUltimate = !!dino.abilityIds[5]
       return dino.level < requiredLevel || !hasUltimate
     }
 
@@ -54,16 +54,16 @@ class SlotService {
   isSlotUnlockedAndEmpty(dino: Dino, slot: number): boolean {
     if (this.isSlotLocked(dino, slot)) return false
 
-    const ability = dino.abilities[slot]
-    return !ability || !ability.name
+    const abilityId = dino.abilityIds[slot]
+    return !abilityId
   }
 
   /**
    * Check if a slot is filled with an ability
    */
   isSlotFilled(dino: Dino, slot: number): boolean {
-    const ability = dino.abilities[slot]
-    return !!ability && !!ability.name
+    const abilityId = dino.abilityIds[slot]
+    return !!abilityId
   }
 
   /**
@@ -122,12 +122,12 @@ class SlotService {
     for (let slot = 0; slot <= 5; slot++) {
       const requiredLevel = this.getSlotRequiredLevel(slot)
       const status = this.computeSlotStatus(dino, slot)
-      const ability = dino.abilities[slot]
+      const abilityId = dino.abilityIds[slot]
 
       states.push({
         slot,
         status,
-        abilityId: ability?.name, // Use name as ID for now
+        abilityId: abilityId || undefined,
         requiredLevel,
         isClickable: this.canClickSlot(dino, slot),
       })

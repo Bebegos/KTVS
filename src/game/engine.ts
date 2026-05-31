@@ -8,6 +8,7 @@ import {
   Ability,
   ActiveEffect,
 } from './types'
+import { abilityDefinitionService } from '../lib/services/abilityDefinitionService'
 
 export function rollDice(): DiceResult {
   const value = Math.floor(Math.random() * GAME_CONFIG.DICE_SIDES) + 1
@@ -178,16 +179,24 @@ export function initializeBattle(p1Dino: Dino, p2Dino: Dino): BattleState {
 }
 
 function dinoToCharacter(dino: Dino): BattleCharacter {
-  const abilities: Ability[] = dino.abilities.map((a, idx) => ({
-    id: `${dino.id}-${idx}`,
-    name: a.name,
-    cd: 0,
-    maxCd: a.cd,
-    kind: a.kind,
-    effects: a.effects || [],
-    multiplier: a.multiplier,
-    icon: a.icon,
-  }))
+  // Load abilities from library using abilityIds
+  const abilities: Ability[] = dino.abilityIds
+    .map((abilityId) => {
+      if (!abilityId) return null
+      const def = abilityDefinitionService.getAbility(abilityId)
+      if (!def) return null
+      return {
+        id: abilityId,
+        name: def.name,
+        cd: 0,
+        maxCd: def.cooldown || 0,
+        kind: def.kind,
+        effects: def.effects || [],
+        multiplier: def.damageMultiplier,
+        icon: def.icon,
+      } as Ability
+    })
+    .filter((a): a is Ability => a !== null)
 
   return {
     dinoId: dino.id,
