@@ -136,5 +136,16 @@ CREATE POLICY "battles_access" ON battles FOR ALL USING (true) WITH CHECK (true)
 -- Realtime yayını (online mod için)
 ALTER PUBLICATION supabase_realtime ADD TABLE battles;
 
+-- 4. USER_COINS tablosu (DinoCoin sistemi)
+CREATE TABLE IF NOT EXISTS user_coins (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  coins INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Row Level Security
+ALTER TABLE user_coins ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "user_coins_access" ON user_coins FOR ALL USING (true) WITH CHECK (true);
+
 -- Tamamlandı!
 -- Şimdi frontend'i .env dosyasına koyup deploy edebilirsin.
