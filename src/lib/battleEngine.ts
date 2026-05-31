@@ -1,6 +1,17 @@
 // Battle Engine - Single source of truth for ALL battle mechanics
 // Used by: PvE, PvP (Düello), Offline battles
 // Manages: Turn order, damage, effects, abilities, cooldowns, win/lose
+//
+// HEALING MECHANICS (3 types):
+// 1. Direct Healing (kind: 'heal'):
+//    - Pure healing: Heal attacker based on ATK * multiplier (e.g., Nurture, Antidote Mastery)
+//    - Vampiric/Lifesteal: Deal damage to opponent + heal attacker for 50% of damage dealt (e.g., Bloodlust/Kan Hortumu)
+// 2. Passive Healing from Effects:
+//    - 'heal' effect: Applies healing each turn for duration (e.g., Nurture passive)
+//    - 'regen' effect: Applies regeneration each turn (e.g., Natural Recovery passive)
+//    - Healing applied via applyEffectDamageAndDecrement() which uses negative damage values
+// 3. Stat-based Buff Healing:
+//    - Effects like 'shield' increase DEF reducing damage taken (indirect healing via damage reduction)
 
 import { Dino, DinoAbility, ActiveEffect } from '../game/types'
 import { getEffectDamage, getEffect } from './effects'
@@ -124,14 +135,45 @@ export class BattleEngine {
       throw new Error(`Ability ${abilityIdx} not found`)
     }
 
-    // Calculate damage
-    const baseDamage = this.calculateDamage(attacker, defender, ability)
-    const finalDamage = Math.round(baseDamage)
+    let finalDamage = 0
+    let healAmount = 0
+    let message = ''
+    let targetDied = false
 
-    // Apply damage
-    defender.currentHp = Math.max(0, defender.currentHp - finalDamage)
+    // Handle different ability kinds
+    if (ability.kind === 'heal') {
+      // Pure healing or vampiric healing
+      // Vampiric abilities (like Bloodlust) deal damage AND heal
+      const isVampiric = (ability as any).isVampiric || ability.effect === 'none'
 
-    const message = `${character === 'player' ? '👤' : '👹'} ${ability.name} [${finalDamage} DMG]`
+      if (isVampiric) {
+        // Vampiric: deal damage to opponent, heal attacker for portion of damage
+        const baseDamage = this.calculateDamage(attacker, defender, ability)
+        finalDamage = Math.round(baseDamage)
+        defender.currentHp = Math.max(0, defender.currentHp - finalDamage)
+
+        // Heal attacker for 50% of damage dealt (standard lifesteal)
+        healAmount = Math.round(finalDamage * 0.5)
+        attacker.currentHp = Math.min(attacker.dino.maxHp, attacker.currentHp + healAmount)
+        message = `${character === 'player' ? '👤' : '👹'} ${ability.name} [${finalDamage} DMG] 🩸 +${healAmount} HP`
+        targetDied = defender.currentHp <= 0
+      } else {
+        // Pure healing: heal attacker only
+        const baseHeal = attacker.dino.atk * (ability.multiplier || 1)
+        healAmount = Math.round(baseHeal)
+        attacker.currentHp = Math.min(attacker.dino.maxHp, attacker.currentHp + healAmount)
+        message = `${character === 'player' ? '👤' : '👹'} ${ability.name} [+${healAmount} HP]`
+      }
+    } else {
+      // Damage abilities (attack, debuff, buff)
+      const baseDamage = this.calculateDamage(attacker, defender, ability)
+      finalDamage = Math.round(baseDamage)
+
+      // Apply damage to defender
+      defender.currentHp = Math.max(0, defender.currentHp - finalDamage)
+      message = `${character === 'player' ? '👤' : '👹'} ${ability.name} [${finalDamage} DMG]`
+      targetDied = defender.currentHp <= 0
+    }
 
     // Apply effect - buff goes to attacker, debuff goes to defender
     let effectApplied: string | null = null
@@ -142,9 +184,6 @@ export class BattleEngine {
 
     // Set cooldown
     attacker.cooldowns[abilityIdx] = ability.cd || 0
-
-    // Check if target died
-    const targetDied = defender.currentHp <= 0
 
     return {
       damage: finalDamage,

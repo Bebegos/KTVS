@@ -483,8 +483,10 @@ export const SPEC_ABILITIES: Record<string, SpecAbilities> = {
         cooldown: 4,
         damageMultiplier: 0.9,
         effect: 'none',
-        description: '4 turda bir, hasar verir + HP kazanır',
-        fullDescription: 'Rakibinin kanını içerek HP kazanır.',
+        description: '4 turda bir, hasarı %50 inin geri kazanır',
+        fullDescription: 'Rakibinin kanını içerek hasar verir ve aldığı hasarın %50sini HP olarak geri kazanır.',
+        // @ts-ignore - vampiric flag for BattleEngine
+        isVampiric: true,
       },
     ],
   },
