@@ -200,7 +200,7 @@ export async function subscribeToDuelloSession(sessionId: string, callback: (ses
   return subscription
 }
 
-// Add XP to dino
+// Add XP to dino and handle level-ups with pending rewards
 export async function addXpToDino(dinoId: string, xpAmount: number) {
   const { data: dino, error: fetchError } = await supabase
     .from('dinos')
@@ -212,6 +212,7 @@ export async function addXpToDino(dinoId: string, xpAmount: number) {
 
   let newXp = (dino.xp || 0) + xpAmount
   let newLevel = dino.level || 1
+  let levelsGained = 0
 
   // Check for level ups with dynamic XP requirements
   // XP needed = 100 * level^1.5
@@ -220,19 +221,45 @@ export async function addXpToDino(dinoId: string, xpAmount: number) {
     if (newXp >= xpNeeded) {
       newLevel += 1
       newXp -= xpNeeded
+      levelsGained += 1
     } else {
       break
     }
   }
 
+  // If level-ups occurred, add pending rewards (5 stat points per level + 1 ability per level)
+  const pendingRewards = dino.pending_rewards ? {
+    unspent_stat_points: (dino.pending_rewards.unspent_stat_points || 0) + (levelsGained * 5),
+    pending_ability_ids: dino.pending_rewards.pending_ability_ids || [],
+  } : {
+    unspent_stat_points: levelsGained * 5,
+    pending_ability_ids: [],
+  }
+
+  // Pending ability IDs are filled in the client (BattleScreen component) with actual class abilities
+  // We just mark how many abilities need to be selected (one per level gained)
+  for (let i = 0; i < levelsGained; i++) {
+    pendingRewards.pending_ability_ids.push(`__level_up_ability_${i}__`)
+  }
+
+  const updateData: any = {
+    xp: newXp,
+    level: newLevel,
+  }
+
+  // Only update pending rewards if there are pending rewards to add
+  if (levelsGained > 0) {
+    updateData.pending_rewards = pendingRewards
+  }
+
   const { error: updateError } = await supabase
     .from('dinos')
-    .update({ xp: newXp, level: newLevel })
+    .update(updateData)
     .eq('id', dinoId)
 
   if (updateError) throw updateError
 
-  return { newLevel, newXp }
+  return { newLevel, newXp, levelsGained, pendingRewardsAdded: levelsGained > 0 }
 }
 
 // Record Düello VS match result
