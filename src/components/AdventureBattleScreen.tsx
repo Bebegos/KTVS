@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Dino } from '../game/types'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Dino, ActiveEffect } from '../game/types'
 import { Adventure, AdventureScene, AdventureEnemy } from '../lib/adventures'
 import { BattleEngine } from '../lib/battleEngine'
 import { supabase, addXpToDino, addCoinsToUser } from '../lib/supabase'
@@ -10,6 +10,9 @@ import EffectsDisplay from './EffectsDisplay'
 import AbilityIcon from './AbilityIcon'
 import HealthBar from './HealthBar'
 import BattleEffectVisuals from './BattleEffectVisuals'
+import AbilityInfoModal from './AbilityInfoModal'
+import EffectInfoModal from './EffectInfoModal'
+import SvgIcon from './SvgIcon'
 import { getEffectNameTR } from '../lib/effect-translations'
 
 interface AdventureBattleScreenProps {
@@ -42,9 +45,24 @@ export default function AdventureBattleScreen({
   const [recordingMatch, setRecordingMatch] = useState(false)
   const [totalXpGained, setTotalXpGained] = useState(0)
   const [totalCoinsGained, setTotalCoinsGained] = useState(0)
+  const [abilityInfoOpen, setAbilityInfoOpen] = useState(false)
+  const [selectedAbilityInfo, setSelectedAbilityInfo] = useState<any>(null)
+  const [effectInfoOpen, setEffectInfoOpen] = useState(false)
+  const [selectedEffectInfo, setSelectedEffectInfo] = useState<ActiveEffect | null>(null)
 
   const currentScene = adventure.scenes[currentSceneIdx]
   const currentEnemyData = currentScene?.enemies[currentEnemyIdx]
+
+  // Helper functions for modals
+  const openAbilityInfo = (ability: any, idx: number) => {
+    setSelectedAbilityInfo({ ...ability, idx })
+    setAbilityInfoOpen(true)
+  }
+
+  const openEffectInfo = (effect: ActiveEffect) => {
+    setSelectedEffectInfo(effect)
+    setEffectInfoOpen(true)
+  }
 
   // Create battle engine when entering battle
   useEffect(() => {
@@ -311,7 +329,7 @@ export default function AdventureBattleScreen({
                   whileTap={{ scale: 0.95 }}
                   onClick={() => selectAbility(idx)}
                   disabled={selectedAbility !== null || !canUse || roundInProgress}
-                  className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[120px] ${
+                  className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[120px] relative ${
                     isSelected
                       ? 'neon-border-cyan hs-card text-neon-cyan border-2 scale-105'
                       : !canUse
@@ -319,6 +337,15 @@ export default function AdventureBattleScreen({
                       : 'hs-card neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
                   }`}
                 >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openAbilityInfo(ability, idx)
+                    }}
+                    className="absolute top-2 right-2 text-neon-cyan hover:text-neon-cyan/70 text-lg transition"
+                  >
+                    ℹ️
+                  </button>
                   <div className="flex items-center gap-2 w-full">
                     <AbilityIcon iconId={ability.icon} size="md" />
                     <p className="font-black text-sm">{ability.name}</p>
@@ -343,7 +370,7 @@ export default function AdventureBattleScreen({
               whileTap={{ scale: 0.95 }}
               onClick={() => selectAbility(5)}
               disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
-              className={`w-full p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[100px] bg-gradient-to-b from-yellow-600/40 via-purple-500/30 to-yellow-700/40 border-4 border-yellow-500/80 shadow-[0_0_30px_rgba(234,179,8,0.4)] ${
+              className={`w-full p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[100px] relative bg-gradient-to-b from-yellow-600/40 via-purple-500/30 to-yellow-700/40 border-4 border-yellow-500/80 shadow-[0_0_30px_rgba(234,179,8,0.4)] ${
                 selectedAbility === 5
                   ? 'scale-105'
                   : !battleEngine?.canUseAbility('player', 5)
@@ -352,6 +379,15 @@ export default function AdventureBattleScreen({
               }`}
             >
               <div className="absolute top-2 left-1/2 -translate-x-1/2 text-2xl">👑</div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  openAbilityInfo(battleState.player.abilities[5], 5)
+                }}
+                className="absolute top-2 right-2 text-yellow-300 hover:text-yellow-300/70 text-lg transition"
+              >
+                ℹ️
+              </button>
               <div className="flex items-center gap-2 w-full mt-4">
                 <AbilityIcon iconId={battleState.player.abilities[5].icon} size="md" />
                 <p className="font-black text-sm text-yellow-300">{battleState.player.abilities[5].name}</p>
@@ -393,6 +429,17 @@ export default function AdventureBattleScreen({
             ))}
           </div>
         </div>
+
+        <AnimatePresence>
+          {abilityInfoOpen && selectedAbilityInfo && (
+            <AbilityInfoModal
+              ability={selectedAbilityInfo}
+              cooldown={battleState.player.cooldowns[selectedAbilityInfo.idx] || 0}
+              isOpen={abilityInfoOpen}
+              onClose={() => setAbilityInfoOpen(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     )
   }

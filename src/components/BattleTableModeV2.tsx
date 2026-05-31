@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Dino } from '../game/types'
+import { Dino, ActiveEffect } from '../game/types'
 import { BattleEngine } from '../lib/battleEngine'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 import AbilityIcon from './AbilityIcon'
+import AbilityInfoModal from './AbilityInfoModal'
 import BattleEffectVisuals from './BattleEffectVisuals'
 import HealthBar from './HealthBar'
 import SvgIcon from './SvgIcon'
@@ -40,6 +41,13 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
   const [showEffectVisual, setShowEffectVisual] = useState(false)
   const [showSkipTurnModal, setShowSkipTurnModal] = useState(false)
   const [abilityUsedThisTurn, setAbilityUsedThisTurn] = useState(false)
+  const [abilityInfoOpen, setAbilityInfoOpen] = useState(false)
+  const [selectedAbilityInfo, setSelectedAbilityInfo] = useState<any>(null)
+
+  const openAbilityInfo = (ability: any, idx: number) => {
+    setSelectedAbilityInfo({ ...ability, idx })
+    setAbilityInfoOpen(true)
+  }
 
   function executeAbility(abilityIdx: number) {
     if (!engine.canUseAbility('player', abilityIdx)) return
@@ -269,6 +277,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                           disabled={!engine.canUseAbility('player', idx) || abilityUsedThisTurn}
                           onClick={() => executeAbility(idx)}
                           cooldown={battleState.player.cooldowns[idx]}
+                          onInfoClick={openAbilityInfo}
                         />
                       ) : (
                         <div
@@ -295,6 +304,17 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-4xl drop-shadow-lg">
                           👑
                         </div>
+
+                        {/* Info Icon */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openAbilityInfo(battleState.player.abilities[5], 5)
+                          }}
+                          className="absolute top-2 right-2 text-yellow-300 hover:text-yellow-300/70 text-lg transition"
+                        >
+                          ℹ️
+                        </button>
 
                         {/* Golden sparkles */}
                         <div className="absolute inset-0 opacity-30 pointer-events-none">
@@ -400,6 +420,17 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
           </motion.div>
         </motion.div>
       )}
+
+      <AnimatePresence>
+        {abilityInfoOpen && selectedAbilityInfo && (
+          <AbilityInfoModal
+            ability={selectedAbilityInfo}
+            cooldown={battleState.player.cooldowns[selectedAbilityInfo.idx] || 0}
+            isOpen={abilityInfoOpen}
+            onClose={() => setAbilityInfoOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -410,6 +441,7 @@ function AbilityButton({
   disabled,
   onClick,
   cooldown,
+  onInfoClick,
   isUlti = false,
 }: {
   ability: any
@@ -417,6 +449,7 @@ function AbilityButton({
   disabled: boolean
   onClick: () => void
   cooldown: number
+  onInfoClick?: (ability: any, idx: number) => void
   isUlti?: boolean
 }) {
   // Safety check: don't render if ability doesn't exist
@@ -436,6 +469,22 @@ function AbilityButton({
           : 'hs-card neon-border-cyan border-2'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}`}
     >
+      {onInfoClick && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onInfoClick(ability, idx)
+          }}
+          className={`absolute top-2 right-2 text-lg transition ${
+            isUlti
+              ? 'text-neon-purple hover:text-neon-purple/70'
+              : 'text-neon-cyan hover:text-neon-cyan/70'
+          }`}
+        >
+          ℹ️
+        </button>
+      )}
+
       <div className="flex-shrink-0 pt-1">
         <AbilityIcon iconId={ability?.icon} size="md" />
       </div>
