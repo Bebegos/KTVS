@@ -26,7 +26,8 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
   if (!isOpen || !dino.pendingRewards) return null
 
   const pendingPoints = dino.pendingRewards.unspentStatPoints
-  const pendingAbilities = dino.pendingRewards.pendingAbilityIds
+  // Filter out placeholder abilities - those are handled by AbilityDiscoveryModal
+  const pendingAbilities = dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__'))
   const allocatedPoints = statAllocation.atk + statAllocation.def + statAllocation.spd
   const remainingPoints = pendingPoints - allocatedPoints
 
