@@ -8,6 +8,7 @@ export interface AdventureEnemy {
   atkMultiplier: number
   defMultiplier: number
   spdMultiplier: number
+  abilityIds?: string[] // Themed abilities for this enemy
 }
 
 export interface AdventureScene {
@@ -58,6 +59,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 0.5,
             defMultiplier: 0.4,
             spdMultiplier: 1.2,
+            abilityIds: ['grasshopper_jump', 'grasshopper_jump'],
           },
         ],
         actionText: 'Çekirgeye Saldır',
@@ -75,6 +77,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 0.6,
             defMultiplier: 0.5,
             spdMultiplier: 1.3,
+            abilityIds: ['squirrel_bite', 'squirrel_scurry'],
           },
         ],
         actionText: 'Sincapla Savaş',
@@ -92,6 +95,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 0.8,
             defMultiplier: 0.7,
             spdMultiplier: 0.9,
+            abilityIds: ['iguana_bite', 'iguana_tail_swipe'],
           },
         ],
         actionText: 'Son Düşmanla Karşılaş',
@@ -122,6 +126,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 0.7,
             defMultiplier: 0.3,
             spdMultiplier: 1.4,
+            abilityIds: ['eagle_swoop', 'eagle_screech'],
           },
         ],
         actionText: 'Kartal Saldırısına Karşı Koy',
@@ -139,6 +144,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 0.7,
             defMultiplier: 0.6,
             spdMultiplier: 1.1,
+            abilityIds: ['wolf_howl', 'wolf_bite'],
           },
         ],
         actionText: 'Kurt Çetesiyle Savaş',
@@ -156,6 +162,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 0.9,
             defMultiplier: 0.8,
             spdMultiplier: 1.0,
+            abilityIds: ['deer_charge', 'deer_leap'],
           },
         ],
         actionText: 'Dağ Geyiği\'ne Karşı Koy',
@@ -187,6 +194,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 0.7,
             defMultiplier: 1.2,
             spdMultiplier: 0.7,
+            abilityIds: ['turtle_shell', 'turtle_bite'],
           },
         ],
         actionText: 'Kaplumbağaya Saldır',
@@ -204,6 +212,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 1.0,
             defMultiplier: 0.9,
             spdMultiplier: 0.8,
+            abilityIds: ['crocodile_bite', 'crocodile_thrash'],
           },
         ],
         actionText: 'Timsahla Savaş',
@@ -221,6 +230,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 1.2,
             defMultiplier: 1.1,
             spdMultiplier: 0.9,
+            abilityIds: ['swamp_creature_poison', 'crocodile_bite'],
           },
         ],
         actionText: 'Son Düşmanla Yüzleş',
@@ -251,6 +261,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 1.1,
             defMultiplier: 0.8,
             spdMultiplier: 1.2,
+            abilityIds: ['scorpion_sting', 'scorpion_armor'],
           },
         ],
         actionText: 'Akrepla Karşılaş',
@@ -268,6 +279,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 1.2,
             defMultiplier: 0.9,
             spdMultiplier: 1.0,
+            abilityIds: ['fire_camel_spit', 'fire_camel_heat'],
           },
         ],
         actionText: 'Ateş Devesiyle Savaş',
@@ -285,6 +297,7 @@ export const ADVENTURES: Record<string, Adventure> = {
             atkMultiplier: 1.4,
             defMultiplier: 1.2,
             spdMultiplier: 0.8,
+            abilityIds: ['dragon_flame', 'dragon_roar'],
           },
         ],
         actionText: 'Dragona Karşı Çık',

@@ -555,9 +555,8 @@ export default function AdventureBattleScreen({
 }
 
 function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): Dino {
-  // Create opponent with same abilities as player dino
-  // Note: In the library-based system, ability modifications happen at the library level,
-  // not per-instance. Balance is controlled via ability definitions, not sanitization here.
+  // Create opponent with themed abilities if available, otherwise use player abilities
+  // Each enemy has unique themed abilities based on adventure type and enemy name
 
   return {
     id: 'adventure-enemy-' + Date.now(),
@@ -570,6 +569,6 @@ function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): 
     def: Math.floor((playerDino.def ?? 5) * enemyData.defMultiplier),
     spd: Math.floor((playerDino.spd ?? 5) * enemyData.spdMultiplier),
     element: playerDino.element,
-    abilityIds: playerDino.abilityIds,
+    abilityIds: enemyData.abilityIds || playerDino.abilityIds,
   }
 }
