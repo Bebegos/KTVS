@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap');
-@import url('./styles/hs-stat-icons.css');
+@import './styles/hs-stat-icons.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -207,7 +207,7 @@ body::before {
    HEARTHSTONE BUTTONS - SVG-BASED AUTHENTIC RUSTIC DESIGN
    Wood frame, parchment center, metallic accents, 3D depth
    ============================================================ */
-@import url('./styles/hs-buttons.css');
+@import './styles/hs-buttons.css';
 
 /* Backward compatibility - aliases handled by imported CSS */
 .hs-button { /* alias for .hs-btn */ }
