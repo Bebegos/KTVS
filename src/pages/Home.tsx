@@ -4,14 +4,17 @@ import { useAuth } from '../lib/auth-context'
 import { getDinos } from '../lib/supabase'
 import { Dino } from '../game/types'
 import { APP_VERSION } from '../config/version'
+import { Adventure } from '../lib/adventures'
 import DinoList from '../components/DinoList'
 import DinoCreationFlow from '../components/DinoCreationFlow'
 import BattleTable from '../components/BattleTable'
 import BattleTableModeV2 from '../components/BattleTableModeV2'
 import DuelloVsMode from '../components/DuelloVsMode'
 import MatchLog from '../components/MatchLog'
+import AdventureSelectScreen from '../components/AdventureSelectScreen'
+import AdventureBattleScreen from '../components/AdventureBattleScreen'
 
-type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs'
+type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs' | 'adventure-select' | 'adventure-battle'
 
 export default function Home() {
   const { user, signOut } = useAuth()
@@ -19,6 +22,8 @@ export default function Home() {
   const [dinos, setDinos] = useState<Dino[]>([])
   const [selectedOfflineDino, setSelectedOfflineDino] = useState<Dino | null>(null)
   const [selectedDuelloDino, setSelectedDuelloDino] = useState<Dino | null>(null)
+  const [selectedAdventureDino, setSelectedAdventureDino] = useState<Dino | null>(null)
+  const [selectedAdventure, setSelectedAdventure] = useState<Adventure | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -129,6 +134,14 @@ export default function Home() {
             className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-xl font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition duration-300"
           >
             🎲 Masada Oyna
+          </button>
+
+          {/* Maceralar - Adventure Mode */}
+          <button
+            onClick={() => setPage('adventure-select')}
+            className="w-full px-6 py-4 glass-dark neon-border-pink rounded-xl font-bold text-lg text-neon-pink hover:shadow-neon-pink active:scale-95 transition duration-300"
+          >
+            🗺️ Maceralar
           </button>
 
           <button
@@ -246,6 +259,40 @@ export default function Home() {
         onRefresh={(newDinos) => {
           setDinos(newDinos)
           setSelectedOfflineDino(null)
+          setPage('home')
+        }}
+      />
+    )
+  }
+
+  if (page === 'adventure-select') {
+    return (
+      <AdventureSelectScreen
+        dinos={dinos}
+        onStartAdventure={(dino, adventure) => {
+          setSelectedAdventureDino(dino)
+          setSelectedAdventure(adventure)
+          setPage('adventure-battle')
+        }}
+        onBack={() => setPage('home')}
+      />
+    )
+  }
+
+  if (page === 'adventure-battle' && selectedAdventureDino && selectedAdventure) {
+    return (
+      <AdventureBattleScreen
+        playerDino={selectedAdventureDino}
+        adventure={selectedAdventure}
+        onComplete={(won, xpGained) => {
+          setSelectedAdventureDino(null)
+          setSelectedAdventure(null)
+          setPage('adventure-select')
+          loadDinos()
+        }}
+        onBack={() => {
+          setSelectedAdventureDino(null)
+          setSelectedAdventure(null)
           setPage('home')
         }}
       />
