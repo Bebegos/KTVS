@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice, calculateDamage } from '../game/engine'
+import { abilityDefinitionService } from '../lib/services/abilityDefinitionService'
 
 interface BattleTableModeProps {
   dino: Dino
@@ -17,18 +18,27 @@ interface BattleChar {
 }
 
 export default function BattleTableMode({ dino, onBack, onRefresh }: BattleTableModeProps) {
+  const abilities = dino.abilityIds
+    .map((abilityId) => {
+      if (!abilityId) return null
+      const def = abilityDefinitionService.getAbility(abilityId)
+      if (!def) return null
+      return {
+        id: abilityId,
+        name: def.name,
+        cd: 0,
+        maxCd: def.cooldown || 0,
+        kind: def.kind,
+        effects: def.effects || [],
+      }
+    })
+    .filter((a): a is Ability => a !== null)
+
   const [character, setCharacter] = useState<BattleChar>({
     dino,
     currentHp: dino.maxHp,
     effects: [],
-    abilities: dino.abilities.map((a, idx) => ({
-      id: `${dino.id}-${idx}`,
-      name: a.name,
-      cd: 0,
-      maxCd: a.cd,
-      kind: a.kind,
-      effects: a.effects || [],
-    })),
+    abilities,
   })
 
   const [selectedAbility, setSelectedAbility] = useState<number | null>(null)
