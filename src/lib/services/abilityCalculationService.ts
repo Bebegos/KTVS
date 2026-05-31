@@ -18,6 +18,55 @@ export interface AbilityCalculationResult {
 
 class AbilityCalculationService {
   /**
+   * Get the base stat for an ability based on scaling type
+   */
+  private getBaseStat(
+    attacker: Dino,
+    statScaling: string,
+    bonuses: { atk?: number; def?: number; spd?: number } = {}
+  ): number {
+    const atk = attacker.atk || 5
+    const def = attacker.def || 5
+    const spd = attacker.spd || 5
+    const hp = attacker.maxHp || 10
+
+    const atkBonus = 1 + (bonuses.atk || 0) / 100
+    const defBonus = 1 + (bonuses.def || 0) / 100
+    const spdBonus = 1 + (bonuses.spd || 0) / 100
+
+    const atkWithBonus = atk * atkBonus
+    const defWithBonus = def * defBonus
+    const spdWithBonus = spd * spdBonus
+
+    switch (statScaling) {
+      case 'atk':
+        return atkWithBonus
+      case 'def':
+        return defWithBonus
+      case 'spd':
+        return spdWithBonus
+      case 'hp':
+        return hp
+      case 'max_atk_def':
+        return Math.max(atkWithBonus, defWithBonus)
+      case 'max_atk_spd':
+        return Math.max(atkWithBonus, spdWithBonus)
+      case 'max_def_spd':
+        return Math.max(defWithBonus, spdWithBonus)
+      case 'avg_atk_def':
+        return (atkWithBonus + defWithBonus) / 2
+      case 'avg_atk_spd':
+        return (atkWithBonus + spdWithBonus) / 2
+      case 'avg_def_spd':
+        return (defWithBonus + spdWithBonus) / 2
+      case 'fixed':
+        return 1
+      default:
+        return atkWithBonus
+    }
+  }
+
+  /**
    * Calculate ability's base damage before applying defense/variance
    */
   calculateAbilityBaseDamage(
@@ -31,33 +80,8 @@ class AbilityCalculationService {
       return 0
     }
 
-    // Attack abilities scale from ATK
-    if (ability.statScaling === 'atk') {
-      const baseStat = attacker.atk || 5
-      const atkBonus = attacker_bonuses.atk || 0
-      return baseStat * (1 + atkBonus / 100) * (ability.damageMultiplier || 1)
-    }
-
-    // Defensive/protect abilities scale from DEF
-    if (ability.statScaling === 'def') {
-      const baseStat = attacker.def || 5
-      const defBonus = attacker_bonuses.def || 0
-      return baseStat * (1 + defBonus / 100) * (ability.damageMultiplier || 1)
-    }
-
-    // Speed-based abilities scale from SPD
-    if (ability.statScaling === 'spd') {
-      const baseStat = attacker.spd || 5
-      const spdBonus = attacker_bonuses.spd || 0
-      return baseStat * (1 + spdBonus / 100) * (ability.damageMultiplier || 1)
-    }
-
-    // HP-based abilities scale from HP
-    if (ability.statScaling === 'hp') {
-      return attacker.maxHp * (ability.damageMultiplier || 1)
-    }
-
-    return 0
+    const baseStat = this.getBaseStat(attacker, ability.statScaling, attacker_bonuses)
+    return baseStat * (ability.damageMultiplier || 1)
   }
 
   /**
@@ -71,20 +95,8 @@ class AbilityCalculationService {
     const ability = abilityDefinitionService.getAbility(abilityId)
     if (!ability) return 0
 
-    // Healing abilities typically scale from DEF or ATK
-    if (ability.statScaling === 'def') {
-      const baseStat = healer.def || 5
-      const defBonus = healer_bonuses.def || 0
-      return baseStat * (1 + defBonus / 100) * (ability.damageMultiplier || 1)
-    }
-
-    if (ability.statScaling === 'atk') {
-      const baseStat = healer.atk || 5
-      const atkBonus = healer_bonuses.atk || 0
-      return baseStat * (1 + atkBonus / 100) * (ability.damageMultiplier || 1)
-    }
-
-    return 0
+    const baseStat = this.getBaseStat(healer, ability.statScaling, healer_bonuses)
+    return baseStat * (ability.damageMultiplier || 1)
   }
 
   /**
@@ -126,14 +138,14 @@ class AbilityCalculationService {
     const valueBg = valueType === 'heal' ? 'bg-green-500/20' : 'bg-red-500/20'
 
     // Build description
-    let description = ability.description
+    let description = ability.description || ''
 
     // Replace placeholders or append if needed
-    if (!description.includes('<') && baseValue > 0) {
+    if (baseValue > 0 && !description.includes('<')) {
       description += ` <span class="${valueBg} ${valueColor} px-2 py-1 rounded font-bold">${Math.round(baseValue)}</span>`
     }
 
-    return description
+    return description || 'Bilinmiyor'
   }
 
   /**

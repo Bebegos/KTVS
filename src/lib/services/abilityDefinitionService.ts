@@ -10,6 +10,12 @@ import {
 } from '../abilities'
 import { AbilityType, EffectKind } from '../../game/types'
 
+export type StatScaling =
+  | 'atk' | 'def' | 'spd' | 'hp'
+  | 'max_atk_def' | 'max_atk_spd' | 'max_def_spd'
+  | 'avg_atk_def' | 'avg_atk_spd' | 'avg_def_spd'
+  | 'fixed'
+
 export interface AbilityDefinition {
   id: string
   name: string
@@ -19,6 +25,7 @@ export interface AbilityDefinition {
   category?: string
   cooldown: number
   damageMultiplier?: number
+  statScaling: StatScaling
   effects: EffectKind[]
   description?: string
   fullDescription?: string
@@ -45,9 +52,11 @@ class AbilityDefinitionService {
       category: abilityDef.category,
       cooldown: abilityDef.cooldown || 0,
       damageMultiplier: abilityDef.damageMultiplier,
+      statScaling: (abilityDef as any).statScaling || 'atk',
       effects: (abilityDef.effects || []) as EffectKind[],
       description: abilityDef.description,
       fullDescription: abilityDef.fullDescription,
+      isVampiric: (abilityDef as any).isVampiric || false,
       isPassive: abilityDef.isPassive,
     }
   }
@@ -73,9 +82,11 @@ class AbilityDefinitionService {
           category: ability.category,
           cooldown: ability.cooldown || 0,
           damageMultiplier: ability.damageMultiplier,
+          statScaling: (ability as any).statScaling || 'atk',
           effects: (ability.effects || []) as EffectKind[],
           description: ability.description,
           fullDescription: ability.fullDescription,
+          isVampiric: (ability as any).isVampiric || false,
           isPassive: ability.isPassive,
           classId,
         })
@@ -105,9 +116,11 @@ class AbilityDefinitionService {
           category: ability.category,
           cooldown: ability.cooldown || 0,
           damageMultiplier: ability.damageMultiplier,
+          statScaling: (ability as any).statScaling || 'atk',
           effects: (ability.effects || []) as EffectKind[],
           description: ability.description,
           fullDescription: ability.fullDescription,
+          isVampiric: (ability as any).isVampiric || false,
           isPassive: ability.isPassive,
           classId,
           specId,
@@ -136,9 +149,11 @@ class AbilityDefinitionService {
           category: ability.category,
           cooldown: ability.cooldown || 0,
           damageMultiplier: ability.damageMultiplier,
+          statScaling: (ability as any).statScaling || 'atk',
           effects: (ability.effects || []) as EffectKind[],
           description: ability.description,
           fullDescription: ability.fullDescription,
+          isVampiric: (ability as any).isVampiric || false,
           isPassive: ability.isPassive,
         })
       }

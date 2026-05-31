@@ -71,7 +71,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
         </div>
 
         {/* Cooldown Info */}
-        {ability.cd > 0 && (
+        {ability.cooldown > 0 && (
           <div className={`mb-4 p-3 rounded-lg font-bold ${
             isCooling
               ? 'bg-red-500/20 border border-red-500/50 text-red-400'
@@ -85,11 +85,11 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-slate-700/40 rounded-lg p-3 text-center">
             <p className="text-xs text-neon-cyan/70 font-bold mb-1">Hasar Çarpanı</p>
-            <p className="text-xl font-black text-neon-cyan">×{ability.multiplier || 1}</p>
+            <p className="text-xl font-black text-neon-cyan">×{ability.damageMultiplier || 1}</p>
           </div>
           <div className="bg-slate-700/40 rounded-lg p-3 text-center">
             <p className="text-xs text-neon-cyan/70 font-bold mb-1">Cooldown</p>
-            <p className="text-xl font-black text-neon-cyan">{ability.cd}T</p>
+            <p className="text-xl font-black text-neon-cyan">{ability.cooldown}T</p>
           </div>
         </div>
 
