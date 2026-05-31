@@ -1,0 +1,167 @@
+/* ============================================================
+   HEARTHSTONE STYLE SVG BUTTONS - Authentic Rustik Design
+   Wood frame, parchment center, metallic accents, 3D depth
+   ============================================================ */
+
+/* Base Button Styles */
+.hs-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #1a0f06;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  outline: none;
+  user-select: none;
+  overflow: hidden;
+
+  /* SVG button background - wood frame + parchment + metallic */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60" preserveAspectRatio="none"><defs><filter id="woodGrain"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.12" numOctaves="6" seed="1" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/></filter><linearGradient id="woodGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%234a3420;stop-opacity:1"/><stop offset="40%" style="stop-color:%233a2614;stop-opacity:1"/><stop offset="100%" style="stop-color:%232a1810;stop-opacity:1"/></linearGradient><linearGradient id="metalGold" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:%23f4e4a6;stop-opacity:1"/><stop offset="50%" style="stop-color:%23d4af37;stop-opacity:1"/><stop offset="100%" style="stop-color:%23b8860b;stop-opacity:1"/></linearGradient><linearGradient id="parchment" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23f5ead5;stop-opacity:1"/><stop offset="50%" style="stop-color:%23e8d9be;stop-opacity:1"/><stop offset="100%" style="stop-color:%23d9c9a8;stop-opacity:1"/></linearGradient><filter id="woodTexture"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.15" numOctaves="5" seed="42"/><feColorMatrix type="saturate" values="0.3"/></filter><filter id="parchmentNoise"><feTurbulence type="fractalNoise" baseFrequency="0.04 0.04" numOctaves="3" seed="99" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="0.5" xChannelSelector="R"/></filter></defs><!-- Outer wooden frame --><rect x="2" y="2" width="196" height="56" rx="6" fill="url(%23woodGrad)" filter="url(%23woodTexture)"/><rect x="2" y="2" width="196" height="56" rx="6" fill="rgba(0,0,0,0.2)"/><rect x="2" y="2" width="196" height="3" rx="1" fill="rgba(255,220,150,0.3)"/><rect x="2" y="55" width="196" height="3" rx="1" fill="rgba(0,0,0,0.4)"/><!-- Metallic gold border --><rect x="5" y="5" width="190" height="50" rx="5" fill="none" stroke="url(%23metalGold)" stroke-width="2.5" opacity="0.9"/><rect x="5" y="5" width="190" height="50" rx="5" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" opacity="0.6"/><!-- Parchment center --><rect x="8" y="8" width="184" height="44" rx="4" fill="url(%23parchment)" filter="url(%23parchmentNoise)"/><!-- Parchment texture overlay --><rect x="8" y="8" width="184" height="44" rx="4" fill="url(%23parchment)" opacity="0.3" style="mix-blend-mode: overlay;"/><rect x="8" y="8" width="184" height="22" rx="4" fill="rgba(255,255,255,0.15)"/><!-- Inner shadow for depth --><rect x="8" y="8" width="184" height="44" rx="4" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1"/><rect x="9" y="9" width="182" height="42" rx="3" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/><!-- Highlight edge --><path d="M 10 12 Q 10 10 12 10 L 190 10" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="none"/></svg>');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 12px 24px;
+  min-height: 44px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Size modifiers */
+.hs-btn-xs {
+  padding: 4px 12px;
+  font-size: 12px;
+  min-height: 28px;
+  background-size: 100% 100%;
+}
+
+.hs-btn-sm {
+  padding: 8px 16px;
+  font-size: 14px;
+  min-height: 36px;
+}
+
+.hs-btn-lg {
+  padding: 16px 32px;
+  font-size: 18px;
+  min-height: 52px;
+}
+
+.hs-btn-xl {
+  padding: 20px 40px;
+  font-size: 20px;
+  font-weight: 700;
+  min-height: 60px;
+}
+
+/* Block button (full width) */
+.hs-btn-block {
+  width: 100%;
+}
+
+/* Hover state - slight brightness and lift */
+.hs-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  filter: brightness(1.1) contrast(1.05);
+}
+
+/* Active/Pressed state - pushed down */
+.hs-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  filter: brightness(0.95);
+}
+
+/* Disabled state */
+.hs-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  color: #7a6a5a;
+  filter: grayscale(0.5) brightness(0.9);
+}
+
+/* Color variants using SVG filters */
+.hs-btn-green {
+  filter: hue-rotate(-20deg) saturate(1.3) brightness(1.05);
+}
+
+.hs-btn-green:hover:not(:disabled) {
+  filter: hue-rotate(-20deg) saturate(1.4) brightness(1.15);
+}
+
+.hs-btn-red {
+  filter: hue-rotate(15deg) saturate(1.4) brightness(1.0);
+}
+
+.hs-btn-red:hover:not(:disabled) {
+  filter: hue-rotate(15deg) saturate(1.5) brightness(1.1);
+}
+
+.hs-btn-blue {
+  filter: hue-rotate(200deg) saturate(1.3) brightness(1.02);
+}
+
+.hs-btn-blue:hover:not(:disabled) {
+  filter: hue-rotate(200deg) saturate(1.4) brightness(1.12);
+}
+
+.hs-btn-purple {
+  filter: hue-rotate(280deg) saturate(1.2) brightness(1.03);
+}
+
+.hs-btn-purple:hover:not(:disabled) {
+  filter: hue-rotate(280deg) saturate(1.35) brightness(1.13);
+}
+
+.hs-btn-yellow {
+  filter: hue-rotate(45deg) saturate(1.5) brightness(1.1);
+}
+
+.hs-btn-yellow:hover:not(:disabled) {
+  filter: hue-rotate(45deg) saturate(1.6) brightness(1.2);
+}
+
+/* Default variant (no color filter) */
+.hs-btn:not(.hs-btn-green):not(.hs-btn-red):not(.hs-btn-blue):not(.hs-btn-purple):not(.hs-btn-yellow) {
+  filter: brightness(1.0);
+}
+
+.hs-btn:not(.hs-btn-green):not(.hs-btn-red):not(.hs-btn-blue):not(.hs-btn-purple):not(.hs-btn-yellow):hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+/* Focus ring for accessibility */
+.hs-btn:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
+/* Loading/animated state */
+.hs-btn.is-loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.hs-btn.is-loading::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-top-color: #1a0f06;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
