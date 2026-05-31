@@ -81,10 +81,10 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleOpenDetail(dino)}
-                  className={`rounded-xl p-4 cursor-pointer transition relative border-2 ${
+                  className={`hs-card rounded-2xl p-6 cursor-pointer transition relative ${
                     hasPendingRewards
-                      ? 'border-yellow-500 bg-gradient-to-br from-slate-800/80 via-slate-800/60 to-yellow-900/20 shadow-lg shadow-yellow-500/30'
-                      : 'glass-dark neon-border-cyan'
+                      ? 'ring-2 ring-yellow-500 ring-offset-1 ring-offset-slate-900 shadow-2xl shadow-yellow-500/40'
+                      : 'hover:shadow-lg'
                   }`}
                 >
                   {/* Level-up badge */}
@@ -98,54 +98,66 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                     </motion.div>
                   )}
 
-                  <div className="text-4xl mb-2">🦖</div>
-                <h2 className="text-2xl font-bold text-neon-cyan mb-1">{dino.name}</h2>
-                <p className="text-sm text-neon-cyan/70 mb-3">
-                  {dino.element && `${dino.element} • `}
-                  Seviye {dino.level}
-                </p>
+                  <div className="text-5xl mb-3">🦖</div>
+                  <h2 className="text-3xl font-black bg-gradient-to-r from-gold-light to-gold-mid bg-clip-text text-transparent mb-2">{dino.name}</h2>
+                  <p className="text-sm text-gold-light/80 mb-4 font-semibold">
+                    {dino.element && `${dino.element} • `}
+                    ⭐ Seviye {dino.level}
+                  </p>
 
-                {/* Class & Spec Badges */}
-                {(dino.class || dino.spec) && (
-                  <div className="flex gap-2 mb-3 flex-wrap">
-                    {dino.class && (
-                      <div className="glass-dark border border-neon-cyan/30 rounded-lg px-2 py-1 flex items-center gap-2">
-                        <MedallionIcon id={dino.class} type="class" size="sm" />
-                        <span className="text-xs font-bold text-neon-cyan">{getClassIcon(dino.class)?.label || 'Unknown'}</span>
-                      </div>
-                    )}
-                    {dino.spec && (
-                      <div className="glass-dark border border-neon-purple/30 rounded-lg px-2 py-1 flex items-center gap-2">
-                        <MedallionIcon id={dino.spec} type="spec" size="sm" />
-                        <span className="text-xs font-bold text-neon-purple">{getSpecIcon(dino.spec)?.label || 'Unknown'}</span>
-                      </div>
-                    )}
+                  {/* Class & Spec Medallions */}
+                  {(dino.class || dino.spec) && (
+                    <div className="flex gap-3 mb-4 flex-wrap">
+                      {dino.class && (
+                        <div className="bg-gradient-to-br from-blue-900/40 to-blue-900/20 border border-blue-600/50 rounded-lg px-3 py-2 flex items-center gap-2 hover:border-blue-500 transition">
+                          <MedallionIcon id={dino.class} type="class" size="sm" />
+                          <span className="text-xs font-bold text-blue-200">{getClassIcon(dino.class)?.label || 'Unknown'}</span>
+                        </div>
+                      )}
+                      {dino.spec && (
+                        <div className="bg-gradient-to-br from-purple-900/40 to-purple-900/20 border border-purple-600/50 rounded-lg px-3 py-2 flex items-center gap-2 hover:border-purple-500 transition">
+                          <MedallionIcon id={dino.spec} type="spec" size="sm" />
+                          <span className="text-xs font-bold text-purple-200">{getSpecIcon(dino.spec)?.label || 'Unknown'}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                <div className="grid grid-cols-2 gap-3 mb-4 text-xs font-bold">
+                  <div className="bg-gradient-to-br from-red-900/40 to-red-900/20 border border-red-600/50 p-3 rounded-lg text-red-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1"><SvgIcon id="hp" type="stat" size="xs" /> CAN</span>
+                    <span className="text-lg">{dino.maxHp ?? 30}</span>
                   </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-2 mb-4 text-sm font-bold">
-                  <div className="glass border border-red-500/30 p-2 rounded text-red-400 flex items-center gap-1"><SvgIcon id="hp" type="stat" size="xs" /> {dino.maxHp ?? 30}</div>
-                  <div className="glass border border-orange-500/30 p-2 rounded text-orange-400 flex items-center gap-1"><SvgIcon id="atk" type="stat" size="xs" /> {dino.atk ?? 5}</div>
-                  <div className="glass border border-blue-500/30 p-2 rounded text-blue-400 flex items-center gap-1"><SvgIcon id="def" type="stat" size="xs" /> {dino.def ?? 5}</div>
-                  <div className="glass border border-yellow-500/30 p-2 rounded text-yellow-400 flex items-center gap-1"><SvgIcon id="spd" type="stat" size="xs" /> {dino.spd ?? 5}</div>
+                  <div className="bg-gradient-to-br from-orange-900/40 to-orange-900/20 border border-orange-600/50 p-3 rounded-lg text-orange-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1"><SvgIcon id="atk" type="stat" size="xs" /> ATK</span>
+                    <span className="text-lg">{dino.atk ?? 5}</span>
+                  </div>
+                  <div className="bg-gradient-to-br from-blue-900/40 to-blue-900/20 border border-blue-600/50 p-3 rounded-lg text-blue-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1"><SvgIcon id="def" type="stat" size="xs" /> DEF</span>
+                    <span className="text-lg">{dino.def ?? 5}</span>
+                  </div>
+                  <div className="bg-gradient-to-br from-yellow-900/40 to-yellow-900/20 border border-yellow-600/50 p-3 rounded-lg text-yellow-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1"><SvgIcon id="spd" type="stat" size="xs" /> SPD</span>
+                    <span className="text-lg">{dino.spd ?? 5}</span>
+                  </div>
                 </div>
 
-                <div className="mb-3">
-                  <p className="text-xs font-bold text-neon-cyan/70 mb-1">XP:</p>
-                  <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden border border-neon-cyan/20">
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-xs font-bold text-gold-light">✨ DENEYIM</p>
+                    <p className="text-xs font-bold text-gold-light">{dino.xp}/100</p>
+                  </div>
+                  <div className="w-full bg-gradient-to-r from-slate-900 to-slate-800 rounded-full h-3 overflow-hidden border border-gold-dark/40">
                     <div
-                      className="bg-gradient-to-r from-neon-cyan to-neon-purple h-full"
+                      className="bg-gradient-to-r from-gold-light via-gold-mid to-gold-dark h-full transition-all duration-500"
                       style={{ width: `${(dino.xp / 100) * 100}%` }}
                     />
                   </div>
-                  <p className="text-xs text-neon-cyan/70 text-center mt-1">
-                    {dino.xp}/100
-                  </p>
                 </div>
 
                 {dino.abilityIds && dino.abilityIds.length > 0 && (
-                  <div className="mb-3">
-                    <p className="font-bold text-neon-cyan/70 mb-2 text-xs">⚡ Yetenekler:</p>
+                  <div className="mb-4">
+                    <p className="font-bold text-gold-light mb-3 text-xs">⚡ YETENEKLER ({dino.abilityIds.filter(id => id).length})</p>
                     <div className="space-y-2">
                       {dino.abilityIds.map((abilityId: string, idx: number) => {
                         if (!abilityId) return null
@@ -155,7 +167,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                         return (
                           <div
                             key={idx}
-                            className="glass-dark border border-neon-purple/30 rounded-lg p-2 flex items-start gap-2"
+                            className="bg-gradient-to-br from-purple-900/30 to-purple-900/10 border border-purple-600/40 rounded-lg p-3 flex items-start gap-2 hover:border-purple-500/60 transition"
                           >
                             <AbilityIcon iconId={ability.icon} size="md" className="flex-shrink-0" />
                             <div className="flex-1 min-w-0">
@@ -184,21 +196,27 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                   </div>
                 )}
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 pt-2 border-t border-gold-dark/30">
+                  <button
+                    onClick={() => handleOpenDetail(dino)}
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-gold-mid/80 to-gold-dark/80 hover:from-gold-light/80 hover:to-gold-mid/80 text-gold-dark font-bold rounded-lg transition active:scale-95"
+                  >
+                    ℹ️ Detaylar
+                  </button>
                   {onEdit && (
                     <button
                       onClick={() => onEdit(dino)}
-                      className="flex-1 px-4 py-2 glass-dark neon-border-purple rounded font-bold text-neon-purple hover:shadow-neon-purple active:scale-95 transition"
+                      className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-900/60 to-purple-900/40 hover:from-purple-800/80 hover:to-purple-800/60 border border-purple-600/50 text-purple-200 font-bold rounded-lg transition active:scale-95"
                     >
-                      ✏️ Düzenle
+                      ✏️ Düzen
                     </button>
                   )}
                   <button
                     onClick={() => handleDelete(dino.id)}
                     disabled={deleting === dino.id}
-                    className="flex-1 px-4 py-2 glass-dark border border-red-500/30 rounded font-bold text-red-400 hover:shadow-red-500/50 disabled:opacity-50 active:scale-95 transition"
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-red-900/60 to-red-900/40 hover:from-red-800/80 hover:to-red-800/60 border border-red-600/50 text-red-300 font-bold rounded-lg disabled:opacity-50 transition active:scale-95"
                   >
-                    {deleting === dino.id ? '⏳' : '🗑️'} Sil
+                    {deleting === dino.id ? '⏳' : '🗑️'}
                   </button>
                 </div>
                 </motion.div>
