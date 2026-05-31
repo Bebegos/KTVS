@@ -2,13 +2,11 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino } from '../game/types'
 import { abilityDefinitionService } from '../lib/services'
-import { getClassIcon, getSpecIcon } from '../lib/icons'
+import DinoCard from './DinoCard'
 import AbilityIcon from './AbilityIcon'
-import MedallionIcon from './MedallionIcon'
 import SvgIcon from './SvgIcon'
 import { getEffectEmoji } from '../lib/effect-translations'
 import RewardSpendingModal from './RewardSpendingModal'
-import StatDisplay from './StatDisplay'
 import StatBonusAllocator from './StatBonusAllocator'
 import AbilityDiscoveryModal from './AbilityDiscoveryModal'
 
@@ -40,21 +38,31 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
       </div>
 
       <div className="relative z-10">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          <button
-            onClick={onBack}
-            className="hs-btn"
-          >
-            ← Geri
-          </button>
-          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple flex-1">
-            🦖 {dino.name}
-          </h1>
-          <div className="text-center">
-            <p className="text-neon-cyan/70 text-sm">⭐ Seviye {dino.level}</p>
-            <p className="text-gold-light font-bold">💫 {dino.xp}/100 XP</p>
-          </div>
+        {/* Back Button */}
+        <button
+          onClick={onBack}
+          className="hs-btn mb-4"
+        >
+          <span>Geri</span>
+        </button>
+
+        {/* Main Dinosaur Card */}
+        <div className="mb-6 max-w-2xl">
+          <DinoCard
+            dino={dino}
+            mode="display"
+            actions={
+              hasPendingRewards
+                ? [
+                    {
+                      label: 'Ödülü Kullan',
+                      onClick: () => setRewardModalOpen(true),
+                      variant: 'green' as const,
+                    },
+                  ]
+                : []
+            }
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

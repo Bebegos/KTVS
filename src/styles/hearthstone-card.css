@@ -418,3 +418,295 @@
 .dino-card.has-rewards .hs-card-main {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* ============================================================
+   BATTLE DINOSAUR CARD - Battle State Display
+   ============================================================ */
+
+.battle-dino-card {
+  display: block;
+}
+
+.battle-dino-header {
+  margin-bottom: 12px;
+  font-weight: 900;
+}
+
+.battle-dino-health-section {
+  margin-bottom: 12px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.battle-dino-badges {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.battle-dino-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.battle-dino-badge.class-badge {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.battle-dino-badge.spec-badge {
+  background: rgba(147, 51, 234, 0.15);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  color: #9333ea;
+}
+
+.battle-dino-effects {
+  margin-bottom: 12px;
+  padding: 8px;
+  background: rgba(212, 175, 55, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.battle-dino-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.battle-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.battle-stat-item .stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8b7500;
+  letter-spacing: 0.5px;
+}
+
+.battle-stat-item .stat-value {
+  font-size: 18px;
+  font-weight: 900;
+  color: #d4af37;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.battle-dino-abilities {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.battle-abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.battle-ability-btn {
+  padding: 8px;
+  background: linear-gradient(135deg, #fdf6e3 0%, #f3e4c0 50%, #e6cfa0 100%);
+  border: 2px solid #d4af37;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.battle-ability-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fffbf5 0%, #f7ead5 50%, #efddb8 100%);
+  border-color: #ffd700;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+}
+
+.battle-ability-btn.selected {
+  background: linear-gradient(135deg, #fffef5 0%, #f8edda 50%, #ede0be 100%);
+  border-color: #ffd700;
+  box-shadow: 0 0 16px rgba(255, 221, 0, 0.6);
+}
+
+.battle-ability-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.battle-ability-btn .ability-name {
+  font-weight: 700;
+  color: #2a1810;
+}
+
+.battle-ability-btn .ability-cd {
+  font-size: 9px;
+  color: #8b7500;
+  font-weight: 600;
+}
+
+/* Side-specific styling */
+.battle-dino-player .hs-card-title-bar {
+  background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+  border-color: #0c4a6e;
+}
+
+.battle-dino-opponent .hs-card-title-bar {
+  background: linear-gradient(180deg, #a855f7 0%, #9333ea 50%, #7e22ce 100%);
+  border-color: #581c87;
+}
+
+/* ============================================================
+   BATTLE PREVIEW CARD - Pre-Battle Dinosaur Display
+   ============================================================ */
+
+.battle-preview-card-wrapper {
+  display: block;
+}
+
+.battle-preview-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.battle-preview-name {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: #2a1810;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.battle-preview-badges {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.battle-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.battle-preview-badge.class-badge {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #1e40af;
+}
+
+.battle-preview-badge.spec-badge {
+  background: rgba(147, 51, 234, 0.15);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  color: #6d28d9;
+}
+
+.battle-preview-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.battle-preview-xp-section {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.battle-preview-xp-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8b7500;
+  letter-spacing: 0.5px;
+}
+
+.battle-preview-xp-value {
+  color: #d4af37;
+  font-weight: 900;
+}
+
+.battle-preview-xp-bar {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(to right, #2a1810 0%, #3a2614 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.battle-preview-xp-fill {
+  height: 100%;
+  background: linear-gradient(to right, #d4af37 0%, #f5e1a4 50%, #c9a227 100%);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.battle-preview-abilities {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.battle-preview-abilities-label {
+  margin: 0 0 8px 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8b7500;
+  letter-spacing: 0.5px;
+}
+
+.battle-preview-abilities-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ability-tag {
+  padding: 4px 8px;
+  background: linear-gradient(135deg, #fdf6e3 0%, #f3e4c0 50%, #e6cfa0 100%);
+  border: 1px solid #d4af37;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2a1810;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
