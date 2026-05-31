@@ -16,6 +16,7 @@ import { calculateStartingStats, getStatDistributionBreakdown } from '../lib/sta
 import SvgIcon from './SvgIcon'
 import MedallionIcon from './MedallionIcon'
 import StatDisplay from './StatDisplay'
+import HsCard, { HsCardGrid } from './HsCard'
 
 interface DinoCreationFlowProps {
   onBack: () => void
@@ -183,29 +184,32 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto"
             >
-              <h2 className="col-span-full text-2xl font-bold text-neon-cyan mb-2 text-center">
-                Dinozor Sınıfını Seç
+              <h2 className="text-2xl font-bold text-neon-cyan mb-6 text-center">
+                🦖 Dinozor Sınıfını Seç
               </h2>
 
-              {classes.map(classAbs => {
-                return (
-                  <motion.button
-                    key={classAbs.id}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleSelectClass(classAbs.id)}
-                    className="bg-slate-800/60 border border-neon-cyan/40 rounded-xl p-6 text-left transition hover:border-neon-cyan hover:shadow-neon-cyan flex items-center gap-4"
-                  >
-                    <MedallionIcon id={classAbs.id} type="class" size="xl" />
-                    <div>
-                      <h3 className="text-xl font-black text-neon-cyan mb-1">{classAbs.name}</h3>
-                      <p className="text-sm text-neon-cyan/70">{classAbs.description}</p>
-                    </div>
-                  </motion.button>
-                )
-              })}
+              <HsCardGrid className="max-w-4xl mx-auto">
+                {classes.map(classAbs => {
+                  return (
+                    <HsCard
+                      key={classAbs.id}
+                      onClick={() => handleSelectClass(classAbs.id)}
+                      selected={selectedClass === classAbs.id}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0">
+                          <MedallionIcon id={classAbs.id} type="class" size="xl" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-black text-amber-900 mb-1">{classAbs.emoji} {classAbs.name}</h3>
+                          <p className="text-sm text-amber-800">{classAbs.description}</p>
+                        </div>
+                      </div>
+                    </HsCard>
+                  )
+                })}
+              </HsCardGrid>
             </motion.div>
           )}
 

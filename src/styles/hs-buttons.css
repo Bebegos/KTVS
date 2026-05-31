@@ -20,16 +20,42 @@
   transition: all 0.2s ease;
   outline: none;
   user-select: none;
-  overflow: hidden;
-
-  /* SVG button background - wood frame + parchment + metallic */
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60" preserveAspectRatio="none"><defs><filter id="woodGrain"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.12" numOctaves="6" seed="1" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/></filter><linearGradient id="woodGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%234a3420;stop-opacity:1"/><stop offset="40%" style="stop-color:%233a2614;stop-opacity:1"/><stop offset="100%" style="stop-color:%232a1810;stop-opacity:1"/></linearGradient><linearGradient id="metalGold" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:%23f4e4a6;stop-opacity:1"/><stop offset="50%" style="stop-color:%23d4af37;stop-opacity:1"/><stop offset="100%" style="stop-color:%23b8860b;stop-opacity:1"/></linearGradient><linearGradient id="parchment" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23f5ead5;stop-opacity:1"/><stop offset="50%" style="stop-color:%23e8d9be;stop-opacity:1"/><stop offset="100%" style="stop-color:%23d9c9a8;stop-opacity:1"/></linearGradient><filter id="woodTexture"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.15" numOctaves="5" seed="42"/><feColorMatrix type="saturate" values="0.3"/></filter><filter id="parchmentNoise"><feTurbulence type="fractalNoise" baseFrequency="0.04 0.04" numOctaves="3" seed="99" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="0.5" xChannelSelector="R"/></filter></defs><!-- Outer wooden frame --><rect x="2" y="2" width="196" height="56" rx="6" fill="url(%23woodGrad)" filter="url(%23woodTexture)"/><rect x="2" y="2" width="196" height="56" rx="6" fill="rgba(0,0,0,0.2)"/><rect x="2" y="2" width="196" height="3" rx="1" fill="rgba(255,220,150,0.3)"/><rect x="2" y="55" width="196" height="3" rx="1" fill="rgba(0,0,0,0.4)"/><!-- Metallic gold border --><rect x="5" y="5" width="190" height="50" rx="5" fill="none" stroke="url(%23metalGold)" stroke-width="2.5" opacity="0.9"/><rect x="5" y="5" width="190" height="50" rx="5" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" opacity="0.6"/><!-- Parchment center --><rect x="8" y="8" width="184" height="44" rx="4" fill="url(%23parchment)" filter="url(%23parchmentNoise)"/><!-- Parchment texture overlay --><rect x="8" y="8" width="184" height="44" rx="4" fill="url(%23parchment)" opacity="0.3" style="mix-blend-mode: overlay;"/><rect x="8" y="8" width="184" height="22" rx="4" fill="rgba(255,255,255,0.15)"/><!-- Inner shadow for depth --><rect x="8" y="8" width="184" height="44" rx="4" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1"/><rect x="9" y="9" width="182" height="42" rx="3" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/><!-- Highlight edge --><path d="M 10 12 Q 10 10 12 10 L 190 10" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="none"/></svg>');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
+  overflow: visible;
   padding: 12px 24px;
   min-height: 44px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  background: linear-gradient(180deg, #4a3826 0%, #2a1d10 50%, #1a1109 100%);
+  box-shadow:
+    0 5px 0 rgba(0,0,0,0.55),
+    0 8px 18px rgba(0,0,0,0.6),
+    inset 0 2px 2px rgba(180,140,90,0.4),
+    inset 0 -3px 6px rgba(0,0,0,0.7);
+}
+
+.hs-btn::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #f3d27a 0%, #d4af37 45%, #b8860b 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255,248,210,0.9),
+    inset 0 -2px 4px rgba(120,80,10,0.7),
+    0 1px 2px rgba(0,0,0,0.4);
+  z-index: -2;
+}
+
+.hs-btn::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 8px;
+  background: radial-gradient(ellipse at 50% 30%, #fdf6e3 0%, #f3e4c0 55%, #e6cfa0 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.85),
+    inset 0 -3px 6px rgba(160,120,70,0.45),
+    inset 0 0 0 1px rgba(120,80,30,0.25);
+  z-index: -1;
 }
 
 /* Size modifiers */
@@ -37,7 +63,16 @@
   padding: 4px 12px;
   font-size: 12px;
   min-height: 28px;
-  background-size: 100% 100%;
+}
+
+.hs-btn-xs::before {
+  inset: 3px;
+  border-radius: 8px;
+}
+
+.hs-btn-xs::after {
+  inset: 6px;
+  border-radius: 5px;
 }
 
 .hs-btn-sm {
@@ -46,10 +81,30 @@
   min-height: 36px;
 }
 
+.hs-btn-sm::before {
+  inset: 4px;
+  border-radius: 9px;
+}
+
+.hs-btn-sm::after {
+  inset: 7px;
+  border-radius: 6px;
+}
+
 .hs-btn-lg {
   padding: 16px 32px;
   font-size: 18px;
   min-height: 52px;
+}
+
+.hs-btn-lg::before {
+  inset: 6px;
+  border-radius: 14px;
+}
+
+.hs-btn-lg::after {
+  inset: 11px;
+  border-radius: 9px;
 }
 
 .hs-btn-xl {
@@ -59,109 +114,209 @@
   min-height: 60px;
 }
 
+.hs-btn-xl::before {
+  inset: 7px;
+  border-radius: 17px;
+}
+
+.hs-btn-xl::after {
+  inset: 13px;
+  border-radius: 11px;
+}
+
 /* Block button (full width) */
 .hs-btn-block {
   width: 100%;
 }
 
-/* Hover state - slight brightness and lift */
+/* Hover state */
 .hs-btn:hover:not(:disabled) {
+  filter: brightness(1.06);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  filter: brightness(1.1) contrast(1.05);
+  box-shadow:
+    0 7px 0 rgba(0,0,0,0.55),
+    0 12px 24px rgba(0,0,0,0.6),
+    inset 0 2px 2px rgba(180,140,90,0.5),
+    inset 0 -3px 6px rgba(0,0,0,0.7);
 }
 
-/* Active/Pressed state - pushed down */
+/* Active state */
 .hs-btn:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
-  filter: brightness(0.95);
+  transform: translateY(3px);
+  box-shadow:
+    0 2px 0 rgba(0,0,0,0.55),
+    0 4px 10px rgba(0,0,0,0.5),
+    inset 0 2px 2px rgba(180,140,90,0.4),
+    inset 0 -2px 4px rgba(0,0,0,0.6);
 }
 
 /* Disabled state */
 .hs-btn:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
-  color: #7a6a5a;
-  filter: grayscale(0.5) brightness(0.9);
+  filter: grayscale(0.7) brightness(0.78);
+  opacity: 0.7;
 }
 
-/* Color variants using SVG filters */
+/* Color variants */
+.hs-btn-green::after {
+  background: radial-gradient(ellipse at 50% 30%, #d8f5b0 0%, #9fd860 50%, #5a9e2a 100%);
+}
 .hs-btn-green {
-  filter: hue-rotate(-20deg) saturate(1.3) brightness(1.05);
+  color: #234012;
+  text-shadow: 0 1px 0 rgba(220,255,190,0.7);
 }
 
-.hs-btn-green:hover:not(:disabled) {
-  filter: hue-rotate(-20deg) saturate(1.4) brightness(1.15);
+.hs-btn-red::after {
+  background: radial-gradient(ellipse at 50% 30%, #ffd0c0 0%, #e88060 50%, #c0392b 100%);
 }
-
 .hs-btn-red {
-  filter: hue-rotate(15deg) saturate(1.4) brightness(1.0);
+  color: #5a1410;
+  text-shadow: 0 1px 0 rgba(255,210,195,0.6);
 }
 
-.hs-btn-red:hover:not(:disabled) {
-  filter: hue-rotate(15deg) saturate(1.5) brightness(1.1);
+.hs-btn-blue::after {
+  background: radial-gradient(ellipse at 50% 30%, #cce4ff 0%, #6fa8e8 50%, #2a6ec0 100%);
 }
-
 .hs-btn-blue {
-  filter: hue-rotate(200deg) saturate(1.3) brightness(1.02);
+  color: #10294a;
+  text-shadow: 0 1px 0 rgba(200,225,255,0.6);
 }
 
-.hs-btn-blue:hover:not(:disabled) {
-  filter: hue-rotate(200deg) saturate(1.4) brightness(1.12);
+.hs-btn-purple::after {
+  background: radial-gradient(ellipse at 50% 30%, #e6d0ff 0%, #b080e8 50%, #7a2ac0 100%);
 }
-
 .hs-btn-purple {
-  filter: hue-rotate(280deg) saturate(1.2) brightness(1.03);
+  color: #2e1048;
+  text-shadow: 0 1px 0 rgba(230,205,255,0.6);
 }
 
-.hs-btn-purple:hover:not(:disabled) {
-  filter: hue-rotate(280deg) saturate(1.35) brightness(1.13);
+.hs-btn-yellow::after {
+  background: radial-gradient(ellipse at 50% 30%, #fef5e7 0%, #f4d03f 50%, #d68910 100%);
 }
-
 .hs-btn-yellow {
-  filter: hue-rotate(45deg) saturate(1.5) brightness(1.1);
+  color: #4a3013;
+  text-shadow: 0 1px 0 rgba(255,248,225,0.7);
 }
 
-.hs-btn-yellow:hover:not(:disabled) {
-  filter: hue-rotate(45deg) saturate(1.6) brightness(1.2);
-}
-
-/* Default variant (no color filter) */
-.hs-btn:not(.hs-btn-green):not(.hs-btn-red):not(.hs-btn-blue):not(.hs-btn-purple):not(.hs-btn-yellow) {
-  filter: brightness(1.0);
-}
-
-.hs-btn:not(.hs-btn-green):not(.hs-btn-red):not(.hs-btn-blue):not(.hs-btn-purple):not(.hs-btn-yellow):hover:not(:disabled) {
-  filter: brightness(1.1);
-}
-
-/* Focus ring for accessibility */
+/* Focus ring */
 .hs-btn:focus-visible {
   outline: 2px solid #d4af37;
   outline-offset: 2px;
 }
 
-/* Loading/animated state */
-.hs-btn.is-loading {
+/* ============================================================
+   HEARTHSTONE STYLE CARDS - Premium Parchment Design
+   Wood frame, golden borders, aged paper texture
+   ============================================================ */
+
+.hs-card {
+  position: relative;
+  background: linear-gradient(135deg, #fdf6e3 0%, #f3e4c0 50%, #e6cfa0 100%);
+  border: 3px solid #d4af37;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow:
+    0 0 0 2px #8b7500,
+    0 6px 16px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(255,255,255,0.7),
+    inset 0 -2px 4px rgba(120,85,40,0.3);
+}
+
+.hs-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 3px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.01) 0px, rgba(0,0,0,0.01) 1px, transparent 1px, transparent 2px);
+  border-radius: 12px;
   pointer-events: none;
+  z-index: 1;
+}
+
+.hs-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.hs-card-header {
+  border-bottom: 2px solid rgba(212,175,55,0.4);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.hs-card-header h2,
+.hs-card-header h3 {
+  color: #3a2614;
+  text-shadow: 0 1px 0 rgba(255,248,225,0.8);
+  margin: 0;
+}
+
+.hs-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2a1810;
+}
+
+.hs-card-subtitle {
+  font-size: 12px;
+  color: #8b7500;
+  margin-top: 4px;
   opacity: 0.8;
 }
 
-.hs-btn.is-loading::after {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin-left: 8px;
-  border: 2px solid rgba(0, 0, 0, 0.3);
-  border-top-color: #1a0f06;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
+.hs-card-content {
+  color: #3a2614;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* Card hover effect */
+.hs-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 2px #8b7500,
+    0 10px 24px rgba(0,0,0,0.5),
+    inset 0 1px 2px rgba(255,255,255,0.8),
+    inset 0 -2px 4px rgba(120,85,40,0.4);
+  background: linear-gradient(135deg, #fef9ec 0%, #f5e8cf 50%, #ead5ae 100%);
+}
+
+/* Card active/selected state */
+.hs-card.selected,
+.hs-card.active {
+  border-color: #ffdd00;
+  box-shadow:
+    0 0 0 2px #8b7500,
+    0 0 0 4px #ffdd00,
+    0 8px 20px rgba(255,221,0,0.3),
+    inset 0 1px 2px rgba(255,255,255,0.8),
+    inset 0 -2px 4px rgba(120,85,40,0.4);
+  background: linear-gradient(135deg, #fffef5 0%, #f8edda 50%, #ede0be 100%);
+}
+
+/* Card disabled state */
+.hs-card.disabled {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+}
+
+/* Card grid layout */
+.hs-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.hs-card-lg {
+  grid-column: span 1;
+}
+
+@media (max-width: 768px) {
+  .hs-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
   }
 }

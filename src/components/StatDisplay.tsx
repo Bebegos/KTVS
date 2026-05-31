@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { StatKey, STAT_DEFINITIONS, calculateMaxHp } from '../lib/stat-system'
 import { Dino } from '../game/types'
 import StatDetailModal from './StatDetailModal'
+import StatIcon from './StatIcon'
 
 interface StatDisplayProps {
   stat: StatKey
@@ -51,7 +52,7 @@ export default function StatDisplay({
       >
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <span className={iconSizes[size]}>{def.emoji}</span>
+            <StatIcon stat={stat as any} size={size === 'sm' ? 'sm' : size === 'md' ? 'md' : 'lg'} />
             {(size === 'md' || size === 'lg') && (
               <div className="min-w-0">
                 <p className={`font-black text-slate-100 ${size === 'lg' ? 'text-base' : 'text-sm'}`}>
