@@ -457,6 +457,276 @@ export const EFFECTS: Record<string, EffectDefinition> = {
       },
     },
   },
+
+  heal: {
+    id: 'heal',
+    name: 'İyileştirme',
+    icon: '💚',
+    emoji: '💚',
+    color: 'green',
+    description: 'HP\'yi geri getirir',
+    fullDescription: 'Dinozor her tur bazı HP\'sini geri kazanır.',
+    type: 'buff',
+    isBuffEffect: true,
+    defaultLevel: 1,
+    levels: {
+      1: {
+        damage: -5,
+        duration: 3,
+        particles: {
+          type: 'leaf',
+          count: 8,
+          color: '#4ade80',
+          duration: 1500,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.3,
+          duration: 400,
+        },
+        sound: 'heal',
+      },
+      2: {
+        damage: -10,
+        duration: 3,
+        particles: {
+          type: 'leaf',
+          count: 12,
+          color: '#86efac',
+          duration: 1500,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.4,
+          duration: 500,
+        },
+        sound: 'heal-strong',
+      },
+      3: {
+        damage: -15,
+        duration: 4,
+        particles: {
+          type: 'leaf',
+          count: 16,
+          color: '#dcfce7',
+          duration: 2000,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.5,
+          duration: 600,
+        },
+        sound: 'heal-ultimate',
+      },
+    },
+  },
+
+  regen: {
+    id: 'regen',
+    name: 'Yeniden Doğuş',
+    icon: '🌿',
+    emoji: '🌿',
+    color: 'green',
+    description: 'Hızlı HP iyileştirmesi',
+    fullDescription: 'Doğal güçler dinozoru hızlı bir şekilde iyileştirir. Her tur daha çok HP kazanır.',
+    type: 'buff',
+    isBuffEffect: true,
+    defaultLevel: 1,
+    levels: {
+      1: {
+        damage: -8,
+        duration: 2,
+        particles: {
+          type: 'leaf',
+          count: 10,
+          color: '#22c55e',
+          duration: 1500,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.35,
+          duration: 450,
+        },
+        sound: 'regen',
+      },
+      2: {
+        damage: -12,
+        duration: 3,
+        particles: {
+          type: 'leaf',
+          count: 15,
+          color: '#16a34a',
+          duration: 1500,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.45,
+          duration: 550,
+        },
+        sound: 'regen-strong',
+      },
+      3: {
+        damage: -18,
+        duration: 3,
+        particles: {
+          type: 'leaf',
+          count: 20,
+          color: '#15803d',
+          duration: 2000,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.55,
+          duration: 650,
+        },
+        sound: 'regen-ultimate',
+      },
+    },
+  },
+
+  defense_down: {
+    id: 'defense_down',
+    name: 'Savunma Düşüşü',
+    icon: '📉',
+    emoji: '📉',
+    color: 'red',
+    description: 'Savunma azalması',
+    fullDescription: 'Rakibin savunması zayıflar ve daha çok hasar alır.',
+    type: 'debuff',
+    isBuffEffect: false,
+    defaultLevel: 1,
+    levels: {
+      1: {
+        statBonus: { def: -30 },
+        duration: 2,
+        particles: {
+          type: 'spark',
+          count: 8,
+          color: '#ef4444',
+          duration: 1500,
+        },
+        screenEffect: {
+          type: 'tint',
+          intensity: 0.3,
+          duration: 400,
+        },
+        sound: 'debuff-def',
+      },
+      2: {
+        statBonus: { def: -50 },
+        duration: 2,
+        particles: {
+          type: 'spark',
+          count: 12,
+          color: '#dc2626',
+          duration: 1500,
+        },
+        screenEffect: {
+          type: 'tint',
+          intensity: 0.4,
+          duration: 500,
+        },
+        sound: 'debuff-def-strong',
+      },
+      3: {
+        statBonus: { def: -70 },
+        duration: 3,
+        particles: {
+          type: 'spark',
+          count: 16,
+          color: '#991b1b',
+          duration: 2000,
+        },
+        screenEffect: {
+          type: 'tint',
+          intensity: 0.5,
+          duration: 600,
+        },
+        sound: 'debuff-def-critical',
+      },
+    },
+  },
+
+  paralyze: {
+    id: 'paralyze',
+    name: 'Felç',
+    icon: '⚡',
+    emoji: '⚡',
+    color: 'yellow',
+    description: 'Hareket edilemiyor ve hasar azalıyor',
+    fullDescription: 'Elektrik şokundan dolayı hareket edemez ve saldırı gücü azalır.',
+    type: 'debuff',
+    isBuffEffect: false,
+    defaultLevel: 1,
+    levels: {
+      1: {
+        statBonus: { atk: -20, spd: -30 },
+        duration: 2,
+        particles: {
+          type: 'spark',
+          count: 10,
+          color: '#facc15',
+          duration: 1200,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.4,
+          duration: 450,
+        },
+        sound: 'paralyze',
+      },
+      2: {
+        statBonus: { atk: -35, spd: -50 },
+        duration: 2,
+        particles: {
+          type: 'spark',
+          count: 15,
+          color: '#eab308',
+          duration: 1400,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.5,
+          duration: 550,
+        },
+        sound: 'paralyze-strong',
+      },
+      3: {
+        statBonus: { atk: -50, spd: -70 },
+        duration: 3,
+        particles: {
+          type: 'spark',
+          count: 20,
+          color: '#ca8a04',
+          duration: 1600,
+        },
+        screenEffect: {
+          type: 'flash',
+          intensity: 0.6,
+          duration: 650,
+        },
+        sound: 'paralyze-critical',
+      },
+    },
+  },
+
+  none: {
+    id: 'none',
+    name: 'Efekt Yok',
+    icon: '⭕',
+    emoji: '⭕',
+    color: 'blue',
+    description: 'Hiç efekt',
+    fullDescription: 'Bu yeteneğin hiç efekti yoktur, sadece hasar veya koruma sağlar.',
+    type: 'buff',
+    isBuffEffect: false,
+    defaultLevel: 1,
+    levels: {
+      1: {
+        duration: 0,
+      },
+    },
+  },
 }
 
 // Helper functions
