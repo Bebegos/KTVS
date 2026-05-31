@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, Ability, ActiveEffect } from '../game/types'
 import { rollDice, calculateDamage, hasEffect, applyEffect } from '../game/engine'
 import { getEffectNameTR } from '../lib/effect-translations'
+import { getEffectDamage } from '../lib/effects'
 import { supabase, addXpToDino, recordDuelloMatch, abandonDuelloSession } from '../lib/supabase'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
@@ -280,6 +281,70 @@ export default function DuelloBattleScreen({
     addLog(`👤 Seçim yapıldı, rakip bekleniyor...`)
   }
 
+  function applyEffectsAndCleanup() {
+    setPlayerChar(c => {
+      let newHp = c.currentHp
+      const newEffects: ActiveEffect[] = []
+
+      for (const effect of c.effects) {
+        const damage = getEffectDamage(effect.type, 1, c.dino.maxHp)
+        newHp = Math.max(0, newHp - damage)
+
+        if (damage > 0) {
+          addLog(`💀 ${getEffectNameTR(effect.type)}: -${damage} HP`)
+        }
+
+        // Decrement duration
+        const newDuration = effect.duration - 1
+        if (newDuration > 0) {
+          newEffects.push({ ...effect, duration: newDuration })
+        }
+      }
+
+      // Check if player died from effects
+      if (newHp <= 0) {
+        setBattleEnded(true)
+        setWinner('opponent')
+        onBattleEnd('opponent')
+        setBattleLog(prev => ['💀 YENİLDİNİZ! (Efekt hasarı)', ...prev.slice(0, 9)])
+        setRoundInProgress(false)
+      }
+
+      return { ...c, currentHp: newHp, effects: newEffects }
+    })
+
+    setOpponentChar(c => {
+      let newHp = c.currentHp
+      const newEffects: ActiveEffect[] = []
+
+      for (const effect of c.effects) {
+        const damage = getEffectDamage(effect.type, 1, c.dino.maxHp)
+        newHp = Math.max(0, newHp - damage)
+
+        if (damage > 0) {
+          addLog(`🔴 ${getEffectNameTR(effect.type)}: -${damage} HP`)
+        }
+
+        // Decrement duration
+        const newDuration = effect.duration - 1
+        if (newDuration > 0) {
+          newEffects.push({ ...effect, duration: newDuration })
+        }
+      }
+
+      // Check if opponent died from effects
+      if (newHp <= 0) {
+        setBattleEnded(true)
+        setWinner('player')
+        onBattleEnd('player')
+        setBattleLog(prev => ['🎉 KAZANDINIZ! (Efekt hasarı)', ...prev.slice(0, 9)])
+        setRoundInProgress(false)
+      }
+
+      return { ...c, currentHp: newHp, effects: newEffects }
+    })
+  }
+
   function executeRound() {
     if (playerSelectedAbility === null || opponentSelectedAbility === null) return
 
@@ -468,13 +533,18 @@ export default function DuelloBattleScreen({
         return
       }
 
+      // Apply effects and cleanup before next round
+      setTimeout(() => {
+        applyEffectsAndCleanup()
+      }, 1500)
+
       // Reset round
       setTimeout(() => {
         setPlayerSelectedAbility(null)
         setOpponentSelectedAbility(null)
         setRoundInProgress(false)
         setRound(prev => prev + 1)
-      }, 1500)
+      }, 2000)
     }
   }
 
