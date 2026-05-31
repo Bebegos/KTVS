@@ -13,18 +13,6 @@ export interface Ability {
   icon?: string // Saldırı ikonu ID'si
 }
 
-export interface DinoAbility {
-  name: string
-  cd: number
-  kind: AbilityType
-  effects: EffectKind[] // Array of effects
-  multiplier?: number // Hasar çarpanı (varsayılan 1x)
-  icon?: string // Saldırı ikonu ID'si
-  description?: string // Ability description
-  isVampiric?: boolean // For lifesteal abilities like Bloodlust
-  isPassive?: boolean // For passive abilities
-}
-
 export interface Dino {
   id: string
   name: string
@@ -36,15 +24,13 @@ export interface Dino {
   spd: number
   level: number
   xp: number
-  abilities: DinoAbility[]
+  abilityIds: string[] // IDs of selected abilities from library (6 slots: 0-4 regular, 5 ultimate)
   familyCode: string
   createdAt?: string
 
-  // New class and spec system
+  // Class and spec system
   class?: string // 'big_carnivore', 'raptor', 'giant_herbivore', 'flying_carnivore'
   spec?: string // Specialization within the class
-  selectedAbilityIds?: string[] // IDs of selected abilities from library
-  ultimateId?: string // ID of the selected ultimate ability
 }
 
 export interface ActiveEffect {
