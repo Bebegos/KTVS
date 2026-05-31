@@ -175,10 +175,11 @@ export class BattleEngine {
       targetDied = defender.currentHp <= 0
     }
 
-    // Apply effect - buff goes to attacker, debuff goes to defender
+    // Apply effect - buff goes to attacker, debuff goes to defender, heal goes to attacker
     let effectApplied: string | null = null
     if (ability.effect !== 'none') {
-      const effectTarget = ability.kind === 'buff' ? attacker : defender
+      // Determine target: buffs and heal effects go to attacker, debuffs go to defender
+      const effectTarget = (ability.kind === 'buff' || ability.kind === 'heal') ? attacker : defender
       effectApplied = this.applyEffect(effectTarget, ability.effect)
     }
 
@@ -227,7 +228,9 @@ export class BattleEngine {
     const effect = getEffect(effectId)
     if (!effect) return ''
 
-    const duration = effect.levels[1]?.duration || 2
+    // Use effect's default level, fallback to level 1, then to 2
+    const defaultLevel = effect.defaultLevel || 1
+    const duration = effect.levels[defaultLevel]?.duration || effect.levels[1]?.duration || 2
 
     // Check if effect already exists
     const existingIdx = character.effects.findIndex(e => e.type === effectId)
@@ -288,7 +291,8 @@ export class BattleEngine {
     }
 
     char.effects = newEffects
-    char.currentHp = Math.max(0, char.currentHp - totalDamage)
+    // Apply damage/healing: negative totalDamage means healing
+    char.currentHp = Math.min(char.dino.maxHp, Math.max(0, char.currentHp - totalDamage))
 
     return totalDamage
   }
@@ -308,7 +312,9 @@ export class BattleEngine {
     const effect = getEffect(effectId)
     if (!effect || effect.type !== 'buff') return 0
 
-    const bonus = effect.levels[1]?.statBonus
+    // Use effect's default level for stat bonus
+    const defaultLevel = effect.defaultLevel || 1
+    const bonus = effect.levels[defaultLevel]?.statBonus || effect.levels[1]?.statBonus
     if (!bonus) return 0
 
     return bonus[stat] || 0

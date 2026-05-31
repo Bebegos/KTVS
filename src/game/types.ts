@@ -20,6 +20,9 @@ export interface DinoAbility {
   effect: EffectKind
   multiplier?: number // Hasar çarpanı (varsayılan 1x)
   icon?: string // Saldırı ikonu ID'si
+  description?: string // Ability description
+  isVampiric?: boolean // For lifesteal abilities like Bloodlust
+  isPassive?: boolean // For passive abilities
 }
 
 export interface Dino {
