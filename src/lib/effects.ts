@@ -763,23 +763,34 @@ export function getEffectColor(effectId: string): string {
   return colorMap[effect.color]
 }
 
-// Get effect damage (debuffs)
+// Get effect damage/healing (debuffs deal damage, healing effects return negative damage)
 export function getEffectDamage(
   effectId: string,
   level: number = 1,
   targetMaxHp: number = 100
 ): number {
   const effect = EFFECTS[effectId]
-  if (!effect || effect.type !== 'debuff') return 0
+  if (!effect) return 0
 
+  // Get appropriate level data
   const levelData = effect.levels[level] || effect.levels[effect.defaultLevel]
   if (!levelData) return 0
 
-  if (levelData.damagePercent) {
-    return Math.round((targetMaxHp * levelData.damagePercent) / 100)
+  // For debuff effects: apply damage (positive)
+  if (effect.type === 'debuff') {
+    if (levelData.damagePercent) {
+      return Math.round((targetMaxHp * levelData.damagePercent) / 100)
+    }
+    return levelData.damage || 0
   }
 
-  return levelData.damage || 0
+  // For healing effects (heal, regen): apply healing (negative damage)
+  // heal and regen effects have negative damage values to represent healing
+  if (effectId === 'heal' || effectId === 'regen') {
+    return levelData.damage || 0 // Will be negative, representing healing
+  }
+
+  return 0
 }
 
 // Get stat bonus (buffs)
