@@ -301,6 +301,12 @@ export default function DuelloBattleScreen({
         }
       }
 
+      // Decrement ability cooldowns
+      const newAbilities = c.abilities.map(ability => ({
+        ...ability,
+        cd: Math.max(0, ability.cd - 1),
+      }))
+
       // Check if player died from effects
       if (newHp <= 0) {
         setBattleEnded(true)
@@ -310,7 +316,7 @@ export default function DuelloBattleScreen({
         setRoundInProgress(false)
       }
 
-      return { ...c, currentHp: newHp, effects: newEffects }
+      return { ...c, currentHp: newHp, effects: newEffects, abilities: newAbilities }
     })
 
     setOpponentChar(c => {
@@ -332,6 +338,12 @@ export default function DuelloBattleScreen({
         }
       }
 
+      // Decrement ability cooldowns
+      const newAbilities = c.abilities.map(ability => ({
+        ...ability,
+        cd: Math.max(0, ability.cd - 1),
+      }))
+
       // Check if opponent died from effects
       if (newHp <= 0) {
         setBattleEnded(true)
@@ -341,7 +353,7 @@ export default function DuelloBattleScreen({
         setRoundInProgress(false)
       }
 
-      return { ...c, currentHp: newHp, effects: newEffects }
+      return { ...c, currentHp: newHp, effects: newEffects, abilities: newAbilities }
     })
   }
 
