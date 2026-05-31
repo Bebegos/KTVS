@@ -137,16 +137,24 @@ export default function DinoCard({
       {/* XP Bar */}
       {mode !== 'summary' && (
         <div className="dino-card-xp-section">
-          <div className="dino-card-xp-label">
-            <span>DENEYIM</span>
-            <span className="dino-card-xp-value">{dino.xp}/100</span>
-          </div>
-          <div className="dino-card-xp-bar">
-            <div
-              className="dino-card-xp-fill"
-              style={{ width: `${(dino.xp / 100) * 100}%` }}
-            />
-          </div>
+          {(() => {
+            const xpNeeded = Math.floor(100 * Math.pow(dino.level || 1, 1.5))
+            const progress = Math.min((dino.xp / xpNeeded) * 100, 100)
+            return (
+              <>
+                <div className="dino-card-xp-label">
+                  <span>DENEYIM</span>
+                  <span className="dino-card-xp-value">{dino.xp}/{xpNeeded}</span>
+                </div>
+                <div className="dino-card-xp-bar">
+                  <div
+                    className="dino-card-xp-fill"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </>
+            )
+          })()}
         </div>
       )}
 

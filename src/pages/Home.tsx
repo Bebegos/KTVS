@@ -208,9 +208,17 @@ export default function Home() {
           setSelectedDetailDino(null)
           setPage('dino-list')
         }}
-        onRefresh={(newDinos) => {
-          setDinos(newDinos)
-          setSelectedDetailDino(newDinos[0] || null)
+        onRefresh={(updatedDinos) => {
+          // Merge updated dinos with existing list
+          const updatedIds = new Set(updatedDinos.map(d => d.id))
+          const merged = [
+            ...dinos.filter(d => !updatedIds.has(d.id)),
+            ...updatedDinos
+          ]
+          setDinos(merged)
+          // Update selected dino if it was updated
+          const updated = updatedDinos.find(d => d.id === selectedDetailDino.id)
+          if (updated) setSelectedDetailDino(updated)
         }}
       />
     )
