@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Dino } from '../game/types'
 import { abilityDefinitionService } from '../lib/services'
 import { getClassIcon, getSpecIcon } from '../lib/icons'
@@ -8,6 +8,8 @@ import MedallionIcon from './MedallionIcon'
 import SvgIcon from './SvgIcon'
 import { getEffectEmoji } from '../lib/effect-translations'
 import RewardSpendingModal from './RewardSpendingModal'
+import StatDisplay from './StatDisplay'
+import StatBonusAllocator from './StatBonusAllocator'
 
 interface DinoDetailPageProps {
   dino: Dino
@@ -15,8 +17,10 @@ interface DinoDetailPageProps {
   onRefresh: (dinos: Dino[]) => void
 }
 
-export default function DinoDetailPage({ dino, onBack, onRefresh }: DinoDetailPageProps) {
+export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }: DinoDetailPageProps) {
+  const [dino, setDino] = useState(initialDino)
   const [rewardModalOpen, setRewardModalOpen] = useState(false)
+  const [showBonusAllocator, setShowBonusAllocator] = useState(false)
 
   const hasPendingRewards = dino.pendingRewards && (dino.pendingRewards.unspentStatPoints > 0 || dino.pendingRewards.pendingAbilityIds.length > 0)
 
@@ -88,22 +92,35 @@ export default function DinoDetailPage({ dino, onBack, onRefresh }: DinoDetailPa
             >
               <p className="text-xs font-bold text-neon-cyan/70 uppercase">İstatistikler</p>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <span className="text-xs font-bold text-red-400">❤️ CAN</span>
-                  <span className="text-xl font-black text-red-300">{dino.maxHp}</span>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                  <span className="text-xs font-bold text-orange-400">⚔️ SALDIRI</span>
-                  <span className="text-xl font-black text-orange-300">{dino.atk}</span>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                  <span className="text-xs font-bold text-blue-400">🛡️ SAVUNMA</span>
-                  <span className="text-xl font-black text-blue-300">{dino.def}</span>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                  <span className="text-xs font-bold text-yellow-400">⚡ HIZ</span>
-                  <span className="text-xl font-black text-yellow-300">{dino.spd}</span>
-                </div>
+                <StatDisplay
+                  stat="sta"
+                  dino={dino}
+                  value={dino.sta || 0}
+                  size="md"
+                  showBonus={false}
+                  showDetailButton={true}
+                />
+                <StatDisplay
+                  stat="atk"
+                  dino={dino}
+                  value={dino.atk}
+                  size="md"
+                  showDetailButton={true}
+                />
+                <StatDisplay
+                  stat="def"
+                  dino={dino}
+                  value={dino.def}
+                  size="md"
+                  showDetailButton={true}
+                />
+                <StatDisplay
+                  stat="spd"
+                  dino={dino}
+                  value={dino.spd}
+                  size="md"
+                  showDetailButton={true}
+                />
               </div>
             </motion.div>
 
@@ -129,59 +146,75 @@ export default function DinoDetailPage({ dino, onBack, onRefresh }: DinoDetailPa
 
           {/* Right Column: Abilities & Rewards */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Pending Rewards */}
+            {/* Pending Rewards - Show Bonus Allocator or Action Buttons */}
             {hasPendingRewards && dino.pendingRewards && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-yellow-500/10 border-2 border-yellow-500/40 rounded-xl p-5 space-y-4 shadow-lg shadow-yellow-500/20"
+                className="space-y-4"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl animate-pulse">⚡</span>
-                  <div>
-                    <h2 className="text-xl font-black text-yellow-300">SEVİYE ATLADI!</h2>
-                    <p className="text-xs text-yellow-300/70">Ödüllerini harcamaya hazır mısın?</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  {dino.pendingRewards.unspentStatPoints > 0 && (
-                    <div className="bg-yellow-600/20 border border-yellow-500/50 rounded-lg p-4">
-                      <p className="text-sm font-black text-yellow-200 mb-2">
-                        📈 {dino.pendingRewards.unspentStatPoints} STAT PUANI
-                      </p>
-                      <p className="text-xs text-yellow-300/80">
-                        Saldırı, Savunma ve Hız arasında dağıt
-                      </p>
-                    </div>
-                  )}
-
-                  {dino.pendingRewards.pendingAbilityIds.length > 0 && (
-                    <div className="bg-purple-600/20 border border-purple-500/50 rounded-lg p-4">
-                      <p className="text-sm font-black text-purple-200 mb-3">
-                        ✨ {dino.pendingRewards.pendingAbilityIds.length} YETENEĞİ SEÇ
-                      </p>
-                      <div className="space-y-2">
-                        {dino.pendingRewards.pendingAbilityIds.map(abilityId => {
-                          const ability = abilityDefinitionService.getAbility(abilityId)
-                          return ability ? (
-                            <div key={abilityId} className="flex items-center gap-2 text-xs text-purple-300 bg-purple-900/30 px-3 py-2 rounded">
-                              <span>•</span>
-                              <span className="font-bold">{ability.name}</span>
-                            </div>
-                          ) : null
-                        })}
+                {showBonusAllocator && dino.pendingRewards.unspentStatPoints > 0 ? (
+                  <StatBonusAllocator
+                    dino={dino}
+                    bonusPoints={dino.pendingRewards.unspentStatPoints}
+                    onComplete={(updatedDino) => {
+                      setDino(updatedDino)
+                      setShowBonusAllocator(false)
+                      onRefresh([updatedDino])
+                    }}
+                    onCancel={() => setShowBonusAllocator(false)}
+                  />
+                ) : (
+                  <div className="bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-yellow-500/10 border-2 border-yellow-500/40 rounded-xl p-5 space-y-4 shadow-lg shadow-yellow-500/20">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl animate-pulse">⚡</span>
+                      <div>
+                        <h2 className="text-xl font-black text-yellow-300">SEVİYE ATLADI!</h2>
+                        <p className="text-xs text-yellow-300/70">Yeni ödüllerini keşfet</p>
                       </div>
                     </div>
-                  )}
-                </div>
 
-                <button
-                  onClick={() => setRewardModalOpen(true)}
-                  className="w-full px-4 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-yellow-100 font-black rounded-lg transition active:scale-95 shadow-lg shadow-yellow-500/30"
-                >
-                  Ödüllerini Harca →
-                </button>
+                    <div className="space-y-3">
+                      {dino.pendingRewards.unspentStatPoints > 0 && (
+                        <div className="bg-yellow-600/20 border border-yellow-500/50 rounded-lg p-4">
+                          <p className="text-sm font-black text-yellow-200 mb-2">
+                            📈 {dino.pendingRewards.unspentStatPoints} STAT PUANI HAZIR
+                          </p>
+                          <p className="text-xs text-yellow-300/80">
+                            Statlarınızı güçlendir
+                          </p>
+                        </div>
+                      )}
+
+                      {dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__')).length > 0 && (
+                        <div className="bg-purple-600/20 border border-purple-500/50 rounded-lg p-4">
+                          <p className="text-sm font-black text-purple-200 mb-3">
+                            ✨ {dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__')).length} YETENEĞİ KEŞFET
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-3">
+                      {dino.pendingRewards.unspentStatPoints > 0 && (
+                        <button
+                          onClick={() => setShowBonusAllocator(true)}
+                          className="flex-1 px-4 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-yellow-100 font-black rounded-lg transition active:scale-95 shadow-lg shadow-yellow-500/30"
+                        >
+                          📊 Stat Ekle
+                        </button>
+                      )}
+                      {dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__')).length > 0 && (
+                        <button
+                          onClick={() => setRewardModalOpen(true)}
+                          className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-purple-100 font-black rounded-lg transition active:scale-95 shadow-lg shadow-purple-500/30"
+                        >
+                          ✨ Yetenek Keşfet
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -253,15 +286,17 @@ export default function DinoDetailPage({ dino, onBack, onRefresh }: DinoDetailPa
         </div>
       </div>
 
-      {/* Reward Spending Modal */}
-      {rewardModalOpen && dino.pendingRewards && (
-        <RewardSpendingModal
-          dino={dino}
-          isOpen={rewardModalOpen}
-          onClose={() => setRewardModalOpen(false)}
-          onConfirm={handleRewardSpent}
-        />
-      )}
+      {/* Modals */}
+      <AnimatePresence>
+        {rewardModalOpen && dino.pendingRewards && (
+          <RewardSpendingModal
+            dino={dino}
+            isOpen={rewardModalOpen}
+            onClose={() => setRewardModalOpen(false)}
+            onConfirm={handleRewardSpent}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
