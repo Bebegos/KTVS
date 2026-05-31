@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Dino } from '../game/types'
+import { Dino, BattleVisualEffects } from '../game/types'
 import { BattleEngine } from '../lib/battleEngine'
 import { getEffectNameTR } from '../lib/effect-translations'
 import { supabase, addXpToDino, recordDuelloMatch, abandonDuelloSession } from '../lib/supabase'
-import { slotService } from '../lib/services'
+import { slotService, battleVisualService } from '../lib/services'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
 import EffectsDisplay from './EffectsDisplay'
 import BattleStatsCard from './BattleStatsCard'
 import HealthBar from './HealthBar'
 import PremiumAbilityButton from './PremiumAbilityButton'
+import BattleEffectOverlay from './battle-effects/BattleEffectOverlay'
+import FloatingDamageNumber from './battle-effects/FloatingDamageNumber'
 
 interface DuelloBattleScreenProps {
   playerDino: Dino
@@ -46,6 +48,13 @@ export default function DuelloBattleScreen({
   const [playerSelectedAbility, setPlayerSelectedAbility] = useState<number | null>(null)
   const [opponentSelectedAbility, setOpponentSelectedAbility] = useState<number | null>(null)
   const subscriptionRef = useRef<any>(null)
+
+  // New immersive battle effect system
+  const [activeEffectOverlay, setActiveEffectOverlay] = useState(false)
+  const [currentVisualEffects, setCurrentVisualEffects] = useState<BattleVisualEffects | null>(null)
+  const [floatingDamages, setFloatingDamages] = useState<
+    Array<{ id: string; damage: number; isCritical: boolean; isHealing: boolean; x: number; y: number }>
+  >([])
 
   const addLog = (msg: string) => {
     console.log(msg)
@@ -202,33 +211,63 @@ export default function DuelloBattleScreen({
     setTimeout(() => {
       try {
         const result = engine.executeRound(playerSelectedAbility, opponentSelectedAbility)
+        const playerAbility = battleState.player.abilities[playerSelectedAbility]
+        const opponentAbility = battleState.opponent.abilities[opponentSelectedAbility]
+
+        // Get visual effects for both abilities
+        const playerVisuals = battleVisualService.getVisualEffects(playerAbility)
+        const opponentVisuals = battleVisualService.getVisualEffects(opponentAbility)
 
         addLog(`👤 ${result.playerAction.message}`)
-        setCurrentEffectVisual('damage')
-        setShowEffectVisual(true)
-        setTimeout(() => setShowEffectVisual(false), 1500)
+
+        // Show player ability effect overlay
+        setCurrentVisualEffects(playerVisuals)
+        setActiveEffectOverlay(true)
+
+        // Add floating damage numbers for player
+        if (result.playerAction.damage > 0) {
+          const newDamage = {
+            id: `${Date.now()}-player`,
+            damage: result.playerAction.damage,
+            isCritical: false,
+            isHealing: false,
+            x: window.innerWidth * 0.25,
+            y: window.innerHeight * 0.3,
+          }
+          setFloatingDamages(prev => [...prev, newDamage])
+        }
 
         setTimeout(() => {
+          setActiveEffectOverlay(false)
+
           if (result.playerAction.effectApplied) {
             addLog(`✨ ${result.playerAction.effectApplied} uygulandı`)
-            setCurrentEffectVisual('debuff')
-            setShowEffectVisual(true)
-            setTimeout(() => setShowEffectVisual(false), 1500)
           }
 
           setTimeout(() => {
             addLog(`👹 ${result.opponentAction.message}`)
+
             if (!result.opponentAction.targetDied) {
-              setCurrentEffectVisual('damage')
-              setShowEffectVisual(true)
-              setTimeout(() => setShowEffectVisual(false), 1500)
+              // Show opponent ability effect overlay
+              setCurrentVisualEffects(opponentVisuals)
+              setActiveEffectOverlay(true)
+
+              // Add floating damage numbers for opponent
+              if (result.opponentAction.damage > 0) {
+                const newDamage = {
+                  id: `${Date.now()}-opponent`,
+                  damage: result.opponentAction.damage,
+                  isCritical: false,
+                  isHealing: false,
+                  x: window.innerWidth * 0.75,
+                  y: window.innerHeight * 0.3,
+                }
+                setFloatingDamages(prev => [...prev, newDamage])
+              }
             }
 
             if (result.opponentAction.effectApplied) {
               addLog(`✨ ${result.opponentAction.effectApplied} uygulandı`)
-              setCurrentEffectVisual('debuff')
-              setShowEffectVisual(true)
-              setTimeout(() => setShowEffectVisual(false), 1500)
             }
 
             if (result.effectDamage.playerDamage > 0) {
@@ -238,19 +277,23 @@ export default function DuelloBattleScreen({
               addLog(`🔴 Efekt hasarı (Rakip): -${result.effectDamage.opponentDamage} HP`)
             }
 
-            setBattleState(engine.getState())
+            setTimeout(() => {
+              setActiveEffectOverlay(false)
+              setBattleState(engine.getState())
 
-            if (result.battleEnded) {
-              onBattleEnd(result.winner!)
-              return
-            }
+              if (result.battleEnded) {
+                onBattleEnd(result.winner!)
+                return
+              }
 
-            addLog(`🔄 Tur ${engine.getCurrentRound()}`)
-            setPlayerSelectedAbility(null)
-            setOpponentSelectedAbility(null)
-            setRoundInProgress(false)
-          }, result.opponentAction.targetDied ? 0 : 2000)
-        }, result.playerAction.effectApplied ? 2000 : 1000)
+              addLog(`🔄 Tur ${engine.getCurrentRound()}`)
+              setPlayerSelectedAbility(null)
+              setOpponentSelectedAbility(null)
+              setRoundInProgress(false)
+              setFloatingDamages([])
+            }, result.opponentAction.targetDied ? opponentVisuals.animationDuration : opponentVisuals.animationDuration + 500)
+          }, playerVisuals.animationDuration + 200)
+        }, playerVisuals.animationDuration)
       } catch (err) {
         addLog(`❌ Round hatası: ${err instanceof Error ? err.message : String(err)}`)
         setRoundInProgress(false)
@@ -380,6 +423,31 @@ export default function DuelloBattleScreen({
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 p-4 overflow-y-auto relative">
+      {/* New immersive effect overlay */}
+      <AnimatePresence>
+        {activeEffectOverlay && currentVisualEffects && (
+          <BattleEffectOverlay
+            isActive={activeEffectOverlay}
+            visualEffects={currentVisualEffects}
+            onComplete={() => setActiveEffectOverlay(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Floating damage numbers */}
+      <AnimatePresence>
+        {floatingDamages.map((damage) => (
+          <FloatingDamageNumber
+            key={damage.id}
+            damage={damage.damage}
+            isCritical={damage.isCritical}
+            isHealing={damage.isHealing}
+            x={damage.x}
+            y={damage.y}
+          />
+        ))}
+      </AnimatePresence>
+
       <BattleEffectVisuals effectType={currentEffectVisual} isVisible={showEffectVisual} />
 
       <div className="mb-4 flex justify-end">

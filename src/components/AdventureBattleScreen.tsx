@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Dino, ActiveEffect } from '../game/types'
+import { Dino, ActiveEffect, BattleVisualEffects } from '../game/types'
 import { Adventure, AdventureScene, AdventureEnemy } from '../lib/adventures'
 import { BattleEngine } from '../lib/battleEngine'
 import { supabase, addXpToDino, addCoinsToUser } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
-import { slotService, abilityDefinitionService } from '../lib/services'
+import { slotService, abilityDefinitionService, battleVisualService } from '../lib/services'
 import BattleStatsCard from './BattleStatsCard'
 import EffectsDisplay from './EffectsDisplay'
 import AbilityIcon from './AbilityIcon'
@@ -14,6 +14,8 @@ import BattleEffectVisuals from './BattleEffectVisuals'
 import AbilityInfoModal from './AbilityInfoModal'
 import EffectInfoModal from './EffectInfoModal'
 import PremiumAbilityButton from './PremiumAbilityButton'
+import BattleEffectOverlay from './battle-effects/BattleEffectOverlay'
+import FloatingDamageNumber from './battle-effects/FloatingDamageNumber'
 import SvgIcon from './SvgIcon'
 import { getEffectNameTR } from '../lib/effect-translations'
 
@@ -51,6 +53,13 @@ export default function AdventureBattleScreen({
   const [selectedAbilityInfo, setSelectedAbilityInfo] = useState<any>(null)
   const [effectInfoOpen, setEffectInfoOpen] = useState(false)
   const [selectedEffectInfo, setSelectedEffectInfo] = useState<ActiveEffect | null>(null)
+
+  // New immersive battle effect system
+  const [activeEffectOverlay, setActiveEffectOverlay] = useState(false)
+  const [currentVisualEffects, setCurrentVisualEffects] = useState<BattleVisualEffects | null>(null)
+  const [floatingDamages, setFloatingDamages] = useState<
+    Array<{ id: string; damage: number; isCritical: boolean; isHealing: boolean; x: number; y: number }>
+  >([])
 
   const currentScene = adventure.scenes[currentSceneIdx]
   const currentEnemyData = currentScene?.enemies[currentEnemyIdx]
@@ -132,30 +141,78 @@ export default function AdventureBattleScreen({
 
     setTimeout(() => {
       const result = battleEngine.executeRound(playerAbilityIdx, opponentAbilityIdx)
+      const playerAbility = battleState.player.abilities[playerAbilityIdx]
+      const opponentAbility = battleState.opponent.abilities[opponentAbilityIdx]
+
+      // Get visual effects for both abilities upfront
+      const playerVisuals = battleVisualService.getVisualEffects(playerAbility)
+      const opponentVisuals = battleVisualService.getVisualEffects(opponentAbility)
 
       setBattleLog(prev => [result.playerAction.message, ...prev.slice(0, 14)])
-      setCurrentEffectVisual('damage')
-      setShowEffectVisual(true)
-      setTimeout(() => setShowEffectVisual(false), 1500)
+
+      // Show player ability effect overlay
+      setCurrentVisualEffects(playerVisuals)
+      setActiveEffectOverlay(true)
+
+      // Add floating damage numbers
+      if (result.playerAction.damage > 0) {
+        const newDamage = {
+          id: `${Date.now()}-player`,
+          damage: result.playerAction.damage,
+          isCritical: false, // TODO: Add isCrit to result type
+          isHealing: false,
+          x: window.innerWidth * 0.75,
+          y: window.innerHeight * 0.3,
+        }
+        setFloatingDamages(prev => [...prev, newDamage])
+      }
 
       setTimeout(() => {
+        setActiveEffectOverlay(false)
+
         if (!result.playerAction.targetDied) {
+          // Opponent's turn
           setBattleLog(prev => [result.opponentAction.message, ...prev.slice(0, 14)])
-          setCurrentEffectVisual('damage')
-          setShowEffectVisual(true)
-          setTimeout(() => setShowEffectVisual(false), 1500)
+
+          // Show opponent ability effect overlay
+          setTimeout(() => {
+            setCurrentVisualEffects(opponentVisuals)
+            setActiveEffectOverlay(true)
+
+            // Add floating damage numbers for opponent
+            if (result.opponentAction.damage > 0) {
+              const newDamage = {
+                id: `${Date.now()}-opponent`,
+                damage: result.opponentAction.damage,
+                isCritical: false, // TODO: Add isCrit to result type
+                isHealing: false,
+                x: window.innerWidth * 0.25,
+                y: window.innerHeight * 0.3,
+              }
+              setFloatingDamages(prev => [...prev, newDamage])
+            }
+          }, playerVisuals.animationDuration + 200)
+
+          // Hide opponent effect overlay
+          setTimeout(() => {
+            setActiveEffectOverlay(false)
+          }, playerVisuals.animationDuration + 200 + opponentVisuals.animationDuration)
         }
 
-        setBattleState(battleEngine.getState())
-        setPlayerCurrentHp(battleEngine.getState().player.currentHp)
+        // Wait for all animations to complete before updating state
+        setTimeout(() => {
+          setBattleState(battleEngine.getState())
+          setPlayerCurrentHp(battleEngine.getState().player.currentHp)
 
-        if (result.battleEnded) {
-          handleBattleEnd(result.winner === 'player')
-        }
+          if (result.battleEnded) {
+            handleBattleEnd(result.winner === 'player')
+          }
 
-        setSelectedAbility(null)
-        setRoundInProgress(false)
-      }, 2000)
+          setSelectedAbility(null)
+          setRoundInProgress(false)
+          setFloatingDamages([]) // Clear floating damages
+        }, result.playerAction.targetDied ? playerVisuals.animationDuration + 300 : playerVisuals.animationDuration + opponentVisuals.animationDuration + 500)
+      }, playerVisuals.animationDuration)
     }, 800)
   }
 
@@ -273,6 +330,31 @@ export default function AdventureBattleScreen({
   if (inBattle && battleState) {
     return (
       <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 p-4 overflow-y-auto relative">
+        {/* New immersive effect overlay */}
+        <AnimatePresence>
+          {activeEffectOverlay && currentVisualEffects && (
+            <BattleEffectOverlay
+              isActive={activeEffectOverlay}
+              visualEffects={currentVisualEffects}
+              onComplete={() => setActiveEffectOverlay(false)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Floating damage numbers */}
+        <AnimatePresence>
+          {floatingDamages.map((damage) => (
+            <FloatingDamageNumber
+              key={damage.id}
+              damage={damage.damage}
+              isCritical={damage.isCritical}
+              isHealing={damage.isHealing}
+              x={damage.x}
+              y={damage.y}
+            />
+          ))}
+        </AnimatePresence>
+
         <BattleEffectVisuals effectType={currentEffectVisual} isVisible={showEffectVisual} />
 
         <div className="mb-4 flex justify-between items-center">
