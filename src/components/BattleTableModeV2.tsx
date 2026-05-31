@@ -259,28 +259,97 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                   <p className="font-black text-neon-cyan text-sm mb-4 text-center">⚡ YETENEKLER</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    {battleState.player.abilities.slice(0, 4).map((ability, idx) => (
-                      <AbilityButton
-                        key={idx}
-                        ability={ability}
-                        idx={idx}
-                        disabled={!engine.canUseAbility('player', idx) || abilityUsedThisTurn}
-                        onClick={() => executeAbility(idx)}
-                        cooldown={battleState.player.cooldowns[idx]}
-                      />
-                    ))}
+                    {[0, 1, 2, 3].map((idx) => {
+                      const ability = battleState.player.abilities[idx]
+                      return ability ? (
+                        <AbilityButton
+                          key={idx}
+                          ability={ability}
+                          idx={idx}
+                          disabled={!engine.canUseAbility('player', idx) || abilityUsedThisTurn}
+                          onClick={() => executeAbility(idx)}
+                          cooldown={battleState.player.cooldowns[idx]}
+                        />
+                      ) : (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-lg glass-dark neon-border-cyan border-2 flex flex-col items-center justify-center gap-2 opacity-60 cursor-not-allowed"
+                        >
+                          <span className="text-2xl">🔒</span>
+                          <p className="text-xs font-bold text-neon-cyan">Boş Slot</p>
+                          <p className="text-xs text-neon-cyan/70">Seviye {(idx + 1) * 3} açılır</p>
+                        </div>
+                      )
+                    })}
                   </div>
 
-                  {battleState.player.abilities[4] && (
-                    <div className="mb-4">
-                      <AbilityButton
-                        ability={battleState.player.abilities[4]}
-                        idx={4}
-                        disabled={!engine.canUseAbility('player', 4) || abilityUsedThisTurn}
-                        onClick={() => executeAbility(4)}
-                        cooldown={battleState.player.cooldowns[4]}
-                        isUlti
-                      />
+                  {/* Ultimate Slot - Legendary Card Design */}
+                  {battleState.player.abilities[4] ? (
+                    <div className="mb-4 relative">
+                      {/* Hearthstone Legendary Card Frame */}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-b from-yellow-600/40 via-purple-500/30 to-yellow-700/40 border-4 border-yellow-500/80 shadow-[0_0_30px_rgba(234,179,8,0.4)]"
+                      >
+                        {/* Legendary Crown */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-4xl drop-shadow-lg">
+                          👑
+                        </div>
+
+                        {/* Golden sparkles */}
+                        <div className="absolute inset-0 opacity-30 pointer-events-none">
+                          <div className="absolute top-2 right-4 text-xl animate-pulse">✨</div>
+                          <div className="absolute bottom-3 left-3 text-lg animate-pulse animation-delay-500">✨</div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="relative flex gap-3">
+                          <div className="flex-shrink-0 pt-2">
+                            <AbilityIcon iconId={battleState.player.abilities[4].icon} size="lg" />
+                          </div>
+                          <div className="text-left flex-1">
+                            <p className="text-sm font-black text-yellow-300 drop-shadow-lg">
+                              {battleState.player.abilities[4].name}
+                            </p>
+                            <p className="text-xs text-yellow-200/80 font-bold mt-1">ULTIMATE</p>
+                            <div className="text-xs space-y-1 mt-2">
+                              {battleState.player.abilities[4].effect === 'none' ? (
+                                <p className="text-yellow-100/70 font-bold">Saldırı • ×{battleState.player.abilities[4].multiplier || 1}</p>
+                              ) : (
+                                <p className="text-yellow-100 font-bold">
+                                  ⚡ Efekt • ×{battleState.player.abilities[4].multiplier || 1}
+                                </p>
+                              )}
+                              {battleState.player.cooldowns[4] > 0 && (
+                                <p className="text-red-400 font-bold">CD: {battleState.player.cooldowns[4]} tur</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Button overlay */}
+                        <button
+                          onClick={() => executeAbility(4)}
+                          disabled={!engine.canUseAbility('player', 4) || abilityUsedThisTurn}
+                          className={`absolute inset-0 rounded-xl transition ${
+                            !engine.canUseAbility('player', 4) || abilityUsedThisTurn
+                              ? 'opacity-0 cursor-not-allowed'
+                              : 'opacity-0 hover:opacity-20 bg-yellow-400 cursor-pointer'
+                          }`}
+                        />
+                      </motion.div>
+                    </div>
+                  ) : (
+                    <div className="mb-4 relative overflow-hidden rounded-xl p-4 bg-gradient-to-b from-slate-700/30 via-purple-900/30 to-slate-800/30 border-4 border-dashed border-yellow-600/40 shadow-[0_0_20px_rgba(107,114,128,0.3)]">
+                      {/* Locked Ultimate Slot */}
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 text-5xl opacity-50">
+                        🔐
+                      </div>
+                      <div className="relative flex flex-col items-center justify-center gap-2 py-8 text-center opacity-60">
+                        <p className="text-sm font-black text-yellow-400">ULTIMATE SLOT</p>
+                        <p className="text-xs text-yellow-300/70">Seviye 15 açılır</p>
+                        <p className="text-xs text-purple-300/50 mt-2">Efsanevi yeteneğini keşfet!</p>
+                      </div>
                     </div>
                   )}
 
@@ -350,9 +419,14 @@ function AbilityButton({
   cooldown: number
   isUlti?: boolean
 }) {
+  // Safety check: don't render if ability doesn't exist
+  if (!ability) return null
+
   return (
     <motion.button
-      onClick={onClick}
+      onClick={() => {
+        if (!disabled && ability) onClick()
+      }}
       disabled={disabled}
       whileHover={{ scale: disabled ? 1 : 1.05 }}
       whileTap={{ scale: disabled ? 1 : 0.95 }}
@@ -363,17 +437,19 @@ function AbilityButton({
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}`}
     >
       <div className="flex-shrink-0 pt-1">
-        <AbilityIcon iconId={ability.icon} size="md" />
+        <AbilityIcon iconId={ability?.icon} size="md" />
       </div>
 
       <div className="text-left flex-1">
-        <p className={`text-sm font-black ${isUlti ? 'text-neon-purple' : 'text-neon-cyan'}`}>{ability.name}</p>
+        <p className={`text-sm font-black ${isUlti ? 'text-neon-purple' : 'text-neon-cyan'}`}>
+          {ability?.name || 'Bilinmiyor'}
+        </p>
         <div className="text-xs space-y-1 mt-1">
-          {ability.effect === 'none' ? (
-            <p className="text-neon-cyan/70 font-bold">Saldırı • ×{ability.multiplier || 1}</p>
+          {ability?.effect === 'none' ? (
+            <p className="text-neon-cyan/70 font-bold">Saldırı • ×{ability?.multiplier || 1}</p>
           ) : (
             <p className={isUlti ? 'text-purple-400 font-bold' : 'text-red-400 font-bold'}>
-              ⬇️ Efekt • ×{ability.multiplier || 1}
+              ⬇️ Efekt • ×{ability?.multiplier || 1}
             </p>
           )}
           {cooldown > 0 && <p className="text-red-400 font-bold">CD: {cooldown} tur</p>}

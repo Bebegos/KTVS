@@ -238,6 +238,10 @@ body::before {
   pointer-events: none;
 }
 
+/* Animation delay utility for Hearthstone sparkle effects */
+.animation-delay-500 { animation-delay: 500ms; }
+.animation-delay-1000 { animation-delay: 1000ms; }
+
 /* Scrollbar — bronze themed */
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: rgba(28,18,8,0.6); }
