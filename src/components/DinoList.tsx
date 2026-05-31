@@ -8,6 +8,7 @@ import AbilityIcon from './AbilityIcon'
 import MedallionIcon from './MedallionIcon'
 import SvgIcon from './SvgIcon'
 import DinoDetailModal from './DinoDetailModal'
+import StatDisplay from './StatDisplay'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 import { getClassIcon, getSpecIcon } from '../lib/icons'
 
@@ -128,23 +129,35 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                     </div>
                   )}
 
-                <div className="grid grid-cols-2 gap-3 mb-4 text-xs font-bold">
-                  <div className="bg-gradient-to-br from-red-900/40 to-red-900/20 border border-red-600/50 p-3 rounded-lg text-red-300 flex items-center justify-between">
-                    <span className="flex items-center gap-1"><SvgIcon id="hp" type="stat" size="xs" /> CAN</span>
-                    <span className="text-lg">{dino.maxHp ?? 30}</span>
-                  </div>
-                  <div className="bg-gradient-to-br from-orange-900/40 to-orange-900/20 border border-orange-600/50 p-3 rounded-lg text-orange-300 flex items-center justify-between">
-                    <span className="flex items-center gap-1"><SvgIcon id="atk" type="stat" size="xs" /> ATK</span>
-                    <span className="text-lg">{dino.atk ?? 5}</span>
-                  </div>
-                  <div className="bg-gradient-to-br from-blue-900/40 to-blue-900/20 border border-blue-600/50 p-3 rounded-lg text-blue-300 flex items-center justify-between">
-                    <span className="flex items-center gap-1"><SvgIcon id="def" type="stat" size="xs" /> DEF</span>
-                    <span className="text-lg">{dino.def ?? 5}</span>
-                  </div>
-                  <div className="bg-gradient-to-br from-yellow-900/40 to-yellow-900/20 border border-yellow-600/50 p-3 rounded-lg text-yellow-300 flex items-center justify-between">
-                    <span className="flex items-center gap-1"><SvgIcon id="spd" type="stat" size="xs" /> SPD</span>
-                    <span className="text-lg">{dino.spd ?? 5}</span>
-                  </div>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <StatDisplay
+                    stat="sta"
+                    dino={dino}
+                    value={dino.sta || 0}
+                    size="sm"
+                    showDetailButton={false}
+                  />
+                  <StatDisplay
+                    stat="atk"
+                    dino={dino}
+                    value={dino.atk}
+                    size="sm"
+                    showDetailButton={false}
+                  />
+                  <StatDisplay
+                    stat="def"
+                    dino={dino}
+                    value={dino.def}
+                    size="sm"
+                    showDetailButton={false}
+                  />
+                  <StatDisplay
+                    stat="spd"
+                    dino={dino}
+                    value={dino.spd}
+                    size="sm"
+                    showDetailButton={false}
+                  />
                 </div>
 
                 <div className="mb-4">

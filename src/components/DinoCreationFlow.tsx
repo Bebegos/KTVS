@@ -13,8 +13,10 @@ import {
 } from '../lib/abilities'
 import { getClassIcon, getSpecIcon, getAbilityIcon } from '../lib/icons'
 import { calculateStartingStats, getStatDistributionBreakdown } from '../lib/statDistribution'
+import { getStatOrder } from '../lib/stat-system'
 import SvgIcon from './SvgIcon'
 import MedallionIcon from './MedallionIcon'
+import StatDisplay from './StatDisplay'
 
 interface DinoCreationFlowProps {
   onBack: () => void
