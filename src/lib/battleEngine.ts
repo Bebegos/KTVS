@@ -209,13 +209,12 @@ export class BattleEngine {
       // Determine target: buffs and heal effects go to attacker, debuffs go to defender
       const effectTarget = (ability.kind === 'buff' || ability.kind === 'heal') ? attacker : defender
 
-      // Level-gating: enemy effects don't apply if player is 10+ levels below enemy
-      // This check only applies to debuffs (effects on defender)
+      // Level-gating: early game protection - enemy effects don't apply if player level < 10
       const shouldBlockEffects =
         character === 'opponent' && // Attacker is the enemy
         ability.kind !== 'buff' && // Not a self-buff
         ability.kind !== 'heal' && // Not a self-heal
-        (defender.dino.level || 0) + 10 <= (attacker.dino.level || 0) // Player is 10+ levels below
+        (defender.dino.level || 0) < 10 // Player is below level 10
 
       if (!shouldBlockEffects) {
         for (const effectId of ability.effects) {
