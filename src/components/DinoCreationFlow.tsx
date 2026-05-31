@@ -12,6 +12,7 @@ import {
   SPEC_ABILITIES,
 } from '../lib/abilities'
 import { getClassIcon, getSpecIcon, getAbilityIcon } from '../lib/icons'
+import { calculateStartingStats, getStatDistributionBreakdown } from '../lib/statDistribution'
 import SvgIcon from './SvgIcon'
 import MedallionIcon from './MedallionIcon'
 
@@ -95,15 +96,18 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
 
     setLoading(true)
     try {
+      // Calculate stats based on class and spec
+      const calculatedStats = calculateStartingStats(selectedClass, selectedSpec)
+
       // Collect selected ability IDs (2 class + 1 spec)
       const abilityIds = [...selectedClassAbilities, selectedSpecAbility]
 
       await createDino({
         name: stats.name,
-        max_hp: stats.maxHp,
-        atk: stats.atk,
-        def: stats.def,
-        spd: stats.spd,
+        max_hp: calculatedStats.maxHp,
+        atk: calculatedStats.atk,
+        def: calculatedStats.def,
+        spd: calculatedStats.spd,
         level: 1,
         xp: 0,
         ability_ids: abilityIds,
@@ -344,7 +348,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
           )}
 
           {/* Step 5: Stats & Name */}
-          {step === 'stats' && (
+          {step === 'stats' && selectedClass && selectedSpec && (
             <motion.div
               key="stats"
               variants={containerVariants}
@@ -354,13 +358,13 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               className="max-w-2xl mx-auto"
             >
               <h2 className="text-2xl font-bold text-neon-pink mb-6 text-center">
-                Temel Özellikler
+                Dinozor Adı ve İstatistikleri
               </h2>
 
               <div className="glass-dark neon-border-pink rounded-lg p-6 space-y-4">
-                {/* Name */}
+                {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-bold text-neon-pink mb-2">Dinozor Adı *</label>
+                  <label className="block text-sm font-bold text-neon-pink mb-2">🦖 Dinozor Adı *</label>
                   <input
                     type="text"
                     value={stats.name}
@@ -370,39 +374,76 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                   />
                 </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-4">
-                  {['maxHp', 'atk', 'def', 'spd'].map(stat => (
-                    <div key={stat}>
-                      <label className="block text-sm font-bold text-neon-pink mb-2 capitalize">
-                        {stat === 'maxHp' ? 'Can' : stat === 'atk' ? 'Saldırı' : stat === 'def' ? 'Savunma' : 'Hız'}
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min="1"
-                          max={stat === 'maxHp' ? 100 : 20}
-                          value={stats[stat as keyof typeof stats]}
-                          onChange={e =>
-                            setStats({ ...stats, [stat]: Math.max(1, parseInt(e.target.value) || 0) })
-                          }
-                          className="flex-1 px-3 py-2 bg-slate-700 border border-neon-pink/50 rounded-lg text-neon-pink focus:outline-none focus:border-neon-pink"
-                        />
-                        <span className="text-neon-pink/70 text-sm font-bold w-8">
-                          {stats[stat as keyof typeof stats]}
-                        </span>
+                {/* Auto-Calculated Stats Breakdown */}
+                {(() => {
+                  const breakdown = getStatDistributionBreakdown(selectedClass, selectedSpec)
+                  const finalStats = breakdown.final
+
+                  return (
+                    <>
+                      {/* Stat Distribution Explanation */}
+                      <div className="mt-6 space-y-3">
+                        <div className="p-3 bg-gradient-to-r from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-lg">
+                          <p className="text-xs font-bold text-blue-400 mb-2">📊 SINIFINDAN GELEN STATLAR (8 puan):</p>
+                          <div className="space-y-1 text-xs text-white/80">
+                            {breakdown.classTheme && (
+                              <>
+                                <p>Saldırı: +{breakdown.classTheme.classDistribution.atk}</p>
+                                <p>Savunma: +{breakdown.classTheme.classDistribution.def}</p>
+                                <p>Hız: +{breakdown.classTheme.classDistribution.spd}</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-gradient-to-r from-purple-500/10 to-purple-500/5 border border-purple-500/30 rounded-lg">
+                          <p className="text-xs font-bold text-purple-400 mb-2">⭐ ÖZELLESTIRMESINDEN GELEN STATLAR (2 puan):</p>
+                          <div className="space-y-1 text-xs text-white/80">
+                            {breakdown.specTheme && (
+                              <>
+                                <p>Saldırı: +{breakdown.specTheme.specDistribution.atk}</p>
+                                <p>Savunma: +{breakdown.specTheme.specDistribution.def}</p>
+                                <p>Hız: +{breakdown.specTheme.specDistribution.spd}</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+
+                      {/* Final Stats Display */}
+                      <div className="mt-6 grid grid-cols-2 gap-3">
+                        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
+                          <p className="text-xs font-bold text-red-400 mb-1">❤️ CAN</p>
+                          <p className="text-2xl font-black text-red-300">{finalStats.maxHp}</p>
+                          <p className="text-xs text-red-400/70 mt-1">(sabit)</p>
+                        </div>
+                        <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 text-center">
+                          <p className="text-xs font-bold text-orange-400 mb-1">⚔️ SALDIRI</p>
+                          <p className="text-2xl font-black text-orange-300">{finalStats.atk}</p>
+                          <p className="text-xs text-orange-400/70 mt-1">(5 + {finalStats.atk - 5})</p>
+                        </div>
+                        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-center">
+                          <p className="text-xs font-bold text-blue-400 mb-1">🛡️ SAVUNMA</p>
+                          <p className="text-2xl font-black text-blue-300">{finalStats.def}</p>
+                          <p className="text-xs text-blue-400/70 mt-1">(5 + {finalStats.def - 5})</p>
+                        </div>
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-center">
+                          <p className="text-xs font-bold text-yellow-400 mb-1">⚡ HIZ</p>
+                          <p className="text-2xl font-black text-yellow-300">{finalStats.spd}</p>
+                          <p className="text-xs text-yellow-400/70 mt-1">(5 + {finalStats.spd - 5})</p>
+                        </div>
+                      </div>
+                    </>
+                  )
+                })()}
 
                 {/* Summary */}
                 <div className="mt-6 p-4 bg-neon-pink/10 border border-neon-pink/30 rounded-lg">
-                  <p className="text-sm font-bold text-neon-pink mb-3">📋 Özet:</p>
+                  <p className="text-sm font-bold text-neon-pink mb-3">📋 ÖZETi:</p>
                   <div className="space-y-1 text-sm text-neon-pink/80">
-                    <p>Sınıf: <span className="font-bold">{CLASS_ABILITIES[selectedClass!].name}</span></p>
-                    <p>Özellik: <span className="font-bold">{SPEC_ABILITIES[selectedSpec!].name}</span></p>
-                    <p>Seçili Yetenekler: <span className="font-bold">{selectedClassAbilities.length + 1}/5</span></p>
+                    <p>Sınıf: <span className="font-bold">{CLASS_ABILITIES[selectedClass].name}</span></p>
+                    <p>Özelleştirme: <span className="font-bold">{SPEC_ABILITIES[selectedSpec].name}</span></p>
+                    <p>Yetenekler: <span className="font-bold">{selectedClassAbilities.length} Sınıf + 1 Özel = 3 Toplam</span></p>
                   </div>
                 </div>
 
