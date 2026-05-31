@@ -37,6 +37,7 @@ export interface Dino {
   // Class and spec system
   class?: string // 'big_carnivore', 'raptor', 'giant_herbivore', 'flying_carnivore'
   spec?: string // Specialization within the class
+  hpPerLevelStat?: number // How many HP per stat point spent on HP (1.0, 1.5, 2.0)
 
   // Pending rewards (earned but not yet spent)
   pendingRewards?: PendingRewards

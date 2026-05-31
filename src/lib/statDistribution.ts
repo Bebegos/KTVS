@@ -1,23 +1,27 @@
 // Stat Distribution System - Automatic allocation based on class & spec themes
-// Base stats: HP 30, ATK 5, DEF 5, SPD 5
+// Base stats: ATK 5, DEF 5, SPD 5
+// HP: 25-50 range based on class/spec (defense specs get bonus HP)
 // Class distribution: 8 points
 // Spec distribution: 2 points
-// Only ATK, DEF, SPD get the points (HP stays fixed at 30)
 
 export interface StatDistribution {
   atk: number
   def: number
   spd: number
+  hp?: number // Optional: HP multiplier for level-ups
 }
 
 export interface ClassStatTheme {
   name: string
+  baseHp: number // Starting HP for this class (25-40 range)
   classDistribution: StatDistribution // 8 points to distribute
+  hpPerLevelStat: number // How many HP gained per stat point spent on HP (1.0, 1.5, 2.0, etc)
 }
 
 export interface SpecStatTheme {
   name: string
   specDistribution: StatDistribution // 2 points to distribute
+  hpBonus?: number // Additional HP granted by this spec
 }
 
 // ============= CLASS STAT DISTRIBUTIONS (8 points each) =============
@@ -25,6 +29,8 @@ export interface SpecStatTheme {
 export const CLASS_STAT_THEMES: Record<string, ClassStatTheme> = {
   big_carnivore: {
     name: 'Büyük Yırtıcı',
+    baseHp: 35,
+    hpPerLevelStat: 1, // 1 HP per stat point
     classDistribution: {
       atk: 4,  // Heavy attacker
       def: 3,  // Moderate defense
@@ -33,6 +39,8 @@ export const CLASS_STAT_THEMES: Record<string, ClassStatTheme> = {
   },
   raptor: {
     name: 'Raptor',
+    baseHp: 28,
+    hpPerLevelStat: 2, // 2 HP per stat point (fast, fragile)
     classDistribution: {
       atk: 3,  // Good attack
       def: 2,  // Low defense
@@ -41,6 +49,8 @@ export const CLASS_STAT_THEMES: Record<string, ClassStatTheme> = {
   },
   giant_herbivore: {
     name: 'Dev Otçul',
+    baseHp: 45,
+    hpPerLevelStat: 1.5, // 1.5 HP per stat point (defensive)
     classDistribution: {
       atk: 1,  // Weak attack
       def: 5,  // Very defensive
@@ -49,6 +59,8 @@ export const CLASS_STAT_THEMES: Record<string, ClassStatTheme> = {
   },
   flying_carnivore: {
     name: 'Uçan Yırtıcı',
+    baseHp: 25,
+    hpPerLevelStat: 2, // 2 HP per stat point (very fragile, very fast)
     classDistribution: {
       atk: 3,  // Good attack
       def: 1,  // Very low defense
@@ -63,6 +75,7 @@ export const SPEC_STAT_THEMES: Record<string, SpecStatTheme> = {
   // big_carnivore specs
   armored: {
     name: 'Zırhlı',
+    hpBonus: 8, // +8 HP (tank specialization)
     specDistribution: {
       atk: 0,
       def: 2,  // +2 DEF (tank specialization)
@@ -115,6 +128,7 @@ export const SPEC_STAT_THEMES: Record<string, SpecStatTheme> = {
   // giant_herbivore specs
   tank: {
     name: 'Tank',
+    hpBonus: 12, // +12 HP (pure tank spec - herbivore)
     specDistribution: {
       atk: 0,
       def: 2,  // +2 DEF (pure tank)
@@ -123,6 +137,7 @@ export const SPEC_STAT_THEMES: Record<string, SpecStatTheme> = {
   },
   healer: {
     name: 'İyileştirici',
+    hpBonus: 6, // +6 HP (support role)
     specDistribution: {
       atk: 0,
       def: 1,
@@ -131,6 +146,7 @@ export const SPEC_STAT_THEMES: Record<string, SpecStatTheme> = {
   },
   earth_shaker: {
     name: 'Yer Sarsıcı',
+    hpBonus: 4, // +4 HP (balanced tank)
     specDistribution: {
       atk: 1,
       def: 1,  // +1 ATK +1 DEF (control spec)
@@ -171,10 +187,9 @@ export const SPEC_STAT_THEMES: Record<string, SpecStatTheme> = {
 export function calculateStartingStats(
   classId: string,
   specId: string
-): { maxHp: number; atk: number; def: number; spd: number } {
-  // Base stats (never change)
+): { maxHp: number; atk: number; def: number; spd: number; hpPerLevelStat: number } {
+  // Base combat stats
   const baseStats = {
-    maxHp: 30,
     atk: 5,
     def: 5,
     spd: 5,
@@ -184,27 +199,38 @@ export function calculateStartingStats(
   const classTheme = CLASS_STAT_THEMES[classId]
   if (!classTheme) {
     console.warn(`Class theme not found: ${classId}, using defaults`)
-    return baseStats
+    return {
+      maxHp: 30,
+      ...baseStats,
+      hpPerLevelStat: 1,
+    }
   }
 
   // Get spec theme
   const specTheme = SPEC_STAT_THEMES[specId]
+  let maxHp = classTheme.baseHp
+  if (specTheme?.hpBonus) {
+    maxHp += specTheme.hpBonus
+  }
+
   if (!specTheme) {
     console.warn(`Spec theme not found: ${specId}, using class distribution only`)
     return {
-      ...baseStats,
+      maxHp,
       atk: baseStats.atk + classTheme.classDistribution.atk,
       def: baseStats.def + classTheme.classDistribution.def,
       spd: baseStats.spd + classTheme.classDistribution.spd,
+      hpPerLevelStat: classTheme.hpPerLevelStat,
     }
   }
 
   // Combine class and spec distributions
   return {
-    maxHp: baseStats.maxHp, // Never changes
+    maxHp,
     atk: baseStats.atk + classTheme.classDistribution.atk + specTheme.specDistribution.atk,
     def: baseStats.def + classTheme.classDistribution.def + specTheme.specDistribution.def,
     spd: baseStats.spd + classTheme.classDistribution.spd + specTheme.specDistribution.spd,
+    hpPerLevelStat: classTheme.hpPerLevelStat,
   }
 }
 
