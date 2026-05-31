@@ -1,5 +1,5 @@
 export type EffectKind = 'poison' | 'stun' | 'stop' | 'power' | 'speed' | 'shield' | 'heal' | 'regen' | 'defense_down' | 'paralyze' | 'none'
-export type AbilityType = 'buff' | 'debuff'
+export type AbilityType = 'attack' | 'buff' | 'debuff' | 'heal' | 'utility' | 'ultimate' | 'passive'
 
 export interface Ability {
   id: string

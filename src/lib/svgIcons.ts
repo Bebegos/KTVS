@@ -245,6 +245,66 @@ export const EFFECT_ICONS: Record<string, SvgIcon> = {
       <path d="M42 22 L22 42" stroke="url(#paralyzeGradient)" stroke-width="2"/>
     </svg>`,
   },
+
+  bleeding: {
+    id: 'bleeding',
+    name: 'Kanama',
+    category: 'effect',
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bleedGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#c0392b;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="30" fill="url(#bleedGradient)" opacity="0.1"/>
+      <path d="M32 14 Q22 24 22 32 Q22 48 32 52 Q42 48 42 32 Q42 24 32 14" fill="url(#bleedGradient)" stroke="#c0392b" stroke-width="1.5"/>
+      <circle cx="28" cy="40" r="2" fill="#fff" opacity="0.7"/>
+      <circle cx="36" cy="44" r="2" fill="#fff" opacity="0.7"/>
+      <circle cx="32" cy="50" r="2" fill="#fff" opacity="0.7"/>
+    </svg>`,
+  },
+
+  power: {
+    id: 'power',
+    name: 'Güç',
+    category: 'effect',
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="powerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#e67e22;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="30" fill="url(#powerGradient)" opacity="0.1"/>
+      <path d="M32 10 L42 28 L35 35 L32 18 L29 35 L22 28 Z" fill="url(#powerGradient)" stroke="#e67e22" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="4" fill="#fff" opacity="0.7"/>
+    </svg>`,
+  },
+
+  shield: {
+    id: 'shield',
+    name: 'Kalkan',
+    category: 'effect',
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="30" fill="url(#shieldGradient)" opacity="0.1"/>
+      <path d="M32 10 L46 18 L46 34 Q32 44 32 44 Q18 44 18 34 L18 18 Z" fill="url(#shieldGradient)" stroke="#2980b9" stroke-width="2"/>
+      <circle cx="32" cy="28" r="5" fill="#fff" opacity="0.6"/>
+    </svg>`,
+  },
+
+  speed: {
+    id: 'speed',
+    name: 'Hız Artışı',
+    category: 'effect',
+    svg: ABILITY_ICONS.hiz.svg,
+  },
 }
 
 // ========== STAT ICONS ==========

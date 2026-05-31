@@ -87,11 +87,10 @@ function getUltimateReward(classId: string, specId: string, level: number): Leve
  * Converts an ability from library to DinoAbility for storage
  */
 export function abilityToDinoAbility(ability: any): DinoAbility {
-  const systemKind = ability.kind === 'buff' ? 'buff' : 'debuff'
   return {
     name: ability.name,
-    cd: 0,
-    kind: systemKind,
+    cd: ability.cooldown || 0,
+    kind: ability.kind,
     effect: ability.effect,
     multiplier: ability.damageMultiplier || 0,
     icon: ability.icon,

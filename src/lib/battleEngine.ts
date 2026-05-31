@@ -133,10 +133,11 @@ export class BattleEngine {
 
     const message = `${character === 'player' ? '👤' : '👹'} ${ability.name} [${finalDamage} DMG]`
 
-    // Apply effect
+    // Apply effect - buff goes to attacker, debuff goes to defender
     let effectApplied: string | null = null
     if (ability.effect !== 'none') {
-      effectApplied = this.applyEffect(defender, ability.effect)
+      const effectTarget = ability.kind === 'buff' ? attacker : defender
+      effectApplied = this.applyEffect(effectTarget, ability.effect)
     }
 
     // Set cooldown

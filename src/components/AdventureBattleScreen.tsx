@@ -110,6 +110,7 @@ export default function AdventureBattleScreen({
         }
 
         setBattleState(battleEngine.getState())
+        setPlayerCurrentHp(battleEngine.getState().player.currentHp)
 
         if (result.battleEnded) {
           handleBattleEnd(result.winner === 'player')
