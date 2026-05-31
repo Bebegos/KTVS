@@ -1,27 +1,22 @@
 // Complete abilities library - Single source of truth for all abilities
 // Organized by class and specialization
+// Includes all classes, specs, and ultimate abilities
 
-export type AbilityKind = 'attack' | 'buff' | 'debuff' | 'utility' | 'ultimate' | 'passive'
+export type AbilityKind = 'attack' | 'buff' | 'debuff' | 'utility' | 'ultimate' | 'passive' | 'heal'
 export type AbilityCategory = 'class' | 'spec' | 'base' | 'ultimate'
 
 export interface AbilityDefinition {
   id: string
   name: string
-  icon: string // SVG icon name from our library
+  icon: string
   emoji: string
   kind: AbilityKind
   category: AbilityCategory
-
-  // Mechanics
-  cooldown: number // Turns between uses
-  damageMultiplier: number // 0 for no damage abilities
-  effect: string // 'none' | effect id from effects library
-
-  // Description
+  cooldown: number
+  damageMultiplier: number
+  effect: string // 'none' | effect id
   description: string
   fullDescription: string
-
-  // Passive ability flag
   isPassive?: boolean
 }
 
@@ -87,7 +82,7 @@ export const CLASS_ABILITIES: Record<string, ClassAbilities> = {
         cooldown: 3,
         damageMultiplier: 0.8,
         effect: 'stun',
-        description: '3 turda bir, alt hasar ama sersemletme efektli',
+        description: '3 turda bir, az hasar + sersemletme efektli',
         fullDescription: 'Hızlı bir hamle. Daha az hasar verir ama sersem efekti uygular.',
       },
       {
@@ -113,7 +108,7 @@ export const CLASS_ABILITIES: Record<string, ClassAbilities> = {
         cooldown: 0,
         damageMultiplier: 0.9,
         effect: 'none',
-        description: 'Her tur atılabilen standart hasar',
+        description: 'Her tur atılabilen orta hasar',
         fullDescription: 'Kuyrakla hızlı bir vurma. Her turda kullanılabilir.',
       },
     ],
@@ -161,8 +156,8 @@ export const CLASS_ABILITIES: Record<string, ClassAbilities> = {
         cooldown: 2,
         damageMultiplier: 0,
         effect: 'none',
-        description: '2 turda bir, hasar almaz',
-        fullDescription: 'Hızlı bir kaçış hareketi. Bir saldırıdan kurtulmaya yardımcı olur.',
+        description: '2 turda bir, sonraki hasarı azaltır',
+        fullDescription: 'Hızlı bir kaçış hareketi. Bir sonraki hasarı yarıya indirir.',
       },
       {
         id: 'leap_attack',
@@ -197,7 +192,7 @@ export const CLASS_ABILITIES: Record<string, ClassAbilities> = {
     id: 'giant_herbivore',
     name: 'Dev Otçul',
     emoji: '🦣',
-    description: 'Devasa ve dayanıklı, savunma odaklı.',
+    description: 'Devasa ve dayanıklı, savunma ve iyileştirme odaklı.',
     abilities: [
       {
         id: 'stomp',
@@ -270,7 +265,7 @@ export const CLASS_ABILITIES: Record<string, ClassAbilities> = {
   flying_carnivore: {
     id: 'flying_carnivore',
     name: 'Uçan Yırtıcı',
-    emoji: '🦅',
+    emoji: '🪶',
     description: 'Hızlı ve çevik, hava üstünlüğü sağlayan.',
     abilities: [
       {
@@ -314,7 +309,7 @@ export const CLASS_ABILITIES: Record<string, ClassAbilities> = {
       },
       {
         id: 'swoop',
-        name: 'Hava Kahraman',
+        name: 'Dönüş Hareketi',
         icon: 'swoop',
         emoji: '🌪️',
         kind: 'attack',
@@ -345,7 +340,7 @@ export const CLASS_ABILITIES: Record<string, ClassAbilities> = {
 // ============= SPEC ABILITIES =============
 
 export const SPEC_ABILITIES: Record<string, SpecAbilities> = {
-  // Big Carnivore specs
+  // Big Carnivore Specs
   armored: {
     id: 'armored',
     name: 'Kalkanlı',
@@ -390,7 +385,7 @@ export const SPEC_ABILITIES: Record<string, SpecAbilities> = {
         damageMultiplier: 0,
         effect: 'none',
         isPassive: true,
-        description: 'Pasif, her hasar aldığında %2 sini geri yansıtır',
+        description: 'Pasif, direkt hasarın %2 sini geri yansıtır',
         fullDescription: 'Zırh üzerinde dikenleri vardır. Aldığı direkt hasarın %2 sini yansıtır.',
       },
     ],
@@ -483,13 +478,460 @@ export const SPEC_ABILITIES: Record<string, SpecAbilities> = {
         name: 'Kan Hortumu',
         icon: 'bloodlust',
         emoji: '🧛',
-        kind: 'utility',
+        kind: 'heal',
         category: 'spec',
         cooldown: 4,
         damageMultiplier: 0.9,
         effect: 'none',
         description: '4 turda bir, hasar verir + HP kazanır',
         fullDescription: 'Rakibinin kanını içerek HP kazanır.',
+      },
+    ],
+  },
+
+  // Raptor Specs
+  speed_demon: {
+    id: 'speed_demon',
+    name: 'Hız Şeytanı',
+    emoji: '⚡',
+    description: 'Müthiş hız, her turda saldırı yapabilir.',
+    classId: 'raptor',
+    abilities: [
+      {
+        id: 'blitz_attack',
+        name: 'Yıldırım Saldırısı',
+        icon: 'speed',
+        emoji: '⚡',
+        kind: 'attack',
+        category: 'spec',
+        cooldown: 0,
+        damageMultiplier: 0.95,
+        effect: 'none',
+        description: 'Her tur atılabilen orta hasar',
+        fullDescription: 'Işık hızında saldırı. Her turda kullanılabilir, orta hasar verir.',
+      },
+      {
+        id: 'turbo_charge',
+        name: 'Turbo Şarj',
+        icon: 'speed',
+        emoji: '🏎️',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 3,
+        damageMultiplier: 0,
+        effect: 'speed',
+        description: '3 turda bir, +hız efektli',
+        fullDescription: 'Hızını maksimuma çıkarır. Hareket hızı artar.',
+      },
+      {
+        id: 'temporal_advantage',
+        name: 'Zamansal Üstünlük',
+        icon: 'speed',
+        emoji: '🌀',
+        kind: 'utility',
+        category: 'spec',
+        cooldown: 5,
+        damageMultiplier: 0,
+        effect: 'none',
+        description: '5 turda bir, bir ekstra tur alır',
+        fullDescription: 'Zaman akışını kontrol eder. Ekstra bir tur daha saldırır.',
+      },
+    ],
+  },
+
+  poison_master: {
+    id: 'poison_master',
+    name: 'Zehir Ustası',
+    emoji: '☠️',
+    description: 'Zehir yetenekleri, ölümcül toksinler.',
+    classId: 'raptor',
+    abilities: [
+      {
+        id: 'toxic_cloud',
+        name: 'Zehirli Bulut',
+        icon: 'poison',
+        emoji: '☠️',
+        kind: 'debuff',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 0.2,
+        effect: 'poison',
+        description: '2 turda bir, az hasar + zehir',
+        fullDescription: 'Zehirli gaz bulut. Rakibi zehirler.',
+      },
+      {
+        id: 'neurotoxin',
+        name: 'Nörotoksin',
+        icon: 'paralyze',
+        emoji: '🧬',
+        kind: 'debuff',
+        category: 'spec',
+        cooldown: 4,
+        damageMultiplier: 0,
+        effect: 'paralyze',
+        description: '4 turda bir, paralyze efektli',
+        fullDescription: 'Sinir sistemini felç eden zehir. Paralizi nedeni olur.',
+      },
+      {
+        id: 'antidote_mastery',
+        name: 'Antidot Uzmanı',
+        icon: 'heal',
+        emoji: '💉',
+        kind: 'heal',
+        category: 'spec',
+        cooldown: 3,
+        damageMultiplier: 0,
+        effect: 'heal',
+        description: '3 turda bir, kendini iyileştirir',
+        fullDescription: 'Antioksidanlar ile kendini iyileştirir. HP kazanır.',
+      },
+    ],
+  },
+
+  pack_hunter: {
+    id: 'pack_hunter',
+    name: 'Sürü Avcısı',
+    emoji: '👥',
+    description: 'Taktikli saldırılar, koordineli hamle.',
+    classId: 'raptor',
+    abilities: [
+      {
+        id: 'coordinated_strike',
+        name: 'Koordine Saldırısı',
+        icon: 'slash',
+        emoji: '⚔️',
+        kind: 'attack',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 1.2,
+        effect: 'none',
+        description: '2 turda bir, orta-yüksek hasar',
+        fullDescription: 'Taktiğe dayalı saldırı. Ortadüzey yüksek hasar verir.',
+      },
+      {
+        id: 'pack_tactics',
+        name: 'Sürü Taktikleri',
+        icon: 'dodge',
+        emoji: '🛡️',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 0,
+        effect: 'shield',
+        description: '2 turda bir, +savunma ve +hız',
+        fullDescription: 'Sürü düzenine girer. Savunma ve hız artar.',
+      },
+      {
+        id: 'predatory_instinct',
+        name: 'Avcı İçgüdüsü',
+        icon: 'bite',
+        emoji: '🦁',
+        kind: 'passive',
+        category: 'spec',
+        cooldown: 0,
+        damageMultiplier: 0,
+        effect: 'none',
+        isPassive: true,
+        description: 'Pasif, zayıf rakiplere %15 daha çok hasar',
+        fullDescription: 'Avcı içgüdüsü kırmızı görmesine sebep olur. Zayıf rakiplere ekstra hasar.',
+      },
+    ],
+  },
+
+  // Giant Herbivore Specs
+  tank: {
+    id: 'tank',
+    name: 'Tank',
+    emoji: '🏰',
+    description: 'Son derece dayanıklı, koruma uzmanı.',
+    classId: 'giant_herbivore',
+    abilities: [
+      {
+        id: 'fortify',
+        name: 'Takviye',
+        icon: 'brace',
+        emoji: '🏰',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 0,
+        effect: 'shield',
+        description: '2 turda bir, +savunma %60',
+        fullDescription: 'Vücudunu demir kabuğu gibi yapır. Savunması çok artar.',
+      },
+      {
+        id: 'last_stand',
+        name: 'Son Direniş',
+        icon: 'protect',
+        emoji: '💪',
+        kind: 'utility',
+        category: 'spec',
+        cooldown: 6,
+        damageMultiplier: 0,
+        effect: 'none',
+        description: '6 turda bir, hasarı %80 azaltır',
+        fullDescription: 'Son bir çabada hasarı neredeyse tamamen bloke eder.',
+      },
+      {
+        id: 'iron_body',
+        name: 'Demir Vücut',
+        icon: 'spiky',
+        emoji: '⚔️',
+        kind: 'passive',
+        category: 'spec',
+        cooldown: 0,
+        damageMultiplier: 0,
+        effect: 'none',
+        isPassive: true,
+        description: 'Pasif, aldığı hasarın %3 ünü geri yansıtır',
+        fullDescription: 'Vücudu demir gibi sert. Her hasardan geri vurur.',
+      },
+    ],
+  },
+
+  healer: {
+    id: 'healer',
+    name: 'İyileştirici',
+    emoji: '💚',
+    description: 'Doğal iyileştirme, yaşam kaynağı.',
+    classId: 'giant_herbivore',
+    abilities: [
+      {
+        id: 'nurture',
+        name: 'Beslenme',
+        icon: 'heal',
+        emoji: '🌿',
+        kind: 'heal',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 0,
+        effect: 'heal',
+        description: '2 turda bir, kendini iyileştirir',
+        fullDescription: 'Doğal gücü ile kendini besler. HP kazanır.',
+      },
+      {
+        id: 'natural_recovery',
+        name: 'Doğal İyileşme',
+        icon: 'regenerate',
+        emoji: '🌱',
+        kind: 'heal',
+        category: 'spec',
+        cooldown: 3,
+        damageMultiplier: 0,
+        effect: 'regen',
+        description: '3 turda bir, sürekli iyileşme 3 turlu',
+        fullDescription: 'Doğa ile bağlantı kurur. 3 tur boyunca her tur iyileşir.',
+      },
+      {
+        id: 'symbiotic_bond',
+        name: 'Sembiyo Bağı',
+        icon: 'barrier',
+        emoji: '🌳',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 4,
+        damageMultiplier: 0,
+        effect: 'shield',
+        description: '4 turda bir, +savunma + iyileşme',
+        fullDescription: 'Çevre ile bağlantı kurar. Savunma artar ve iyileşir.',
+      },
+    ],
+  },
+
+  earth_shaker: {
+    id: 'earth_shaker',
+    name: 'Yer Sarsıcısı',
+    emoji: '⛏️',
+    description: 'Yer gücü, sarsıntı saldırıları.',
+    classId: 'giant_herbivore',
+    abilities: [
+      {
+        id: 'ground_slam',
+        name: 'Yer Darbesi',
+        icon: 'stomp',
+        emoji: '⛏️',
+        kind: 'attack',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 1.5,
+        effect: 'none',
+        description: '2 turda bir, yüksek hasar',
+        fullDescription: 'Yeri güçlü şekilde darbeleme. Yüksek hasar verir.',
+      },
+      {
+        id: 'earthquake',
+        name: 'Deprem',
+        icon: 'shake',
+        emoji: '🌍',
+        kind: 'debuff',
+        category: 'spec',
+        cooldown: 5,
+        damageMultiplier: 1.3,
+        effect: 'paralyze',
+        description: '5 turda bir, hasar + paralyze',
+        fullDescription: 'Büyük deprem yaratır. Hasar verir ve paralizr eder.',
+      },
+      {
+        id: 'earth_blessing',
+        name: 'Yer Mübarekleri',
+        icon: 'barrier',
+        emoji: '🪨',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 3,
+        damageMultiplier: 0,
+        effect: 'shield',
+        description: '3 turda bir, +savunma',
+        fullDescription: 'Yer enerjisini çekerek koruma sağlar.',
+      },
+    ],
+  },
+
+  // Flying Carnivore Specs
+  storm_bringer: {
+    id: 'storm_bringer',
+    name: 'Fırtına Getirici',
+    emoji: '⛈️',
+    description: 'Fırtına yetenekleri, elektrik saldırıları.',
+    classId: 'flying_carnivore',
+    abilities: [
+      {
+        id: 'lightning_strike',
+        name: 'Yıldırım Darbe',
+        icon: 'paralyze',
+        emoji: '⚡',
+        kind: 'attack',
+        category: 'spec',
+        cooldown: 3,
+        damageMultiplier: 1.4,
+        effect: 'paralyze',
+        description: '3 turda bir, hasar + paralyze',
+        fullDescription: 'Gökyüzünden yıldırım çeker. Hasar verir ve paralizr eder.',
+      },
+      {
+        id: 'storm_surge',
+        name: 'Fırtına Dalgası',
+        icon: 'wind',
+        emoji: '🌪️',
+        kind: 'debuff',
+        category: 'spec',
+        cooldown: 4,
+        damageMultiplier: 1.2,
+        effect: 'none',
+        description: '4 turda bir, hasar + rakip savunma düşüyor',
+        fullDescription: 'Güçlü fırtına dalgası yaratır. Hasar ve savunma düşürür.',
+      },
+      {
+        id: 'static_field',
+        name: 'Statik Alan',
+        icon: 'aura',
+        emoji: '⚡',
+        kind: 'passive',
+        category: 'spec',
+        cooldown: 0,
+        damageMultiplier: 0,
+        effect: 'none',
+        isPassive: true,
+        description: 'Pasif, elektrik alanı rakip hızını %20 azaltır',
+        fullDescription: 'Vücudu elektrik ile dolu. Yaklaşan rakipleri yavaşlatır.',
+      },
+    ],
+  },
+
+  wind_dancer: {
+    id: 'wind_dancer',
+    name: 'Rüzgar Dansçısı',
+    emoji: '🌪️',
+    description: 'Rüzgar kontrolü, kaçış ve hız.',
+    classId: 'flying_carnivore',
+    abilities: [
+      {
+        id: 'wind_slash',
+        name: 'Rüzgar Kesisi',
+        icon: 'slash',
+        emoji: '🌪️',
+        kind: 'attack',
+        category: 'spec',
+        cooldown: 1,
+        damageMultiplier: 0.9,
+        effect: 'none',
+        description: '1 turda bir, orta hasar',
+        fullDescription: 'Rüzgarla saldırır. Sık kullanılabilir.',
+      },
+      {
+        id: 'evasion_wind',
+        name: 'Kaçış Rüzgarı',
+        icon: 'dodge',
+        emoji: '💨',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 0,
+        effect: 'speed',
+        description: '2 turda bir, +hız, saldırı kaçırma şansı',
+        fullDescription: 'Rüzgarla kendini korur. Hız artar ve saldırı kaçarabilir.',
+      },
+      {
+        id: 'wind_current',
+        name: 'Rüzgar Akımı',
+        icon: 'wind',
+        emoji: '🌬️',
+        kind: 'utility',
+        category: 'spec',
+        cooldown: 3,
+        damageMultiplier: 0,
+        effect: 'none',
+        description: '3 turda bir, saldırı hasarını %30 azaltır',
+        fullDescription: 'Akıllı rüzgar akımı yaratır. Gelen hasarı büyük oranda azaltır.',
+      },
+    ],
+  },
+
+  sun_striker: {
+    id: 'sun_striker',
+    name: 'Güneş Darbesi',
+    emoji: '☀️',
+    description: 'Güneş gücü, ışın saldırıları.',
+    classId: 'flying_carnivore',
+    abilities: [
+      {
+        id: 'solar_flare',
+        name: 'Güneş Alev',
+        icon: 'fire',
+        emoji: '☀️',
+        kind: 'attack',
+        category: 'spec',
+        cooldown: 2,
+        damageMultiplier: 1.3,
+        effect: 'none',
+        description: '2 turda bir, yüksek hasar',
+        fullDescription: 'Güneş enerji patlaması. Yüksek hasar verir.',
+      },
+      {
+        id: 'daylight_buff',
+        name: 'Gündüz Gücü',
+        icon: 'aura',
+        emoji: '⭐',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 3,
+        damageMultiplier: 0,
+        effect: 'power',
+        description: '3 turda bir, +hasar',
+        fullDescription: 'Güneş enerjisini emip güçlenir. Saldırı gücü artar.',
+      },
+      {
+        id: 'solar_shield',
+        name: 'Güneş Kalkanı',
+        icon: 'barrier',
+        emoji: '🌞',
+        kind: 'buff',
+        category: 'spec',
+        cooldown: 4,
+        damageMultiplier: 0,
+        effect: 'shield',
+        description: '4 turda bir, +savunma ve +iyileşme',
+        fullDescription: 'Güneş ışığı ile kendini korur ve iyileştirir.',
       },
     ],
   },
@@ -522,7 +964,7 @@ export const ULTIMATE_ABILITIES: Record<string, AbilityDefinition> = {
     cooldown: 6,
     damageMultiplier: 2.0,
     effect: 'stop',
-    description: 'Devasa bir saldırı + durdurma efekti',
+    description: 'Devasa saldırı + durdurma efekti',
     fullDescription: 'Rakibi tamamen donduran bir enerji dalgası saldırısı.',
   },
 
@@ -553,6 +995,90 @@ export const ULTIMATE_ABILITIES: Record<string, AbilityDefinition> = {
     description: 'Yüksek hasar + sersemletme efekti',
     fullDescription: 'Boyutlar arası bir kopuş açarak yüksek hasar ve sersemlik verir.',
   },
+
+  velocity_surge: {
+    id: 'velocity_surge',
+    name: 'Hız Dalgası',
+    icon: 'speed',
+    emoji: '💥',
+    kind: 'ultimate',
+    category: 'ultimate',
+    cooldown: 6,
+    damageMultiplier: 2.2,
+    effect: 'speed',
+    description: 'Çok yüksek hasar + +hız',
+    fullDescription: 'Hızının zirvesine çıkarak çok yüksek hasar verir.',
+  },
+
+  death_venom: {
+    id: 'death_venom',
+    name: 'Ölüm Zehiri',
+    icon: 'poison',
+    emoji: '☠️',
+    kind: 'ultimate',
+    category: 'ultimate',
+    cooldown: 6,
+    damageMultiplier: 1.5,
+    effect: 'poison',
+    description: 'Hasar + zehir efekti (3 tur)',
+    fullDescription: 'Ölümcül zehir taşır. Uzun süre zehir verir.',
+  },
+
+  tidal_wave: {
+    id: 'tidal_wave',
+    name: 'Tsunami',
+    icon: 'tidal_wave',
+    emoji: '🌊',
+    kind: 'ultimate',
+    category: 'ultimate',
+    cooldown: 6,
+    damageMultiplier: 2.4,
+    effect: 'none',
+    description: 'Devasa su dalgası, muazzam hasar',
+    fullDescription: 'Devasa bir tsunami yaratır. Karşısındakine muazzam hasar verir.',
+  },
+
+  genesis: {
+    id: 'genesis',
+    name: 'Yaratılış',
+    icon: 'genesis',
+    emoji: '🌱',
+    kind: 'ultimate',
+    category: 'ultimate',
+    cooldown: 6,
+    damageMultiplier: 0,
+    effect: 'regen',
+    description: 'Kendini çok iyileştirir',
+    fullDescription: 'Yaşamın kaynağından güç çekti. Kendini tam olarak iyileştirir.',
+  },
+
+  inferno: {
+    id: 'inferno',
+    name: 'Cehennem Ateşi',
+    icon: 'inferno',
+    emoji: '🔥',
+    kind: 'ultimate',
+    category: 'ultimate',
+    cooldown: 6,
+    damageMultiplier: 2.6,
+    effect: 'none',
+    description: 'Ateş fırtınası, en yüksek hasar',
+    fullDescription: 'Gökyüzü ateşe döner. Muazzam hasar verir.',
+  },
+
+  apocalypse: {
+    id: 'apocalypse',
+    name: 'Kıyamet',
+    icon: 'apocalypse',
+    emoji: '💀',
+    kind: 'ultimate',
+    category: 'ultimate',
+    cooldown: 6,
+    damageMultiplier: 2.1,
+    effect: 'paralyze',
+    description: 'Yüksek hasar + paralyze efekti',
+    fullDescription: 'Dünyanın sonu gibi bir saldırı. Rakibi felç eder.',
+  },
 }
 
 // ============= HELPER FUNCTIONS =============
@@ -570,19 +1096,16 @@ export function getUltimateAbility(ultimateId: string): AbilityDefinition | unde
 }
 
 export function getAbilityDefinition(abilityId: string): AbilityDefinition | undefined {
-  // Search in class abilities
   for (const classAbs of Object.values(CLASS_ABILITIES)) {
     const found = classAbs.abilities.find(a => a.id === abilityId)
     if (found) return found
   }
 
-  // Search in spec abilities
   for (const specAbs of Object.values(SPEC_ABILITIES)) {
     const found = specAbs.abilities.find(a => a.id === abilityId)
     if (found) return found
   }
 
-  // Search in ultimate abilities
   return ULTIMATE_ABILITIES[abilityId]
 }
 
@@ -596,4 +1119,9 @@ export function getSpecsByClass(classId: string): SpecAbilities[] {
 
 export function getRandomAbilityFromList(abilities: AbilityDefinition[]): AbilityDefinition {
   return abilities[Math.floor(Math.random() * abilities.length)]
+}
+
+export function getUltimatesByClass(classId: string): AbilityDefinition[] {
+  const validUltis = Object.values(ULTIMATE_ABILITIES)
+  return validUltis
 }
