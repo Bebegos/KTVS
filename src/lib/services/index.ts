@@ -8,6 +8,7 @@ export { effectService } from './effectService'
 export { dinoAbilityService } from './dinoAbilityService'
 export { battleAbilityService } from './battleAbilityService'
 export { battleService } from './battleService'
+export { pendingRewardsService } from './pendingRewardsService'
 
 // Type exports
 export type { AbilityDefinition } from './abilityDefinitionService'
