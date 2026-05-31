@@ -8,7 +8,7 @@ import {
   SPEC_ABILITIES,
   ULTIMATE_ABILITIES,
 } from './abilities'
-import { Dino, DinoAbility } from '../game/types'
+import { Dino } from '../game/types'
 import { getAbilityIcon } from './icons'
 
 export interface LevelUpReward {
@@ -84,51 +84,30 @@ function getUltimateReward(classId: string, specId: string, level: number): Leve
 }
 
 /**
- * Converts an ability from library to DinoAbility for storage
- */
-export function abilityToDinoAbility(ability: any): DinoAbility {
-  const dinoAbility: DinoAbility = {
-    name: ability.name,
-    cd: ability.cooldown || 0,
-    kind: ability.kind,
-    effects: ability.effects || [],
-    multiplier: ability.damageMultiplier || 0,
-    icon: ability.icon,
-  }
-
-  // Preserve vampiric flag for life steal abilities (Bloodlust, etc.)
-  if (ability.isVampiric) {
-    (dinoAbility as any).isVampiric = true
-  }
-
-  return dinoAbility
-}
-
-/**
  * Add ability reward to dinozor's ability slots
- * Replaces placeholder slots or overwrites older abilities if needed
+ * Stores ability ID instead of full ability object
  */
 export function addAbilityReward(dino: Dino, reward: LevelUpReward): Dino {
-  const newAbilities = [...dino.abilities]
-  const newAbility = abilityToDinoAbility(reward.ability)
+  const abilityId = reward.ability.id
+  const newAbilityIds = [...dino.abilityIds]
 
-  // Look for placeholder slots
-  const placeholderIdx = newAbilities.findIndex(a => a.name.includes('[') && a.name.includes(']'))
+  // Look for empty slot (first 5 slots are regular abilities)
+  const emptyIdx = newAbilityIds.findIndex((id, idx) => !id && idx < 5)
 
-  if (placeholderIdx !== -1) {
-    // Replace placeholder
-    newAbilities[placeholderIdx] = newAbility
-  } else if (newAbilities.length < 5) {
-    // Add to empty slot if available
-    newAbilities.push(newAbility)
+  if (emptyIdx !== -1) {
+    // Add to empty slot
+    newAbilityIds[emptyIdx] = abilityId
+  } else if (newAbilityIds.length < 5) {
+    // Add to a new slot
+    newAbilityIds.push(abilityId)
   } else {
-    // Replace oldest non-essential ability (last one usually)
-    newAbilities[newAbilities.length - 1] = newAbility
+    // Replace oldest ability (last one)
+    newAbilityIds[newAbilityIds.length - 1] = abilityId
   }
 
   return {
     ...dino,
-    abilities: newAbilities,
+    abilityIds: newAbilityIds,
   }
 }
 

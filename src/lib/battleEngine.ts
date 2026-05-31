@@ -13,8 +13,12 @@
 // 3. Stat-based Buff Healing:
 //    - Effects like 'shield' increase DEF reducing damage taken (indirect healing via damage reduction)
 
-import { Dino, DinoAbility, ActiveEffect } from '../game/types'
+import { Dino, ActiveEffect } from '../game/types'
 import { getEffectDamage, getEffect } from './effects'
+import { abilityDefinitionService } from './services/abilityDefinitionService'
+
+// Use AbilityDefinition from the service which is the new canonical form
+export type AbilityForBattle = ReturnType<typeof abilityDefinitionService.getAbility> & { cd?: number; multiplier?: number }
 
 // ============= TYPES =============
 
@@ -22,7 +26,7 @@ export interface BattleCharacter {
   dino: Dino
   currentHp: number
   effects: ActiveEffect[]
-  abilities: DinoAbility[]
+  abilities: any[] // Ability definitions loaded from library
   cooldowns: number[] // Cooldown for each ability by index
 }
 
@@ -73,12 +77,17 @@ export class BattleEngine {
   // ===== INITIALIZATION =====
 
   private initializeBattleCharacter(dino: Dino): BattleCharacter {
+    // Load ability definitions from library using abilityIds
+    const abilities = dino.abilityIds
+      .map(id => (id ? abilityDefinitionService.getAbility(id) : null))
+      .filter((ability): ability is any => ability !== null)
+
     return {
       dino,
       currentHp: dino.maxHp,
       effects: [],
-      abilities: [...dino.abilities],
-      cooldowns: new Array(dino.abilities.length).fill(0),
+      abilities,
+      cooldowns: new Array(abilities.length).fill(0),
     }
   }
 
@@ -167,7 +176,7 @@ export class BattleEngine {
         targetDied = defender.currentHp <= 0
       } else {
         // Pure healing: heal attacker only
-        const baseHeal = attacker.dino.atk * (ability.multiplier || 1)
+        const baseHeal = attacker.dino.atk * (ability.damageMultiplier || ability.multiplier || 1)
         healAmount = Math.round(baseHeal)
         attacker.currentHp = Math.min(attacker.dino.maxHp, attacker.currentHp + healAmount)
         message = `${character === 'player' ? '👤' : '👹'} ${ability.name} [+${healAmount} HP]`
@@ -201,7 +210,7 @@ export class BattleEngine {
     if (!attacker.cooldowns || attacker.cooldowns.length <= abilityIdx) {
       attacker.cooldowns = new Array(attacker.abilities.length).fill(0)
     }
-    attacker.cooldowns[abilityIdx] = ability.cd || 0
+    attacker.cooldowns[abilityIdx] = ability.cooldown || ability.cd || 0
 
     return {
       damage: finalDamage,
@@ -213,8 +222,8 @@ export class BattleEngine {
 
   // ===== DAMAGE CALCULATION =====
 
-  private calculateDamage(attacker: BattleCharacter, defender: BattleCharacter, ability: DinoAbility): number {
-    const baseDamage = attacker.dino.atk * (ability.multiplier || 1)
+  private calculateDamage(attacker: BattleCharacter, defender: BattleCharacter, ability: any): number {
+    const baseDamage = attacker.dino.atk * (ability.damageMultiplier || ability.multiplier || 1)
     const variance = 0.8 + Math.random() * 0.4 // 0.8x to 1.2x
 
     // Apply defense reduction

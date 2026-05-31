@@ -1,7 +1,7 @@
-// DinoAbilityService - Manages ability instances on dinosaurs
+// DinoAbilityService - Manages ability IDs on dinosaurs
 // Bridges AbilityDefinition library to Dino storage
 
-import { Dino, DinoAbility, ValidationResult } from '../../game/types'
+import { Dino, ValidationResult } from '../../game/types'
 import { abilityDefinitionService } from './abilityDefinitionService'
 import { validationService } from './validationService'
 import { slotService } from './slotService'
@@ -11,20 +11,8 @@ class DinoAbilityService {
    * Create empty ability slots for a new dinosaur
    * Slots 0-4 are regular abilities, slot 5 is ultimate
    */
-  createAbilitySlots(dino: Dino): DinoAbility[] {
-    const abilities: DinoAbility[] = []
-
-    // Create 6 empty slots
-    for (let i = 0; i < 6; i++) {
-      abilities.push({
-        name: '', // Empty
-        cd: 0,
-        kind: 'attack',
-        effects: [],
-      })
-    }
-
-    return abilities
+  createAbilitySlots(): string[] {
+    return Array(6).fill('')
   }
 
   /**
@@ -47,30 +35,13 @@ class DinoAbilityService {
       }
     }
 
-    // Create or update the dino ability instance
-    const dinoAbility: DinoAbility = {
-      name: abilityDef.name,
-      cd: 0,
-      kind: abilityDef.kind,
-      effects: abilityDef.effects,
-      multiplier: abilityDef.damageMultiplier,
-      icon: abilityDef.icon,
-      description: abilityDef.description,
-      isVampiric: abilityDef.isVampiric,
-    }
-
-    // Ensure dino.abilities array is large enough
-    while (dino.abilities.length <= slot) {
-      dino.abilities.push({
-        name: '',
-        cd: 0,
-        kind: 'attack',
-        effects: [],
-      })
+    // Ensure abilityIds array is large enough
+    while (dino.abilityIds.length <= slot) {
+      dino.abilityIds.push('')
     }
 
     // Assign to slot
-    dino.abilities[slot] = dinoAbility
+    dino.abilityIds[slot] = abilityId
 
     return { valid: true }
   }
@@ -87,44 +58,52 @@ class DinoAbilityService {
       }
     }
 
-    // Ensure dino.abilities array is large enough
-    while (dino.abilities.length <= slot) {
-      dino.abilities.push({
-        name: '',
-        cd: 0,
-        kind: 'attack',
-        effects: [],
-      })
+    // Ensure abilityIds array is large enough
+    while (dino.abilityIds.length <= slot) {
+      dino.abilityIds.push('')
     }
 
     // Clear the slot
-    dino.abilities[slot] = {
-      name: '',
-      cd: 0,
-      kind: 'attack',
-      effects: [],
-    }
+    dino.abilityIds[slot] = ''
 
     return { valid: true }
   }
 
   /**
-   * Get ability in a specific slot
+   * Get ability ID in a specific slot
    */
-  getAbilityInSlot(dino: Dino, slot: number): DinoAbility | null {
-    if (slot < 0 || slot > 5 || !dino.abilities[slot]) {
+  getAbilityIdInSlot(dino: Dino, slot: number): string | null {
+    if (slot < 0 || slot > 5 || !dino.abilityIds[slot]) {
       return null
     }
 
-    const ability = dino.abilities[slot]
-    return ability.name ? ability : null
+    return dino.abilityIds[slot] || null
   }
 
   /**
-   * Get all assigned abilities (excluding empty slots)
+   * Get ability definition in a specific slot
    */
-  getAssignedAbilities(dino: Dino): DinoAbility[] {
-    return dino.abilities.filter(a => !!a.name)
+  getAbilityInSlot(dino: Dino, slot: number): any {
+    const abilityId = this.getAbilityIdInSlot(dino, slot)
+    if (!abilityId) return null
+
+    return abilityDefinitionService.getAbility(abilityId)
+  }
+
+  /**
+   * Get all assigned ability IDs (excluding empty slots)
+   */
+  getAssignedAbilityIds(dino: Dino): string[] {
+    return dino.abilityIds.filter(id => !!id)
+  }
+
+  /**
+   * Get all assigned ability definitions
+   */
+  getAssignedAbilities(dino: Dino): any[] {
+    return this.getAssignedAbilityIds(dino)
+      .map(id => abilityDefinitionService.getAbility(id))
+      .filter(ability => ability !== null)
   }
 
   /**
@@ -142,10 +121,18 @@ class DinoAbilityService {
   }
 
   /**
-   * Get ability by name (for lookup)
+   * Find ability ID by name (for lookup)
    */
-  findAbilityByName(dino: Dino, name: string): DinoAbility | null {
-    return dino.abilities.find(a => a.name === name) || null
+  findAbilityIdByName(dino: Dino, name: string): string | null {
+    for (const abilityId of dino.abilityIds) {
+      if (abilityId) {
+        const ability = abilityDefinitionService.getAbility(abilityId)
+        if (ability?.name === name) {
+          return abilityId
+        }
+      }
+    }
+    return null
   }
 
   /**
@@ -168,21 +155,12 @@ class DinoAbilityService {
   }
 
   /**
-   * Lock abilities for a given level (remove high-slot abilities if appropriate)
-   * This is called when a dino's level is set
+   * Lock abilities for a given level (clear high-slot abilities if locked)
    */
   lockAbilitiesForLevel(dino: Dino): void {
     for (let slot = 0; slot <= 5; slot++) {
       if (slotService.isSlotLocked(dino, slot)) {
-        // Clear abilities in locked slots
-        if (dino.abilities[slot]) {
-          dino.abilities[slot] = {
-            name: '',
-            cd: 0,
-            kind: 'attack',
-            effects: [],
-          }
-        }
+        dino.abilityIds[slot] = ''
       }
     }
   }
@@ -195,25 +173,6 @@ class DinoAbilityService {
 
     let spec = dino.spec || 'starter'
     return abilityDefinitionService.getAbilitiesBySpec(dino.class, spec) || []
-  }
-
-  /**
-   * Import ability from definition (used during leveling)
-   */
-  importFromDefinition(definitionId: string): DinoAbility | null {
-    const def = abilityDefinitionService.getAbility(definitionId)
-    if (!def) return null
-
-    return {
-      name: def.name,
-      cd: 0,
-      kind: def.kind,
-      effects: def.effects,
-      multiplier: def.damageMultiplier,
-      icon: def.icon,
-      description: def.description,
-      isVampiric: def.isVampiric,
-    }
   }
 }
 
