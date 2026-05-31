@@ -1,21 +1,40 @@
 import { motion } from 'framer-motion'
-import { DinoAbility } from '../game/types'
+import { Dino } from '../game/types'
+import { abilityCalculationService } from '../lib/services/abilityCalculationService'
+import { abilityDefinitionService } from '../lib/services/abilityDefinitionService'
 import AbilityIcon from './AbilityIcon'
 import SvgIcon from './SvgIcon'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 
 interface AbilityInfoModalProps {
-  ability: DinoAbility
+  abilityId: string
+  dino: Dino
   cooldown: number
   isOpen: boolean
   onClose: () => void
 }
 
-export default function AbilityInfoModal({ ability, cooldown, isOpen, onClose }: AbilityInfoModalProps) {
+export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, onClose }: AbilityInfoModalProps) {
   if (!isOpen) return null
+
+  const ability = abilityDefinitionService.getAbility(abilityId)
+  if (!ability) return null
 
   const isCooling = cooldown > 0
   const canUse = !isCooling
+
+  // Calculate actual damage/healing values
+  let baseValue = 0
+  let valueType = 'dmg'
+  if (ability.kind === 'heal') {
+    baseValue = abilityCalculationService.calculateAbilityHealing(abilityId, dino)
+    valueType = 'heal'
+  } else if (ability.kind === 'attack' || ability.kind === 'debuff') {
+    baseValue = abilityCalculationService.calculateAbilityBaseDamage(abilityId, dino)
+    valueType = 'dmg'
+  }
+
+  const effects = abilityCalculationService.getAbilityEffects(abilityId)
 
   return (
     <motion.div
