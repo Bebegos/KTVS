@@ -488,7 +488,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 <button
                   onClick={handleCreateDino}
                   disabled={loading || !stats.name.trim()}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-neon-pink/60 to-neon-purple/60 border border-neon-pink/40 rounded-lg font-bold text-neon-pink hover:from-neon-pink/80 hover:to-neon-purple/80 hover:border-neon-pink hover:shadow-neon-pink transition disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                  className="hs-button-green w-full px-6 py-4 text-lg mt-4"
                 >
                   {loading ? '⏳ Dinozor Oluşturuluyor...' : '🎉 Dinozor Oluştur!'}
                 </button>
