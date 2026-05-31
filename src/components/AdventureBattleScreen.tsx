@@ -294,14 +294,14 @@ export default function AdventureBattleScreen({
             {battleState.player.abilities.map((ability: any, idx: number) => (
               <motion.button
                 key={idx}
-                whileHover={{ scale: selectedAbility === null && battleEngine.canUseAbility('player', idx) ? 1.05 : 1 }}
+                whileHover={{ scale: selectedAbility === null && battleEngine?.canUseAbility('player', idx) ? 1.05 : 1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => selectAbility(idx)}
-                disabled={selectedAbility !== null || !battleEngine.canUseAbility('player', idx) || roundInProgress}
+                disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', idx) || roundInProgress}
                 className={`p-4 rounded-xl font-bold transition flex flex-col items-start gap-2 min-h-[120px] ${
                   selectedAbility === idx
                     ? 'neon-border-cyan glass-dark text-neon-cyan border-2 scale-105'
-                    : !battleEngine.canUseAbility('player', idx)
+                    : !battleEngine?.canUseAbility('player', idx)
                     ? 'glass border border-gray-500/30 text-gray-500 opacity-50 cursor-not-allowed'
                     : 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
                 }`}

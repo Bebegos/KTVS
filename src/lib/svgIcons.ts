@@ -302,7 +302,7 @@ export const STAT_ICONS: Record<string, SvgIcon> = {
     id: 'spd',
     name: 'Hız',
     category: 'stat',
-    svg: ABILITY_ICONS.hiz,
+    svg: ABILITY_ICONS.hiz.svg,
   },
 
   xp: {
