@@ -65,7 +65,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
       <div className="relative z-10">
         <button
           onClick={onBack}
-          className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+          className="hs-btn"
         >
           ← Geri
         </button>
@@ -217,14 +217,14 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                 <div className="flex gap-2 pt-2 border-t border-gold-dark/30">
                   <button
                     onClick={() => handleOpenDetail(dino)}
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-gold-mid/80 to-gold-dark/80 hover:from-gold-light/80 hover:to-gold-mid/80 text-gold-dark font-bold rounded-lg transition active:scale-95"
+                    className="hs-btn flex-1"
                   >
                     ℹ️ Detaylar
                   </button>
                   {onEdit && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onEdit(dino) }}
-                      className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-900/60 to-purple-900/40 hover:from-purple-800/80 hover:to-purple-800/60 border border-purple-600/50 text-purple-200 font-bold rounded-lg transition active:scale-95"
+                      className="hs-btn hs-btn-purple flex-1"
                     >
                       ✏️ Düzen
                     </button>
@@ -232,7 +232,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(dino.id) }}
                     disabled={deleting === dino.id}
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-red-900/60 to-red-900/40 hover:from-red-800/80 hover:to-red-800/60 border border-red-600/50 text-red-300 font-bold rounded-lg disabled:opacity-50 transition active:scale-95"
+                    className="hs-btn hs-btn-red flex-1"
                   >
                     {deleting === dino.id ? '⏳' : '🗑️'}
                   </button>

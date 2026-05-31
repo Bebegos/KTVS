@@ -127,15 +127,7 @@ export default function CharacterCard({
             disabled={disabled || ability.cd > 0}
             whileHover={{ scale: !disabled && ability.cd === 0 ? 1.02 : 1 }}
             whileTap={{ scale: !disabled && ability.cd === 0 ? 0.98 : 1 }}
-            className={`p-2 rounded-lg text-xs font-bold text-left transition glass-dark border-2 ${
-              idx === 4
-                ? 'neon-border-purple text-neon-purple'
-                : 'neon-border-cyan text-neon-cyan'
-            } ${
-              ability.cd > 0 || disabled
-                ? 'opacity-50 cursor-not-allowed'
-                : 'cursor-pointer'
-            }`}
+            className={`hs-btn hs-btn-sm hs-btn-block ${idx === 4 ? 'hs-btn-purple' : ''}`}
           >
             <div className="flex justify-between items-center">
               <span className="flex-1 truncate">{ability.name}</span>

@@ -68,11 +68,7 @@ export default function Auth() {
               setError(null)
               setInfo(null)
             }}
-            className={`flex-1 py-3 px-4 rounded-lg font-bold text-lg transition ${
-              mode === 'login'
-                ? 'glass-dark neon-border-cyan text-neon-cyan shadow-neon-cyan'
-                : 'glass border border-neon-cyan/20 text-neon-cyan/60 hover:border-neon-cyan/40'
-            }`}
+            className={`flex-1 ${mode === 'login' ? 'hs-btn hs-btn-blue' : 'hs-btn'}`}
           >
             🔓 Giriş Yap
           </button>
@@ -82,11 +78,7 @@ export default function Auth() {
               setError(null)
               setInfo(null)
             }}
-            className={`flex-1 py-3 px-4 rounded-lg font-bold text-lg transition ${
-              mode === 'register'
-                ? 'glass-dark neon-border-purple text-neon-purple shadow-neon-purple'
-                : 'glass border border-neon-purple/20 text-neon-purple/60 hover:border-neon-purple/40'
-            }`}
+            className={`flex-1 ${mode === 'register' ? 'hs-btn hs-btn-purple' : 'hs-btn'}`}
           >
             ✨ Kaydol
           </button>
@@ -156,13 +148,7 @@ export default function Auth() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition ${
-              loading
-                ? 'glass opacity-50 cursor-not-allowed text-neon-cyan/50'
-                : mode === 'login'
-                ? 'glass-dark neon-border-cyan text-neon-cyan hover:shadow-neon-cyan active:scale-95'
-                : 'glass-dark neon-border-purple text-neon-purple hover:shadow-neon-purple active:scale-95'
-            }`}
+            className={`hs-btn hs-btn-lg hs-btn-block ${mode === 'login' ? 'hs-btn-blue' : 'hs-btn-purple'}`}
           >
             {loading ? '⏳ Yükleniyor...' : mode === 'login' ? '🔓 Giriş Yap' : '✨ Kaydol'}
           </button>

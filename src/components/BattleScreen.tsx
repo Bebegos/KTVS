@@ -166,7 +166,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
         </div>
         <button
           onClick={onBack}
-          className="px-6 py-4 bg-dino-500 text-white rounded-lg font-bold text-lg hover:bg-dino-600"
+          className="hs-btn hs-btn-green hs-btn-lg"
         >
           ← Ana Menüye Dön
         </button>
@@ -184,7 +184,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
       <div className="flex justify-between items-center">
         <button
           onClick={onBack}
-          className="px-3 py-1 bg-gray-500 text-white rounded font-bold text-sm"
+          className="hs-btn hs-btn-sm"
         >
           ← Çık
         </button>
@@ -248,13 +248,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
                 disabled={!isP1Turn || diceRolling || ability.cd > 0}
                 whileHover={{ scale: isP1Turn && ability.cd === 0 ? 1.05 : 1 }}
                 whileTap={{ scale: isP1Turn && ability.cd === 0 ? 0.95 : 1 }}
-                className={`p-3 rounded font-bold text-left transition ${
-                  ability.cd > 0
-                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                    : isP1Turn
-                    ? 'bg-dino-400 text-white hover:bg-dino-500 active:bg-dino-600 cursor-pointer'
-                    : 'bg-gray-200 text-gray-600 cursor-not-allowed'
-                }`}
+                className="hs-btn hs-btn-green hs-btn-block"
               >
                 <div className="flex justify-between items-center">
                   <span>{ability.name}</span>
@@ -274,7 +268,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
               disabled={diceRolling}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full px-4 py-3 bg-dino-500 text-white rounded-lg font-bold hover:bg-dino-600 disabled:bg-gray-400"
+              className="hs-btn hs-btn-green hs-btn-block"
             >
               ✅ Turu Bitir
             </motion.button>
@@ -352,13 +346,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
                 disabled={isP1Turn || diceRolling || ability.cd > 0}
                 whileHover={{ scale: !isP1Turn && ability.cd === 0 ? 1.05 : 1 }}
                 whileTap={{ scale: !isP1Turn && ability.cd === 0 ? 0.95 : 1 }}
-                className={`p-3 rounded font-bold text-left transition ${
-                  ability.cd > 0
-                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                    : !isP1Turn
-                    ? 'bg-red-400 text-white hover:bg-red-500 active:bg-red-600 cursor-pointer'
-                    : 'bg-gray-200 text-gray-600 cursor-not-allowed'
-                }`}
+                className="hs-btn hs-btn-red hs-btn-block"
               >
                 <div className="flex justify-between items-center">
                   <span>{ability.name}</span>
@@ -378,7 +366,7 @@ export default function BattleScreen({ dino1, dino2, onBack, onRefresh }: Battle
               disabled={diceRolling}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full px-4 py-3 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 disabled:bg-gray-400"
+              className="hs-btn hs-btn-red hs-btn-block"
             >
               ✅ Turu Bitir
             </motion.button>
@@ -460,7 +448,7 @@ function LevelUpScreen({
                     [stat]: Math.max(0, s[stat] - 1),
                   }))
                 }
-                className="px-3 py-1 bg-red-500 text-white rounded font-bold"
+                className="hs-btn hs-btn-red hs-btn-sm"
               >
                 −
               </button>
@@ -485,7 +473,7 @@ function LevelUpScreen({
                   }))
                 }
                 disabled={remainingPoints <= 0}
-                className="px-3 py-1 bg-dino-500 text-white rounded font-bold disabled:bg-gray-400"
+                className="hs-btn hs-btn-green hs-btn-sm"
               >
                 +
               </button>
@@ -500,7 +488,7 @@ function LevelUpScreen({
         <button
           onClick={handleSubmit}
           disabled={remainingPoints !== 0}
-          className="w-full px-6 py-3 bg-purple-500 text-white rounded-lg font-bold text-lg hover:bg-purple-600 disabled:bg-gray-400"
+          className="hs-btn hs-btn-purple hs-btn-lg hs-btn-block"
         >
           ✅ Onayla
         </button>

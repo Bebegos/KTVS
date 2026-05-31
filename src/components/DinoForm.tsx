@@ -67,7 +67,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
       <div className="relative z-10">
         <button
           onClick={onBack}
-          className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+          className="hs-btn"
         >
           ← Geri
         </button>
@@ -150,7 +150,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
           <button
             type="submit"
             disabled={loading || !form.name}
-            className="w-full px-6 py-4 glass-dark neon-border-purple rounded-lg font-bold text-lg text-neon-purple hover:shadow-neon-purple disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition"
+            className="hs-btn hs-btn-purple hs-btn-lg hs-btn-block"
           >
             {loading ? '⏳ Kaydediliyor...' : '✨ Dinozoru Kaydet'}
           </button>

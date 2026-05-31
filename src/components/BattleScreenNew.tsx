@@ -170,7 +170,7 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
         </div>
         <button
           onClick={onBack}
-          className="px-6 py-4 glass-dark neon-border-purple rounded-xl font-bold text-lg text-neon-purple hover:shadow-neon-purple active:scale-95 transition relative z-10"
+          className="hs-btn hs-btn-purple hs-btn-lg relative z-10"
         >
           ← Ana Menüye Dön
         </button>
@@ -193,7 +193,7 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
       <div className="relative z-10 flex justify-between items-center p-4 glass-dark neon-border-cyan border-b">
         <button
           onClick={onBack}
-          className="px-4 py-2 glass-dark neon-border-pink rounded-lg font-bold text-neon-pink hover:shadow-neon-pink transition"
+          className="hs-btn hs-btn-red"
         >
           🚪 Çık
         </button>
@@ -241,7 +241,7 @@ export default function BattleScreenNew({ dino1, dino2, onBack, onRefresh }: Bat
             disabled={diceRolling}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="w-full px-3 py-4 glass-dark neon-border-cyan rounded-xl font-black text-lg text-neon-cyan hover:shadow-neon-cyan disabled:opacity-50 transition"
+            className="hs-btn hs-btn-lg hs-btn-block"
           >
             ✅ TUR BITIR
           </motion.button>
@@ -341,7 +341,7 @@ function LevelUpScreen({
                     [stat]: Math.max(0, s[stat] - 1),
                   }))
                 }
-                className="px-3 py-1 glass-dark border border-red-500/50 text-red-400 rounded font-black hover:border-red-500/80 transition"
+                className="hs-btn hs-btn-red hs-btn-sm"
               >
                 −
               </button>
@@ -366,7 +366,7 @@ function LevelUpScreen({
                   }))
                 }
                 disabled={remainingPoints <= 0}
-                className="px-3 py-1 glass-dark border border-green-500/50 text-green-400 rounded font-black hover:border-green-500/80 disabled:opacity-50 transition"
+                className="hs-btn hs-btn-green hs-btn-sm"
               >
                 +
               </button>
@@ -381,11 +381,7 @@ function LevelUpScreen({
         <button
           onClick={handleSubmit}
           disabled={remainingPoints !== 0}
-          className={`w-full px-6 py-3 glass-dark rounded-lg font-black text-lg transition ${
-            remainingPoints === 0
-              ? 'neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
-              : 'border border-gray-600/50 text-gray-500 cursor-not-allowed opacity-50'
-          }`}
+          className="hs-btn hs-btn-lg hs-btn-block"
         >
           ✅ ONAYLA
         </button>

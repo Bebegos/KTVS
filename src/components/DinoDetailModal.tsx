@@ -55,7 +55,7 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
             </div>
             <button
               onClick={onClose}
-              className="text-neon-cyan/70 hover:text-neon-cyan text-2xl"
+              className="hs-btn hs-btn-sm"
             >
               ✕
             </button>
@@ -143,7 +143,7 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
 
             <button
               onClick={() => setRewardModalOpen(true)}
-              className="w-full mt-3 px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-yellow-100 font-bold rounded-lg transition"
+              className="hs-btn hs-btn-block mt-3"
             >
               Ödüllerini Harca →
             </button>
@@ -214,14 +214,14 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
           {onEdit && (
             <button
               onClick={onEdit}
-              className="px-4 py-2 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple active:scale-95 transition"
+              className="hs-btn hs-btn-purple"
             >
               ✏️ Düzenle
             </button>
           )}
           <button
             onClick={onClose}
-            className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition"
+            className="hs-btn"
           >
             ← Kapat
           </button>

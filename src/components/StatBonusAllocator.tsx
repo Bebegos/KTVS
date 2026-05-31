@@ -140,11 +140,7 @@ export default function StatBonusAllocator({
                 <button
                   onClick={() => handleDecrement(statKey)}
                   disabled={allocated === 0}
-                  className={`px-3 py-2 rounded-lg font-black transition ${
-                    allocated > 0
-                      ? `bg-gradient-to-r ${def.gradient} text-white hover:shadow-lg`
-                      : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                  }`}
+                  className="hs-btn hs-btn-red hs-btn-xs"
                 >
                   −
                 </button>
@@ -166,11 +162,7 @@ export default function StatBonusAllocator({
                 <button
                   onClick={() => handleIncrement(statKey)}
                   disabled={remaining === 0}
-                  className={`px-3 py-2 rounded-lg font-black transition ${
-                    remaining > 0
-                      ? `bg-gradient-to-r ${def.gradient} text-white hover:shadow-lg`
-                      : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                  }`}
+                  className="hs-btn hs-btn-green hs-btn-xs"
                 >
                   +
                 </button>
@@ -197,18 +189,14 @@ export default function StatBonusAllocator({
       <div className="flex gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-3 bg-slate-700/60 border border-slate-600/50 text-slate-300 font-bold rounded-lg hover:bg-slate-700 transition"
+          className="hs-btn flex-1"
         >
           İptal
         </button>
         <button
           onClick={handleConfirm}
           disabled={allocated !== bonusPoints || saving}
-          className={`flex-1 px-4 py-3 font-black rounded-lg transition ${
-            allocated === bonusPoints && !saving
-              ? 'bg-gradient-to-r from-neon-yellow/80 to-gold-light/80 text-yellow-900 hover:from-neon-yellow hover:to-gold-light shadow-lg shadow-yellow-500/30'
-              : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-          }`}
+          className="hs-btn hs-btn-green flex-1"
         >
           {saving ? '💾 Kaydediliyor...' : '✓ Kaydet'}
         </button>

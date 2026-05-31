@@ -144,7 +144,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
       <div className="relative z-10 flex justify-between items-center p-4 glass-dark neon-border-cyan border-b">
         <button
           onClick={onBack}
-          className="px-4 py-2 glass-dark neon-border-pink rounded-lg font-bold text-neon-pink hover:shadow-neon-pink transition"
+          className="hs-btn hs-btn-red"
         >
           🚪 Çık
         </button>
@@ -392,7 +392,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
 
                   <button
                     onClick={endTurn}
-                    className="w-full px-4 py-3 glass-dark neon-border-cyan rounded-lg font-black text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition"
+                    className="hs-btn hs-btn-lg hs-btn-block"
                   >
                     ✅ TURU BITIR
                   </button>
@@ -423,13 +423,13 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
             <div className="flex gap-3">
               <button
                 onClick={() => setShowSkipTurnModal(false)}
-                className="flex-1 px-4 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+                className="hs-btn flex-1"
               >
                 ← Geri
               </button>
               <button
                 onClick={confirmSkipTurn}
-                className="flex-1 px-4 py-3 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple transition"
+                className="hs-btn hs-btn-purple flex-1"
               >
                 ✓ Devam Et
               </button>

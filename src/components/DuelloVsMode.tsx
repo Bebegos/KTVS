@@ -260,7 +260,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
         <button
           onClick={onBack}
-          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+          className="hs-btn absolute top-4 left-4 z-10"
         >
           ← Geri
         </button>
@@ -313,7 +313,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
         <button
           onClick={() => setScreen('options')}
-          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+          className="hs-btn absolute top-4 left-4 z-10"
         >
           ← Geri
         </button>
@@ -339,7 +339,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
             <p className="text-xs text-neon-cyan/70 break-all mb-3">{inviteUrl}</p>
             <button
               onClick={copyToClipboard}
-              className="w-full px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+              className="hs-btn hs-btn-block"
             >
               📋 Kopyala
             </button>
@@ -379,7 +379,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
             setScreen('options')
             stopScanner()
           }}
-          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+          className="hs-btn absolute top-4 left-4 z-10"
         >
           ← Geri
         </button>
@@ -419,7 +419,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
               {/* QR Scanner Button */}
               <button
                 onClick={startScanner}
-                className="w-full px-6 py-4 glass-dark neon-border-purple rounded-lg font-bold text-lg text-neon-purple hover:shadow-neon-purple active:scale-95 transition"
+                className="hs-btn hs-btn-purple hs-btn-lg hs-btn-block"
               >
                 📱 QR KOD TARA
               </button>
@@ -440,7 +440,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
               {/* Stop Scanner Button */}
               <button
                 onClick={stopScanner}
-                className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-lg font-bold text-lg text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition"
+                className="hs-btn hs-btn-lg hs-btn-block"
               >
                 ✋ DURDUR
               </button>
@@ -451,11 +451,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           <button
             onClick={joinSession}
             disabled={joinCode.length !== 9}
-            className={`w-full px-6 py-4 glass-dark rounded-lg font-bold text-lg transition ${
-              joinCode.length === 9
-                ? 'neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
-                : 'border border-gray-600/50 text-gray-500 cursor-not-allowed opacity-50'
-            }`}
+            className="hs-btn hs-btn-lg hs-btn-block"
           >
             ✅ KATIL
           </button>
@@ -562,7 +558,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
                   alert('Düello başlatılamadı')
                 }
               }}
-              className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-lg font-bold text-lg text-neon-cyan hover:shadow-neon-cyan transition"
+              className="hs-btn hs-btn-lg hs-btn-block"
             >
               ⚔️ DÜELLOYA BAŞLA
             </button>
@@ -586,7 +582,7 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
                 subscriptionRef.current.unsubscribe()
               }
             }}
-            className="w-full px-6 py-2 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple transition"
+            className="hs-btn hs-btn-purple hs-btn-block"
           >
             ← Geri
           </button>

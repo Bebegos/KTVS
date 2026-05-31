@@ -68,11 +68,7 @@ export default function EffectInfoModal({ effect, battleCharacterMaxHp = 100, is
           </div>
           <button
             onClick={onClose}
-            className={`${
-              isBuffEffect(effect.type)
-                ? 'text-green-400/70 hover:text-green-400'
-                : 'text-red-400/70 hover:text-red-400'
-            } text-2xl`}
+            className="hs-btn hs-btn-xs"
           >
             ✕
           </button>
@@ -205,11 +201,7 @@ export default function EffectInfoModal({ effect, battleCharacterMaxHp = 100, is
         {/* Close Button */}
         <button
           onClick={onClose}
-          className={`w-full px-4 py-3 glass-dark rounded-lg font-bold active:scale-95 transition ${
-            isBuffEffect(effect.type)
-              ? 'neon-border-cyan text-neon-cyan hover:shadow-neon-cyan'
-              : 'neon-border-pink text-red-400 hover:shadow-red-500/50'
-          } border-2`}
+          className={`hs-btn hs-btn-block ${isBuffEffect(effect.type) ? '' : 'hs-btn-red'}`}
         >
           ← Kapat
         </button>

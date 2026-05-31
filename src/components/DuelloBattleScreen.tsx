@@ -321,7 +321,7 @@ export default function DuelloBattleScreen({
               </div>
               <button
                 onClick={onBack}
-                className="w-full px-6 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+                className="hs-btn hs-btn-block"
               >
                 Ana Ekrana Dön
               </button>
@@ -360,13 +360,13 @@ export default function DuelloBattleScreen({
           <div className="flex gap-3">
             <button
               onClick={() => setShowAbandonModal(false)}
-              className="flex-1 px-4 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+              className="hs-btn flex-1"
             >
               ← Devam Et
             </button>
             <button
               onClick={handleAbandonBattle}
-              className="flex-1 px-4 py-3 glass-dark border border-red-500/50 rounded-lg font-bold text-red-400 hover:shadow-red-500/50 transition"
+              className="hs-btn hs-btn-red flex-1"
             >
               💀 Terk Et
             </button>
@@ -383,7 +383,7 @@ export default function DuelloBattleScreen({
       <div className="mb-4 flex justify-end">
         <button
           onClick={() => setShowAbandonModal(true)}
-          className="px-4 py-2 glass border border-red-500/50 rounded-lg font-bold text-sm text-red-400 hover:shadow-red-500/50 transition"
+          className="hs-btn hs-btn-red hs-btn-sm"
         >
           🚪 Terk Et
         </button>
@@ -502,7 +502,7 @@ export default function DuelloBattleScreen({
           </p>
           <button
             onClick={() => setShowDebug(!showDebug)}
-            className="text-xs px-3 py-1 glass neon-border-cyan rounded text-neon-cyan hover:shadow-neon-cyan transition font-bold"
+            className="hs-btn hs-btn-sm"
           >
             {showDebug ? '📋 Değiştir' : '🔧 Değiştir'}
           </button>

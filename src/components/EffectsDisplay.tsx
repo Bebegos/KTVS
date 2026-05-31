@@ -172,7 +172,7 @@ export default function EffectsDisplay({ effects, battleCharacterMaxHp = 100 }: 
 
               <button
                 onClick={() => setSelectedEffect(null)}
-                className="w-full px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition text-sm"
+                className="hs-btn hs-btn-block"
               >
                 Kapat
               </button>

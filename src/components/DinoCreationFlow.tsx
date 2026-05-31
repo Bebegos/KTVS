@@ -148,7 +148,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
-            className="px-4 py-2 bg-slate-800/60 border border-neon-cyan/40 rounded-lg font-bold text-neon-cyan hover:border-neon-cyan hover:shadow-neon-cyan transition"
+            className="hs-btn"
           >
             ← Geri
           </button>
@@ -256,7 +256,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               <button
                 onClick={handleProceedToSpec}
                 disabled={selectedClassAbilities.length !== 2}
-                className="w-full px-6 py-3 bg-slate-800/60 border border-neon-cyan/40 rounded-lg font-bold text-neon-cyan hover:border-neon-cyan hover:shadow-neon-cyan transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hs-btn hs-btn-block"
               >
                 Devam Et →
               </button>
@@ -342,7 +342,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               <button
                 onClick={handleProceedToStats}
                 disabled={!selectedSpecAbility}
-                className="w-full px-6 py-3 bg-slate-800/60 border border-neon-purple/40 rounded-lg font-bold text-neon-purple hover:border-neon-purple hover:shadow-neon-purple transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hs-btn hs-btn-purple hs-btn-block"
               >
                 Devam Et →
               </button>

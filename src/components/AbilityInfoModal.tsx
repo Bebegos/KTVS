@@ -64,7 +64,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
           </div>
           <button
             onClick={onClose}
-            className="text-neon-cyan/70 hover:text-neon-cyan text-2xl"
+            className="hs-btn hs-btn-xs"
           >
             ✕
           </button>
@@ -167,7 +167,7 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="w-full px-4 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition"
+          className="hs-btn hs-btn-block"
         >
           ← Kapat
         </button>

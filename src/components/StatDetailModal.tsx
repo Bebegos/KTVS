@@ -73,7 +73,7 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
           </div>
           <button
             onClick={onClose}
-            className={`text-slate-400 hover:${def.textColor} text-2xl transition`}
+            className="hs-btn hs-btn-sm"
           >
             ✕
           </button>
@@ -111,7 +111,7 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
         {/* Close Button */}
         <button
           onClick={onClose}
-          className={`w-full px-4 py-2 bg-gradient-to-r ${def.gradient} hover:opacity-80 text-white font-black rounded-lg transition`}
+          className="hs-btn hs-btn-block"
         >
           Kapat
         </button>

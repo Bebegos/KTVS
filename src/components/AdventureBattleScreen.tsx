@@ -259,7 +259,7 @@ export default function AdventureBattleScreen({
 
           <button
             onClick={() => onComplete(adventureWon, totalXpGained)}
-            className="w-full px-6 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+            className="hs-btn hs-btn-block"
           >
             {adventureWon ? '✨ Sonraki Macera' : '← Geri Dön'}
           </button>
@@ -500,7 +500,7 @@ export default function AdventureBattleScreen({
       {/* Back button */}
       <button
         onClick={onBack}
-        className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+        className="hs-btn absolute top-4 left-4 z-10"
       >
         ← Geri
       </button>
@@ -544,7 +544,7 @@ export default function AdventureBattleScreen({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={startBattle}
-            className="w-full px-6 py-4 glass-dark neon-border-cyan rounded-lg font-black text-lg text-neon-cyan hover:shadow-neon-cyan transition"
+            className="hs-btn hs-btn-lg hs-btn-block"
           >
             ⚔️ {currentScene.actionText || 'İlerle'}
           </motion.button>

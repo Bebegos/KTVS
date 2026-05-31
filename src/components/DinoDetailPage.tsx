@@ -44,7 +44,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={onBack}
-            className="px-4 py-2 bg-slate-800/60 border border-neon-cyan/40 rounded-lg font-bold text-neon-cyan hover:border-neon-cyan hover:shadow-neon-cyan transition"
+            className="hs-btn"
           >
             ← Geri
           </button>
@@ -201,7 +201,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                       {dino.pendingRewards.unspentStatPoints > 0 && (
                         <button
                           onClick={() => setShowBonusAllocator(true)}
-                          className="flex-1 px-4 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-yellow-100 font-black rounded-lg transition active:scale-95 shadow-lg shadow-yellow-500/30"
+                          className="hs-btn hs-btn-green flex-1"
                         >
                           📊 Stat Ekle
                         </button>
@@ -209,7 +209,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                       {dino.pendingRewards.pendingAbilityIds.filter(id => !id.startsWith('__')).length > 0 && (
                         <button
                           onClick={() => setShowAbilityDiscovery(true)}
-                          className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-purple-100 font-black rounded-lg transition active:scale-95 shadow-lg shadow-purple-500/30"
+                          className="hs-btn hs-btn-purple flex-1"
                         >
                           ✨ Yetenek Keşfet
                         </button>

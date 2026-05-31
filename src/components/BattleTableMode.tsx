@@ -149,7 +149,7 @@ export default function BattleTableMode({ dino, onBack, onRefresh }: BattleTable
       <div className="flex justify-between items-center p-3 bg-gradient-to-r from-dino-500 to-blue-500 text-white shadow-lg">
         <button
           onClick={onBack}
-          className="px-3 py-1 bg-red-500 rounded font-bold text-sm hover:bg-red-600"
+          className="hs-btn hs-btn-red hs-btn-sm"
         >
           🚪 Çık
         </button>
@@ -192,25 +192,25 @@ export default function BattleTableMode({ dino, onBack, onRefresh }: BattleTable
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => updateHp(-5)}
-                  className="flex-1 px-2 py-1 bg-red-500 text-white rounded font-bold text-sm hover:bg-red-600"
+                  className="hs-btn hs-btn-red hs-btn-sm flex-1"
                 >
                   -5
                 </button>
                 <button
                   onClick={() => updateHp(-10)}
-                  className="flex-1 px-2 py-1 bg-red-600 text-white rounded font-bold text-sm hover:bg-red-700"
+                  className="hs-btn hs-btn-red hs-btn-sm flex-1"
                 >
                   -10
                 </button>
                 <button
                   onClick={() => updateHp(5)}
-                  className="flex-1 px-2 py-1 bg-green-500 text-white rounded font-bold text-sm hover:bg-green-600"
+                  className="hs-btn hs-btn-green hs-btn-sm flex-1"
                 >
                   +5
                 </button>
                 <button
                   onClick={() => updateHp(10)}
-                  className="flex-1 px-2 py-1 bg-green-600 text-white rounded font-bold text-sm hover:bg-green-700"
+                  className="hs-btn hs-btn-green hs-btn-sm flex-1"
                 >
                   +10
                 </button>
@@ -276,11 +276,7 @@ export default function BattleTableMode({ dino, onBack, onRefresh }: BattleTable
                   disabled={diceRolling || ability.cd > 0}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`p-2 rounded-lg text-xs font-black border-2 transition ${
-                    ability.cd > 0
-                      ? 'bg-gray-300 text-gray-600 cursor-not-allowed opacity-50'
-                      : 'bg-dino-400 text-white hover:bg-dino-500 cursor-pointer'
-                  }`}
+                  className="hs-btn hs-btn-green hs-btn-sm"
                 >
                   <div>{ability.name}</div>
                   {ability.cd > 0 && <div className="text-xs">CD:{ability.cd}</div>}
@@ -335,7 +331,7 @@ export default function BattleTableMode({ dino, onBack, onRefresh }: BattleTable
 
             <button
               onClick={endTurn}
-              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-lg font-black text-sm hover:shadow-lg px-3 py-2 active:scale-95 transition"
+              className="hs-btn hs-btn-green"
             >
               ✅<br />TURU<br />BITIR
             </button>

@@ -136,7 +136,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
             <h1 className="text-2xl font-black text-yellow-300">⚡ Ödüllerini Harca</h1>
             <button
               onClick={onClose}
-              className="text-yellow-500/70 hover:text-yellow-400 text-2xl"
+              className="hs-btn hs-btn-sm"
             >
               ✕
             </button>
@@ -164,7 +164,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleStatChange('atk', statAllocation.atk - 1)}
-                  className="px-3 py-1 bg-orange-900/40 hover:bg-orange-800/60 border border-orange-600/50 text-orange-300 font-bold rounded transition"
+                  className="hs-btn hs-btn-red hs-btn-xs"
                 >
                   −
                 </button>
@@ -178,7 +178,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
                 />
                 <button
                   onClick={() => handleStatChange('atk', statAllocation.atk + 1)}
-                  className="px-3 py-1 bg-orange-900/40 hover:bg-orange-800/60 border border-orange-600/50 text-orange-300 font-bold rounded transition"
+                  className="hs-btn hs-btn-green hs-btn-xs"
                 >
                   +
                 </button>
@@ -194,7 +194,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleStatChange('def', statAllocation.def - 1)}
-                  className="px-3 py-1 bg-blue-900/40 hover:bg-blue-800/60 border border-blue-600/50 text-blue-300 font-bold rounded transition"
+                  className="hs-btn hs-btn-red hs-btn-xs"
                 >
                   −
                 </button>
@@ -208,7 +208,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
                 />
                 <button
                   onClick={() => handleStatChange('def', statAllocation.def + 1)}
-                  className="px-3 py-1 bg-blue-900/40 hover:bg-blue-800/60 border border-blue-600/50 text-blue-300 font-bold rounded transition"
+                  className="hs-btn hs-btn-green hs-btn-xs"
                 >
                   +
                 </button>
@@ -224,7 +224,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleStatChange('spd', statAllocation.spd - 1)}
-                  className="px-3 py-1 bg-yellow-900/40 hover:bg-yellow-800/60 border border-yellow-600/50 text-yellow-300 font-bold rounded transition"
+                  className="hs-btn hs-btn-red hs-btn-xs"
                 >
                   −
                 </button>
@@ -238,7 +238,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
                 />
                 <button
                   onClick={() => handleStatChange('spd', statAllocation.spd + 1)}
-                  className="px-3 py-1 bg-yellow-900/40 hover:bg-yellow-800/60 border border-yellow-600/50 text-yellow-300 font-bold rounded transition"
+                  className="hs-btn hs-btn-green hs-btn-xs"
                 >
                   +
                 </button>
@@ -289,11 +289,7 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
                             <button
                               key={slot}
                               onClick={() => handleAbilitySlot(abilityId, slot)}
-                              className={`px-3 py-1 text-xs font-bold rounded transition ${
-                                selectedAbilities.get(abilityId) === slot
-                                  ? 'bg-purple-600 text-purple-100 ring-2 ring-purple-400'
-                                  : 'bg-purple-900/40 text-purple-300 border border-purple-600/50 hover:bg-purple-800/60'
-                              }`}
+                              className="hs-btn hs-btn-purple hs-btn-sm"
                             >
                               Slot {slot}
                             </button>
@@ -324,18 +320,14 @@ export default function RewardSpendingModal({ dino, isOpen, onClose, onConfirm }
         <div className="p-6 flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan active:scale-95 transition"
+            className="hs-btn"
           >
             İptal
           </button>
           <button
             onClick={handleSubmit}
             disabled={!canSubmit || saving}
-            className={`px-6 py-2 font-bold rounded-lg transition active:scale-95 ${
-              canSubmit
-                ? 'bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-yellow-100'
-                : 'bg-gradient-to-r from-yellow-900/40 to-yellow-900/30 text-yellow-300/50 cursor-not-allowed'
-            } disabled:opacity-50`}
+            className="hs-btn hs-btn-green"
           >
             {saving ? '💾 Kaydediliyor...' : '✓ Onayla'}
           </button>

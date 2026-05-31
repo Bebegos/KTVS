@@ -177,7 +177,7 @@ export default function PvEBattleScreen({
               </div>
               <button
                 onClick={onBack}
-                className="w-full px-6 py-3 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+                className="hs-btn hs-btn-block"
               >
                 Ana Ekrana Dön
               </button>
@@ -206,7 +206,7 @@ export default function PvEBattleScreen({
       <div className="mb-4 flex justify-between items-center">
         <button
           onClick={onBack}
-          className="px-4 py-2 glass border border-red-500/50 rounded-lg font-bold text-sm text-red-400 hover:shadow-red-500/50 transition"
+          className="hs-btn hs-btn-red hs-btn-sm"
         >
           🚪 Çık
         </button>

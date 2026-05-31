@@ -71,7 +71,7 @@ export default function MatchLog({ onBack }: MatchLogProps) {
       <div className="relative z-10">
         <button
           onClick={onBack}
-          className="px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan transition"
+          className="hs-btn"
         >
           ← Geri
         </button>

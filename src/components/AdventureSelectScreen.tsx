@@ -28,7 +28,7 @@ export default function AdventureSelectScreen({
       {/* Back button */}
       <button
         onClick={onBack}
-        className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+        className="hs-btn absolute top-4 left-4 z-10"
       >
         ← Geri
       </button>
@@ -78,7 +78,7 @@ export default function AdventureSelectScreen({
           <div className="flex items-center gap-4 w-full max-w-2xl">
             <button
               onClick={() => setSelectedDino(null)}
-              className="px-4 py-2 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple transition"
+              className="hs-btn hs-btn-purple"
             >
               ← Dino Değiştir
             </button>

@@ -205,18 +205,14 @@ export default function AbilityDiscoveryModal({
         <div className="flex gap-3">
           <button
             onClick={handleSkip}
-            className="flex-1 px-4 py-2 bg-slate-700/60 border border-slate-600/50 text-slate-300 font-bold rounded-lg hover:bg-slate-700 transition"
+            className="hs-btn flex-1"
           >
             Atla
           </button>
           <button
             onClick={handleConfirm}
             disabled={!currentSelected || saving}
-            className={`flex-1 px-4 py-2 font-bold rounded-lg transition ${
-              currentSelected && !saving
-                ? 'bg-gradient-to-r from-neon-purple/80 to-neon-pink/80 text-white hover:from-neon-purple hover:to-neon-pink shadow-lg shadow-neon-purple/30'
-                : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-            }`}
+            className="hs-btn hs-btn-purple flex-1"
           >
             {isLastAbility && saving
               ? '💾 Kaydediliyor...'

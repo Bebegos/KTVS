@@ -62,7 +62,7 @@ export default function BattleTable({ onBack, onRefresh, selectedDino: propSelec
 
         <button
           onClick={onBack}
-          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+          className="hs-btn absolute top-4 left-4 z-10"
         >
           ← Geri
         </button>
@@ -129,7 +129,7 @@ export default function BattleTable({ onBack, onRefresh, selectedDino: propSelec
             setMode('select-mode')
             setSelectedDino(null)
           }}
-          className="absolute top-4 left-4 px-4 py-2 glass-dark neon-border-cyan rounded-lg font-bold text-neon-cyan hover:shadow-neon-cyan z-10 transition"
+          className="hs-btn absolute top-4 left-4 z-10"
         >
           ← Geri
         </button>
@@ -147,7 +147,7 @@ export default function BattleTable({ onBack, onRefresh, selectedDino: propSelec
             <p className="text-xl text-neon-cyan mb-4">Dinozor yok!</p>
             <button
               onClick={onBack}
-              className="px-6 py-3 glass-dark neon-border-purple rounded-lg font-bold text-neon-purple hover:shadow-neon-purple"
+              className="hs-btn hs-btn-purple"
             >
               Geri Dön
             </button>
