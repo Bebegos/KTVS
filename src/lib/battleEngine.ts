@@ -115,6 +115,9 @@ export class BattleEngine {
   canUseAbility(character: 'player' | 'opponent', abilityIdx: number): boolean {
     const char = character === 'player' ? this.state.player : this.state.opponent
 
+    // Check if ability exists
+    if (!char.abilities[abilityIdx]) return false
+
     // Check cooldown
     if (char.cooldowns[abilityIdx] > 0) return false
 
@@ -132,7 +135,12 @@ export class BattleEngine {
     const ability = attacker.abilities[abilityIdx]
 
     if (!ability) {
-      throw new Error(`Ability ${abilityIdx} not found`)
+      throw new Error(`Ability ${abilityIdx} not found for ${character}`)
+    }
+
+    // Validate ability structure
+    if (!ability.kind || !ability.name) {
+      throw new Error(`Invalid ability structure at index ${abilityIdx}`)
     }
 
     let finalDamage = 0
@@ -144,7 +152,7 @@ export class BattleEngine {
     if (ability.kind === 'heal') {
       // Pure healing or vampiric healing
       // Vampiric abilities (like Bloodlust) deal damage AND heal
-      const isVampiric = (ability as any).isVampiric || ability.effect === 'none'
+      const isVampiric = (ability as any).isVampiric === true
 
       if (isVampiric) {
         // Vampiric: deal damage to opponent, heal attacker for portion of damage
@@ -183,7 +191,10 @@ export class BattleEngine {
       effectApplied = this.applyEffect(effectTarget, ability.effect)
     }
 
-    // Set cooldown
+    // Set cooldown (ensure cooldown array is properly sized)
+    if (!attacker.cooldowns || attacker.cooldowns.length <= abilityIdx) {
+      attacker.cooldowns = new Array(attacker.abilities.length).fill(0)
+    }
     attacker.cooldowns[abilityIdx] = ability.cd || 0
 
     return {
@@ -205,19 +216,22 @@ export class BattleEngine {
 
     // Apply damage from abilities/buffs
     let attackBonus = 0
+    let defenseBonus = 0
     for (const effect of attacker.effects) {
       const bonus = this.getStatBonus(effect.type, 'atk')
       attackBonus += bonus
     }
-
-    let defenseReduction = 1
     for (const effect of defender.effects) {
       const bonus = this.getStatBonus(effect.type, 'def')
-      defenseReduction += bonus / 100
+      defenseBonus += bonus
     }
 
+    // Defense reduction: negative defense bonus (from defense_down debuff) increases damage
+    // Positive defense bonus (from shield buff) decreases damage
+    const defenseMultiplierFromEffects = 1 - (defenseBonus / 100)
+
     const finalDamage =
-      baseDamage * variance * defenseMultiplier * (1 + attackBonus / 100) * defenseReduction
+      baseDamage * variance * defenseMultiplier * (1 + attackBonus / 100) * Math.max(0.1, defenseMultiplierFromEffects)
 
     return Math.max(1, finalDamage)
   }
@@ -226,11 +240,18 @@ export class BattleEngine {
 
   private applyEffect(character: BattleCharacter, effectId: string): string {
     const effect = getEffect(effectId)
-    if (!effect) return ''
+    if (!effect) {
+      console.warn(`Effect not found: ${effectId}`)
+      return ''
+    }
 
-    // Use effect's default level, fallback to level 1, then to 2
+    // Use effect's default level, fallback to level 1
     const defaultLevel = effect.defaultLevel || 1
     const duration = effect.levels[defaultLevel]?.duration || effect.levels[1]?.duration || 2
+
+    if (!effect.levels[defaultLevel] && !effect.levels[1]) {
+      console.warn(`No duration found for effect ${effectId} at levels ${defaultLevel} or 1`)
+    }
 
     // Check if effect already exists
     const existingIdx = character.effects.findIndex(e => e.type === effectId)
@@ -261,7 +282,7 @@ export class BattleEngine {
 
   applyEffectDamageAndDecrement(character: 'player' | 'opponent'): number {
     const char = character === 'player' ? this.state.player : this.state.opponent
-    let totalDamage = 0
+    let totalEffectChange = 0
 
     const newEffects: ActiveEffect[] = []
 
@@ -274,7 +295,7 @@ export class BattleEngine {
       }
 
       const damage = getEffectDamage(effect.type, 1, char.dino.maxHp)
-      totalDamage += damage
+      totalEffectChange += damage
 
       // Decrement duration
       const newDuration = effect.duration - 1
@@ -291,10 +312,10 @@ export class BattleEngine {
     }
 
     char.effects = newEffects
-    // Apply damage/healing: negative totalDamage means healing
-    char.currentHp = Math.min(char.dino.maxHp, Math.max(0, char.currentHp - totalDamage))
+    // Apply damage/healing: negative totalEffectChange means healing (restores HP)
+    char.currentHp = Math.min(char.dino.maxHp, Math.max(0, char.currentHp - totalEffectChange))
 
-    return totalDamage
+    return totalEffectChange
   }
 
   // ===== COOLDOWN MANAGEMENT =====
