@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../lib/auth-context'
 import { Dino } from '../game/types'
 import { deleteDino, getDinos } from '../lib/supabase'
+import { abilityDefinitionService } from '../lib/services'
 import AbilityIcon from './AbilityIcon'
 import MedallionIcon from './MedallionIcon'
 import SvgIcon from './SvgIcon'
@@ -107,37 +108,43 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                   </p>
                 </div>
 
-                {dino.abilities.length > 0 && (
+                {dino.abilityIds && dino.abilityIds.length > 0 && (
                   <div className="mb-3">
                     <p className="font-bold text-neon-cyan/70 mb-2 text-xs">⚡ Yetenekler:</p>
                     <div className="space-y-2">
-                      {dino.abilities.map((a, idx) => (
-                        <div
-                          key={idx}
-                          className="glass-dark border border-neon-purple/30 rounded-lg p-2 flex items-start gap-2"
-                        >
-                          <AbilityIcon iconId={(a as any).icon} size="md" className="flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-black text-neon-purple text-sm">{a.name}</p>
-                            <div className="text-xs text-neon-purple/70 space-y-0.5">
-                              {!a.effects || a.effects.length === 0 ? (
-                                <p>Saldırı • ×{a.multiplier || 1}</p>
-                              ) : (
-                                <p className={isBuffEffect(a.effects[0]) ? 'text-green-400' : 'text-red-400'}>
-                                  {isBuffEffect(a.effects[0]) ? '⬆️ Buff' : '⬇️ Debuff'} • ×{a.multiplier || 1}
-                                </p>
-                              )}
-                              {a.effects && a.effects.length > 0 && (
-                                <span className="flex items-center gap-1">
-                                  <SvgIcon id={a.effects[0]} type="effect" size="xs" fallback={getEffectEmoji(a.effects[0])} />
-                                  <span className="font-bold text-neon-cyan">{getEffectNameTR(a.effects[0])}</span>
-                                </span>
-                              )}
-                              {a.cd > 0 && <p>CD: <span className="font-bold">{a.cd}</span> tur</p>}
+                      {dino.abilityIds.map((abilityId: string, idx: number) => {
+                        if (!abilityId) return null
+                        const ability = abilityDefinitionService.getAbility(abilityId)
+                        if (!ability) return null
+
+                        return (
+                          <div
+                            key={idx}
+                            className="glass-dark border border-neon-purple/30 rounded-lg p-2 flex items-start gap-2"
+                          >
+                            <AbilityIcon iconId={ability.icon} size="md" className="flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-black text-neon-purple text-sm">{ability.name}</p>
+                              <div className="text-xs text-neon-purple/70 space-y-0.5">
+                                {!ability.effects || ability.effects.length === 0 ? (
+                                  <p>Saldırı • ×{ability.damageMultiplier || 1}</p>
+                                ) : (
+                                  <p className={isBuffEffect((ability.effects[0] as any)) ? 'text-green-400' : 'text-red-400'}>
+                                    {isBuffEffect((ability.effects[0] as any)) ? '⬆️ Buff' : '⬇️ Debuff'} • ×{ability.damageMultiplier || 1}
+                                  </p>
+                                )}
+                                {ability.effects && ability.effects.length > 0 && (
+                                  <span className="flex items-center gap-1">
+                                    <SvgIcon id={ability.effects[0] as any} type="effect" size="xs" fallback={getEffectEmoji((ability.effects[0] as any))} />
+                                    <span className="font-bold text-neon-cyan">{getEffectNameTR((ability.effects[0] as any))}</span>
+                                  </span>
+                                )}
+                                {ability.cooldown && ability.cooldown > 0 && <p>CD: <span className="font-bold">{ability.cooldown}</span> tur</p>}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 )}

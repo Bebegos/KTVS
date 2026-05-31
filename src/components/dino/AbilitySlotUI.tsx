@@ -3,6 +3,7 @@
 
 import { Dino } from '../../game/types'
 import { slotService } from '../../lib/services'
+import { abilityDefinitionService } from '../../lib/services/abilityDefinitionService'
 import AbilityIcon from '../AbilityIcon'
 
 interface AbilitySlotUIProps {
@@ -24,7 +25,8 @@ export default function AbilitySlotUI({
   const isFilled = slotService.isSlotFilled(dino, slot)
   const canClick = slotService.canClickSlot(dino, slot)
   const requiredLevel = slotService.getSlotRequiredLevel(slot)
-  const ability = dino.abilities[slot]
+  const abilityId = dino.abilityIds[slot]
+  const ability = abilityId ? abilityDefinitionService.getAbility(abilityId) : null
 
   const handleClick = () => {
     if (!canClick || !onClick) return
@@ -80,8 +82,8 @@ export default function AbilitySlotUI({
           </div>
           <div className="text-xs space-y-1 w-full">
             <div className="flex justify-between">
-              <span>×{ability.multiplier || 1}</span>
-              {ability.cd > 0 && <span className="text-neon-cyan/70">CD: {ability.cd}</span>}
+              <span>×{ability.damageMultiplier || 1}</span>
+              {ability.cooldown && ability.cooldown > 0 && <span className="text-neon-cyan/70">CD: {ability.cooldown}</span>}
             </div>
           </div>
         </>
