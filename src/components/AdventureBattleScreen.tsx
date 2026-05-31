@@ -317,7 +317,7 @@ export default function AdventureBattleScreen({
         </div>
 
         <div className="mb-6">
-          <p className="text-xs font-bold text-neon-cyan mb-2">⚔️ YETENEKLERİ SEÇ</p>
+          <p className="text-xs font-bold text-neon-cyan mb-2">YETENEKLERİ SEÇ</p>
           <div className="grid grid-cols-2 gap-3 mb-3">
             {[0, 1, 2, 3, 4].map((idx) => {
               const ability = battleState.player.abilities[idx]
@@ -375,9 +375,9 @@ export default function AdventureBattleScreen({
                       e.stopPropagation()
                       openAbilityInfo(battleState.player.abilityIds[idx], idx)
                     }}
-                    className="absolute top-2 right-2 text-neon-cyan hover:text-neon-cyan/70 text-lg transition"
+                    className="absolute top-2 right-2 text-neon-cyan hover:text-neon-cyan/70 text-lg transition text-sm font-bold"
                   >
-                    ℹ️
+                    ℹ
                   </button>
                   <div className="flex items-center gap-2 w-full">
                     <AbilityIcon iconId={ability.icon} size="md" />
@@ -411,15 +411,15 @@ export default function AdventureBattleScreen({
                   : 'hover:shadow-lg'
               }`}
             >
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 text-2xl">👑</div>
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 text-xs font-black text-yellow-300">ULT</div>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   openAbilityInfo(battleState.player.abilityIds[5], 5)
                 }}
-                className="absolute top-2 right-2 text-yellow-300 hover:text-yellow-300/70 text-lg transition"
+                className="absolute top-2 right-2 text-yellow-300 hover:text-yellow-300/70 text-lg transition text-sm font-bold"
               >
-                ℹ️
+                ℹ
               </button>
               <div className="flex items-center gap-2 w-full mt-4">
                 <AbilityIcon iconId={battleState.player.abilities[5].icon} size="md" />
@@ -546,7 +546,7 @@ export default function AdventureBattleScreen({
             onClick={startBattle}
             className="hs-btn hs-btn-lg hs-btn-block"
           >
-            ⚔️ {currentScene.actionText || 'İlerle'}
+            {currentScene.actionText || 'İlerle'}
           </motion.button>
         </div>
       </div>

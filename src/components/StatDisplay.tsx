@@ -78,10 +78,10 @@ export default function StatDisplay({
                   e.stopPropagation()
                   setDetailOpen(true)
                 }}
-                className={`ml-1 opacity-0 group-hover:opacity-100 transition text-slate-400 hover:${def.textColor} text-lg`}
+                className={`ml-1 opacity-0 group-hover:opacity-100 transition text-slate-400 hover:${def.textColor} text-lg text-sm font-bold`}
                 title="Detayları göster"
               >
-                ℹ️
+                ℹ
               </button>
             )}
           </div>
