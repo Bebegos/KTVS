@@ -188,24 +188,29 @@ export class BattleEngine {
     const effect = getEffect(effectId)
     if (!effect) return ''
 
+    const duration = effect.levels[1]?.duration || 2
+
     // Check if effect already exists
     const existingIdx = character.effects.findIndex(e => e.type === effectId)
 
     if (existingIdx !== -1) {
-      // Reset duration if effect exists
-      character.effects[existingIdx].duration = effect.levels[1]?.duration || 2
+      // Reset duration if effect exists, mark as fresh
+      character.effects[existingIdx].duration = duration
+      character.effects[existingIdx].justApplied = true
     } else if (character.effects.length < 2) {
       // Add if slot available (max 2 effects)
       character.effects.push({
         type: effectId as any,
-        duration: effect.levels[1]?.duration || 2,
+        duration,
+        justApplied: true,
       })
     } else {
       // FIFO: remove oldest, add new
       character.effects.shift()
       character.effects.push({
         type: effectId as any,
-        duration: effect.levels[1]?.duration || 2,
+        duration,
+        justApplied: true,
       })
     }
 
@@ -219,6 +224,13 @@ export class BattleEngine {
     const newEffects: ActiveEffect[] = []
 
     for (const effect of char.effects) {
+      // Effects cast THIS round don't tick or decrement yet — they get
+      // their full duration starting next round. Just clear the flag.
+      if (effect.justApplied) {
+        newEffects.push({ ...effect, justApplied: false })
+        continue
+      }
+
       const damage = getEffectDamage(effect.type, 1, char.dino.maxHp)
       totalDamage += damage
 

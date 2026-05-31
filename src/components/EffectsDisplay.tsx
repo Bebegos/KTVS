@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ActiveEffect } from '../game/types'
 import { getEffect } from '../lib/effects'
+import SvgIcon from './SvgIcon'
 
 interface EffectsDisplayProps {
   effects: ActiveEffect[]
@@ -34,11 +35,11 @@ export default function EffectsDisplay({ effects }: EffectsDisplayProps) {
               className="relative group"
               title={definition.name}
             >
-              <div className="text-2xl cursor-help hover:scale-110 transition">
-                {definition.emoji}
+              <div className="cursor-help hover:scale-110 transition">
+                <SvgIcon id={effect.type} type="effect" size="md" fallback={definition.emoji} />
               </div>
               {/* Duration badge */}
-              <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <div className="absolute -top-2 -right-2 bg-gradient-to-br from-gem-health to-gem-health-dark text-white text-xs font-black rounded-full w-5 h-5 flex items-center justify-center border border-gold/60 shadow-md">
                 {effect.duration}
               </div>
               {/* Tooltip on hover */}
@@ -69,9 +70,12 @@ export default function EffectsDisplay({ effects }: EffectsDisplayProps) {
               {selectedEffect.definition && (
                 <>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="text-5xl">
-                      {selectedEffect.definition.emoji}
-                    </div>
+                    <SvgIcon
+                      id={selectedEffect.effect.type}
+                      type="effect"
+                      size="xl"
+                      fallback={selectedEffect.definition.emoji}
+                    />
                     <div>
                       <h2 className="text-2xl font-black text-neon-cyan">
                         {selectedEffect.definition.name}

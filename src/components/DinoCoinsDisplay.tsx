@@ -29,17 +29,14 @@ export default function DinoCoinsDisplay({
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className="flex items-center gap-2 bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-500 rounded-full px-4 py-2 shadow-lg border-2 border-yellow-600 cursor-pointer group relative"
+      className="hs-wood-frame flex items-center gap-2 rounded-full pl-1.5 pr-4 py-1 cursor-pointer group relative"
     >
-      {/* Shine effect */}
-      <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-
       {/* Coin icon */}
       {coinIcon && (
         <motion.div
           animate={{ rotate: [0, -5, 5, 0] }}
           transition={{ duration: 3, repeat: Infinity }}
-          className={`${sizeClasses[size]} flex-shrink-0`}
+          className={`${sizeClasses[size]} flex-shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}
           dangerouslySetInnerHTML={{ __html: coinIcon.svg }}
         />
       )}
@@ -51,14 +48,12 @@ export default function DinoCoinsDisplay({
           initial={{ scale: 1.2, y: -5 }}
           animate={{ scale: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className={`${textSizes[size]} font-black text-yellow-900 drop-shadow-md`}
+          className={`${textSizes[size]} font-black text-gold-light`}
+          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
         >
           {coins.toLocaleString()}
         </motion.span>
       )}
-
-      {/* Glow effect behind */}
-      <div className="absolute inset-0 rounded-full bg-yellow-400 opacity-20 blur-md -z-10 group-hover:opacity-40 transition-opacity" />
     </motion.div>
   )
 }

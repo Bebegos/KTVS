@@ -47,6 +47,7 @@ export interface Dino {
 export interface ActiveEffect {
   type: EffectKind
   duration: number
+  justApplied?: boolean // true on the round it was cast; skips decrement/DoT that round
 }
 
 export interface BattleCharacter {

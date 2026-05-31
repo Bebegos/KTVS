@@ -8,6 +8,7 @@ import { useAuth } from '../lib/auth-context'
 import BattleStatsCard from './BattleStatsCard'
 import EffectsDisplay from './EffectsDisplay'
 import AbilityIcon from './AbilityIcon'
+import HealthBar from './HealthBar'
 import BattleEffectVisuals from './BattleEffectVisuals'
 import { getEffectNameTR } from '../lib/effect-translations'
 
@@ -191,7 +192,6 @@ export default function AdventureBattleScreen({
   }
 
 
-  const playerHpPercent = (playerCurrentHp / playerDino.maxHp) * 100
 
   // ADVENTURE COMPLETE SCREEN
   if (adventureEnded) {
@@ -251,13 +251,9 @@ export default function AdventureBattleScreen({
             <div className="glass-dark neon-border-cyan rounded-lg p-4 mb-3">
               <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
               <h2 className="text-lg font-black text-neon-cyan mb-2">{playerDino.name}</h2>
-              <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-                <div
-                  className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                  style={{ width: `${Math.max(0, playerHpPercent)}%` }}
-                />
+              <div className="mb-3">
+                <HealthBar current={playerCurrentHp} max={playerDino.maxHp} variant="player" />
               </div>
-              <p className="text-xs text-neon-cyan mb-3">{Math.max(0, playerCurrentHp)}/{playerDino.maxHp}</p>
 
               <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
                 <EffectsDisplay effects={battleState.player.effects} />
@@ -272,13 +268,9 @@ export default function AdventureBattleScreen({
             <div className="glass-dark neon-border-purple rounded-lg p-4 mb-3">
               <p className="text-xs font-bold text-neon-purple mb-2">DÜŞMAN</p>
               <h2 className="text-lg font-black text-neon-purple mb-2">{battleState.opponent.dino.name}</h2>
-              <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-                <div
-                  className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                  style={{ width: `${Math.max(0, (battleState.opponent.currentHp / battleState.opponent.dino.maxHp) * 100)}%` }}
-                />
+              <div className="mb-3">
+                <HealthBar current={battleState.opponent.currentHp} max={battleState.opponent.dino.maxHp} variant="enemy" />
               </div>
-              <p className="text-xs text-neon-purple mb-3">{Math.max(0, battleState.opponent.currentHp)}/{battleState.opponent.dino.maxHp}</p>
 
               <div className="mb-3 p-3 bg-neon-purple/5 rounded-lg border border-neon-purple/20">
                 <EffectsDisplay effects={battleState.opponent.effects} />
@@ -389,18 +381,7 @@ export default function AdventureBattleScreen({
         {/* Player status */}
         <div className="w-full glass-dark neon-border-cyan rounded-lg p-4">
           <p className="text-xs font-bold text-neon-cyan mb-2">SENİN DURUMUN</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="glass border border-red-500/30 p-2 rounded text-center">
-              <p className="text-xs text-red-400 font-bold">❤️ CAN</p>
-              <p className="text-lg font-black text-red-400">{playerCurrentHp}/{playerDino.maxHp}</p>
-            </div>
-            <div className="w-full col-span-2 bg-slate-700 rounded-full h-2 overflow-hidden border border-red-500/30">
-              <div
-                className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                style={{ width: `${playerHpPercent}%` }}
-              />
-            </div>
-          </div>
+          <HealthBar current={playerCurrentHp} max={playerDino.maxHp} variant="player" />
         </div>
 
         {/* Action buttons */}
@@ -419,7 +400,19 @@ export default function AdventureBattleScreen({
   )
 }
 
+// Debuff effects that enemies should NOT inflict before level 10
+const ENEMY_DEBUFFS = ['poison', 'bleeding', 'stun', 'stop', 'paralyze', 'defense_down']
+
 function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): Dino {
+  // Nerf: under level 10, enemies can't apply debuffs to the player.
+  // Their attacks still hit, but lose any debuff rider (e.g. bite won't bleed).
+  const sanitizedAbilities =
+    enemyData.level < 10
+      ? playerDino.abilities.map(a =>
+          ENEMY_DEBUFFS.includes(a.effect) ? { ...a, effect: 'none' as const } : a
+        )
+      : playerDino.abilities
+
   return {
     id: 'adventure-enemy-' + Date.now(),
     name: enemyData.name,
@@ -431,6 +424,6 @@ function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): 
     def: Math.floor((playerDino.def ?? 5) * enemyData.defMultiplier),
     spd: Math.floor((playerDino.spd ?? 5) * enemyData.spdMultiplier),
     element: playerDino.element,
-    abilities: playerDino.abilities,
+    abilities: sanitizedAbilities,
   }
 }

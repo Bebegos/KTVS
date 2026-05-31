@@ -14,6 +14,7 @@ import MatchLog from '../components/MatchLog'
 import AdventureSelectScreen from '../components/AdventureSelectScreen'
 import AdventureBattleScreen from '../components/AdventureBattleScreen'
 import DinoCoinsDisplay from '../components/DinoCoinsDisplay'
+import SiteLogo from '../components/SiteLogo'
 
 type PageName = 'home' | 'dino-list' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs' | 'adventure-select' | 'adventure-battle'
 
@@ -77,47 +78,45 @@ export default function Home() {
   // Ana Menü
   if (page === 'home') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-6 relative overflow-y-auto">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto">
         {/* Arka plan efekti - sıcak meşale ışıltıları */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-gold opacity-10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-72 h-72 bg-gem-attack opacity-10 rounded-full blur-3xl"></div>
         </div>
 
-        {/* Versiyon Göstergesi */}
-        <div className="absolute top-4 left-4 z-10">
-          <div className="glass px-3 py-1 rounded-lg">
-            <p className="text-xs font-bold text-neon-cyan/70">v{APP_VERSION}</p>
+        {/* Üst Bar - akışta, taşmaz; mobilde sarar */}
+        <div className="w-full flex items-center justify-between flex-wrap gap-2 z-20">
+          <div className="hs-wood-frame px-3 py-1 rounded-lg">
+            <p className="text-xs font-bold text-gold-light">v{APP_VERSION}</p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* DinoCoin Display */}
+            <DinoCoinsDisplay coins={userCoins} size="sm" />
+
+            {/* User Info */}
+            <div className="hs-wood-frame px-3 py-2 rounded-lg">
+              <p className="text-sm font-bold text-gold-light">👤 {user?.username || user?.email?.split('@')[0]}</p>
+            </div>
+
+            {/* Logout Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSignOut}
+              className="hs-button px-3 py-2 rounded-lg text-sm"
+            >
+              🚪 Çıkış
+            </motion.button>
           </div>
         </div>
 
-        {/* Üst Bar - Hearthstone Tarzı */}
-        <div className="absolute top-4 right-4 flex gap-3 items-center z-10">
-          {/* DinoCoin Display */}
-          <DinoCoinsDisplay coins={userCoins} size="md" />
-
-          {/* User Info */}
-          <div className="glass-dark px-4 py-2 rounded-lg border border-neon-cyan/50 backdrop-blur-md">
-            <p className="text-sm font-bold text-neon-cyan">👤 {user?.username || user?.email?.split('@')[0]}</p>
+        {/* Başlık - logo + slogan */}
+        <div className="text-center mb-4 z-10 mt-2">
+          <div className="flex justify-center mb-2">
+            <SiteLogo size={240} />
           </div>
-
-          {/* Logout Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSignOut}
-            className="px-4 py-2 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold text-sm backdrop-blur-md border border-red-500/50 transition shadow-lg"
-          >
-            🚪 Çıkış
-          </motion.button>
-        </div>
-
-        {/* Başlık - md+ ekranlarda mt-0, sm ekranlarda mt-8 (top bar'dan uzak olması için) */}
-        <div className="text-center mb-8 z-10 mt-8 md:mt-0">
-          <div className="text-8xl mb-4 float-animation">🦖</div>
-          <h1 className="text-6xl font-black hs-text-gold mb-2 font-display tracking-wide">
-            Dino-RP
-          </h1>
           <p className="text-lg hs-text-bronze opacity-90">Dinozor Savaş ve Gelişim Oyunu</p>
         </div>
 

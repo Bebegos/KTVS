@@ -8,6 +8,7 @@ import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
 import EffectsDisplay from './EffectsDisplay'
 import BattleStatsCard from './BattleStatsCard'
+import HealthBar from './HealthBar'
 
 interface DuelloBattleScreenProps {
   playerDino: Dino
@@ -287,8 +288,6 @@ export default function DuelloBattleScreen({
     }
   }
 
-  const playerHpPercent = engine.getPlayerHpPercent()
-  const opponentHpPercent = engine.getOpponentHpPercent()
 
   if (battleState.battleEnded) {
     return (
@@ -402,13 +401,9 @@ export default function DuelloBattleScreen({
           <div className="glass-dark neon-border-cyan rounded-lg p-4 mb-3">
             <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
             <h2 className="text-lg font-black text-neon-cyan mb-2">{playerDino.name}</h2>
-            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-              <div
-                className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                style={{ width: `${Math.max(0, playerHpPercent)}%` }}
-              />
+            <div className="mb-3">
+              <HealthBar current={battleState.player.currentHp} max={battleState.player.dino.maxHp} variant="player" />
             </div>
-            <p className="text-xs text-neon-cyan mb-3">{Math.max(0, battleState.player.currentHp)}/{battleState.player.dino.maxHp}</p>
 
             <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
               <EffectsDisplay effects={battleState.player.effects} />
@@ -422,13 +417,9 @@ export default function DuelloBattleScreen({
           <div className="glass-dark neon-border-purple rounded-lg p-4 mb-3">
             <p className="text-xs font-bold text-neon-purple mb-2">RAKİP</p>
             <h2 className="text-lg font-black text-neon-purple mb-2">{opponentDino.name}</h2>
-            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-red-500/30 mb-1">
-              <div
-                className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                style={{ width: `${Math.max(0, opponentHpPercent)}%` }}
-              />
+            <div className="mb-3">
+              <HealthBar current={battleState.opponent.currentHp} max={battleState.opponent.dino.maxHp} variant="enemy" />
             </div>
-            <p className="text-xs text-neon-purple mb-3">{Math.max(0, battleState.opponent.currentHp)}/{battleState.opponent.dino.maxHp}</p>
 
             <div className="mb-3 p-3 bg-neon-purple/5 rounded-lg border border-neon-purple/20">
               <EffectsDisplay effects={battleState.opponent.effects} />

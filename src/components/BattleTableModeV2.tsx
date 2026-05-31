@@ -5,6 +5,8 @@ import { BattleEngine } from '../lib/battleEngine'
 import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
 import AbilityIcon from './AbilityIcon'
 import BattleEffectVisuals from './BattleEffectVisuals'
+import HealthBar from './HealthBar'
+import SvgIcon from './SvgIcon'
 
 interface BattleTableModeV2Props {
   dino: Dino
@@ -120,8 +122,6 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
     endTurn()
   }
 
-  const hpPercent = (battleState.player.currentHp / maxHp) * 100
-  const opponentHpPercent = (battleState.opponent.currentHp / opponentDino.maxHp) * 100
 
   return (
     <div className="w-screen h-screen flex flex-col relative overflow-hidden">
@@ -163,23 +163,9 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                   <p className="text-sm font-bold text-neon-purple/80">Seviye {battleState.player.dino.level}</p>
                 </div>
 
-                <div className="glass border border-red-500/30 rounded-xl p-4">
-                  <div className="flex justify-between mb-3">
-                    <span className="font-black text-red-400">❤️ CAN</span>
-                    <span className="font-bold text-red-400">{Math.round(battleState.player.currentHp)}/{maxHp}</span>
-                  </div>
-
-                  <input
-                    type="range"
-                    min="0"
-                    max={maxHp}
-                    value={battleState.player.currentHp}
-                    disabled
-                    className="w-full h-2 rounded-full appearance-none cursor-default bg-slate-700"
-                    style={{
-                      background: `linear-gradient(to right, #00f3ff 0%, #d946ef ${hpPercent}%, #334155 ${hpPercent}%, #334155 100%)`,
-                    }}
-                  />
+                <div className="glass-dark rounded-xl p-4">
+                  <p className="font-black text-gold-light text-sm mb-3">CAN</p>
+                  <HealthBar current={battleState.player.currentHp} max={maxHp} variant="player" />
                 </div>
 
                 <div className="glass-dark neon-border-purple rounded-xl p-4">
@@ -215,7 +201,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                                 : 'glass-dark border-2 border-red-500 text-red-400'
                             }`}
                           >
-                            <p className="text-2xl">{getEffectEmoji(battleState.player.effects[idx].type)}</p>
+                            <SvgIcon id={battleState.player.effects[idx].type} type="effect" size="md" fallback={getEffectEmoji(battleState.player.effects[idx].type)} />
                             <p className="text-xs font-black">{battleState.player.effects[idx].duration}</p>
                           </motion.div>
                         ) : (
@@ -241,14 +227,8 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                       <p className="text-xs text-neon-purple/70">Lvl {battleState.opponent.dino.level}</p>
                     </div>
                     <div className="flex flex-col justify-center">
-                      <p className="text-xs font-bold text-red-400 mb-2">❤️ CAN</p>
-                      <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden border border-red-500/30 mb-2">
-                        <div
-                          className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                          style={{ width: `${Math.max(0, opponentHpPercent)}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-red-400 font-bold">{Math.max(0, battleState.opponent.currentHp)}/{opponentDino.maxHp}</p>
+                      <p className="text-xs font-bold text-gold-light mb-2">CAN</p>
+                      <HealthBar current={battleState.opponent.currentHp} max={opponentDino.maxHp} variant="enemy" size="sm" />
                     </div>
                   </div>
 
@@ -261,7 +241,7 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                               ? 'glass-dark border-2 border-green-500 text-green-400'
                               : 'glass-dark border-2 border-red-500 text-red-400'
                           }`}>
-                            <p>{getEffectEmoji(battleState.opponent.effects[idx].type)}</p>
+                            <SvgIcon id={battleState.opponent.effects[idx].type} type="effect" size="md" fallback={getEffectEmoji(battleState.opponent.effects[idx].type)} />
                             <p className="text-xs">{battleState.opponent.effects[idx].duration}</p>
                           </div>
                         ) : (

@@ -128,9 +128,10 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit }: DinoListP
                                 </p>
                               )}
                               {a.effect !== 'none' && (
-                                <p>
-                                  {getEffectEmoji(a.effect)} <span className="font-bold text-neon-cyan">{getEffectNameTR(a.effect)}</span>
-                                </p>
+                                <span className="flex items-center gap-1">
+                                  <SvgIcon id={a.effect} type="effect" size="xs" fallback={getEffectEmoji(a.effect)} />
+                                  <span className="font-bold text-neon-cyan">{getEffectNameTR(a.effect)}</span>
+                                </span>
                               )}
                               {a.cd > 0 && <p>CD: <span className="font-bold">{a.cd}</span> tur</p>}
                             </div>

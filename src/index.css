@@ -58,13 +58,33 @@ body::before {
 
 .glass-dark,
 .hs-panel {
-  /* Carved dark stone / leather panel with warm tint */
-  background:
-    linear-gradient(160deg, rgba(74,49,25,0.96) 0%, rgba(46,29,14,0.97) 60%, rgba(28,18,8,0.98) 100%);
+  /* Real carved-wood plank panel: fractal wood-grain texture over warm gradient */
+  background-color: #3a2614;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27300%27%20height%3D%27300%27%3E%3Cfilter%20id%3D%27w%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.008%200.16%27%20numOctaves%3D%275%27%20seed%3D%2712%27%20result%3D%27n%27/%3E%3CfeColorMatrix%20in%3D%27n%27%20type%3D%27matrix%27%20values%3D%270%200%200%200%200.30%200%200%200%200%200.18%200%200%200%200%200.08%200%200%200%200.9%200%27/%3E%3C/filter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23w%29%27/%3E%3C/svg%3E"),
+    linear-gradient(160deg, rgba(90,61,35,0.55) 0%, rgba(46,29,14,0.6) 60%, rgba(28,18,8,0.7) 100%);
+  background-size: 300px 300px, cover;
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 10px;
-  color: #f0e0c0;
-  box-shadow: inset 0 1px 1px rgba(212,175,55,0.18), inset 0 -3px 8px rgba(0,0,0,0.5), 0 4px 14px rgba(0,0,0,0.45);
+  color: #f5e6c8;
+  box-shadow: inset 0 1px 1px rgba(212,175,55,0.22), inset 0 -3px 10px rgba(0,0,0,0.55), 0 4px 14px rgba(0,0,0,0.5);
+}
+
+/* Thick ornate wooden frame — for hero panels (DinoCoin, headers, cards) */
+.hs-wood-frame {
+  background-color: #3a2614;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27300%27%20height%3D%27300%27%3E%3Cfilter%20id%3D%27w%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.008%200.16%27%20numOctaves%3D%275%27%20seed%3D%2712%27%20result%3D%27n%27/%3E%3CfeColorMatrix%20in%3D%27n%27%20type%3D%27matrix%27%20values%3D%270%200%200%200%200.30%200%200%200%200%200.18%200%200%200%200%200.08%200%200%200%200.9%200%27/%3E%3C/filter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23w%29%27/%3E%3C/svg%3E"),
+    linear-gradient(160deg, rgba(107,74,43,0.6) 0%, rgba(58,38,20,0.7) 100%);
+  background-size: 300px 300px, cover;
+  border: 4px solid #5a3d23;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 2px #d4af37,
+    0 0 0 6px #6b4a2b,
+    inset 0 2px 4px rgba(255,232,170,0.25),
+    inset 0 -4px 10px rgba(0,0,0,0.6),
+    0 6px 18px rgba(0,0,0,0.6);
 }
 
 /* ============================================================

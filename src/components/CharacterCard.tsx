@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Dino, Ability } from '../game/types'
+import HealthBar from './HealthBar'
 
 interface CharacterCardProps {
   dino: Dino
@@ -22,7 +23,6 @@ export default function CharacterCard({
   disabled = false,
   side = 'left',
 }: CharacterCardProps) {
-  const hpPercent = (currentHp / maxHp) * 100
 
   return (
     <motion.div
@@ -50,20 +50,11 @@ export default function CharacterCard({
       </div>
 
       {/* HP Çubuğu */}
-      <div className="glass border border-red-500/30 rounded-lg p-3">
+      <div className="glass-dark rounded-lg p-3">
         <div className="flex justify-between items-center mb-2">
-          <span className="font-black text-red-400">❤️ CAN</span>
-          <span className="font-bold text-red-400 text-sm">
-            {Math.round(currentHp)}/{maxHp}
-          </span>
+          <span className="font-black text-gold-light text-sm">CAN</span>
         </div>
-        <div className="w-full bg-slate-700 rounded-full h-3 border border-red-500/30 overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-red-500 to-red-600"
-            animate={{ width: `${hpPercent}%` }}
-            transition={{ type: 'spring', stiffness: 100 }}
-          />
-        </div>
+        <HealthBar current={currentHp} max={maxHp} variant={side === 'left' ? 'player' : 'enemy'} />
       </div>
 
       {/* XP Çubuğu */}
