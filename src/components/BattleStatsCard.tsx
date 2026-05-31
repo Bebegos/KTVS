@@ -1,5 +1,6 @@
 import { Dino, ActiveEffect } from '../game/types'
 import { getEffectBonus } from '../lib/effects'
+import SvgIcon from './SvgIcon'
 
 interface BattleStatsCardProps {
   dino: Dino
@@ -34,7 +35,7 @@ export default function BattleStatsCard({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-neon-cyan/70">⚔️ ATK</span>
+            <span className="text-neon-cyan/70 flex items-center gap-1"><SvgIcon id="atk" type="stat" size="xs" /> ATK</span>
             <div className="flex items-center gap-2">
               <span className="font-black text-neon-cyan">{dino.atk}</span>
               {statBonuses.atk > 0 && (
@@ -44,7 +45,7 @@ export default function BattleStatsCard({
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-neon-cyan/70">🛡️ DEF</span>
+            <span className="text-neon-cyan/70 flex items-center gap-1"><SvgIcon id="def" type="stat" size="xs" /> DEF</span>
             <div className="flex items-center gap-2">
               <span className="font-black text-neon-cyan">{dino.def}</span>
               {statBonuses.def > 0 && (
@@ -54,7 +55,7 @@ export default function BattleStatsCard({
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-neon-cyan/70">💨 SPD</span>
+            <span className="text-neon-cyan/70 flex items-center gap-1"><SvgIcon id="spd" type="stat" size="xs" /> SPD</span>
             <div className="flex items-center gap-2">
               <span className="font-black text-neon-cyan">{dino.spd}</span>
               {statBonuses.spd > 0 && (
@@ -79,7 +80,7 @@ export default function BattleStatsCard({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-neon-purple/70">⚔️ ATK</span>
+          <span className="text-neon-purple/70 flex items-center gap-1"><SvgIcon id="atk" type="stat" size="xs" /> ATK</span>
           <div className="flex items-center gap-2">
             <span className="font-black text-neon-purple">{dino.atk}</span>
             {statBonuses.atk > 0 && (
@@ -89,7 +90,7 @@ export default function BattleStatsCard({
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-neon-purple/70">🛡️ DEF</span>
+          <span className="text-neon-purple/70 flex items-center gap-1"><SvgIcon id="def" type="stat" size="xs" /> DEF</span>
           <div className="flex items-center gap-2">
             <span className="font-black text-neon-purple">{dino.def}</span>
             {statBonuses.def > 0 && (
@@ -99,7 +100,7 @@ export default function BattleStatsCard({
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-neon-purple/70">💨 SPD</span>
+          <span className="text-neon-purple/70 flex items-center gap-1"><SvgIcon id="spd" type="stat" size="xs" /> SPD</span>
           <div className="flex items-center gap-2">
             <span className="font-black text-neon-purple">{dino.spd}</span>
             {statBonuses.spd > 0 && (
