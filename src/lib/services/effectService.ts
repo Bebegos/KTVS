@@ -36,8 +36,8 @@ class EffectService {
       // Reset duration if effect exists, mark as fresh
       character.effects[existingIdx].duration = duration
       character.effects[existingIdx].justApplied = true
-    } else if (character.effects.length < 2) {
-      // Add if slot available (max 2 effects)
+    } else if (character.effects.length < 5) {
+      // Add if slot available (max 5 effects)
       character.effects.push({
         type: effectId as any,
         duration,

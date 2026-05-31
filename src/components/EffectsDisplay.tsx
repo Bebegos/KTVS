@@ -6,6 +6,7 @@ import SvgIcon from './SvgIcon'
 
 interface EffectsDisplayProps {
   effects: ActiveEffect[]
+  battleCharacterMaxHp?: number
 }
 
 interface SelectedEffect {
@@ -13,7 +14,7 @@ interface SelectedEffect {
   definition: ReturnType<typeof getEffect>
 }
 
-export default function EffectsDisplay({ effects }: EffectsDisplayProps) {
+export default function EffectsDisplay({ effects, battleCharacterMaxHp = 100 }: EffectsDisplayProps) {
   const [selectedEffect, setSelectedEffect] = useState<SelectedEffect | null>(null)
 
   return (
@@ -94,14 +95,78 @@ export default function EffectsDisplay({ effects }: EffectsDisplayProps) {
                     </p>
                   </div>
 
-                  <div className="mb-4">
-                    <p className="text-xs font-bold text-neon-cyan/70 mb-2">
-                      Açıklama:
-                    </p>
-                    <p className="text-sm text-neon-cyan leading-relaxed">
+                  <div className="mb-4 p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+                    <p className="text-sm text-neon-cyan/90 leading-relaxed">
                       {selectedEffect.definition.fullDescription}
                     </p>
                   </div>
+
+                  {/* Damage Details */}
+                  {selectedEffect.definition && selectedEffect.definition.levels && (() => {
+                    const defaultLevel = selectedEffect.definition.defaultLevel || 1
+                    const levelData = selectedEffect.definition.levels[defaultLevel] || selectedEffect.definition.levels[1]
+                    return levelData && (levelData.damage !== undefined || levelData.damagePercent !== undefined) ? (
+                      <div className="mb-4 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                        <p className="text-xs font-bold text-orange-400 mb-2">⚡ HASAR DETAYLARI:</p>
+                        <div className="space-y-1 text-xs text-white/80">
+                          {levelData.damage !== undefined && (
+                            <div className="flex justify-between">
+                              <span>Sabit Hasar:</span>
+                              <span className="font-bold">{levelData.damage} / tur</span>
+                            </div>
+                          )}
+                          {levelData.damagePercent !== undefined && (
+                            <div className="flex justify-between">
+                              <span>Yüzde Hasar:</span>
+                              <span className="font-bold">{levelData.damagePercent}% / tur</span>
+                            </div>
+                          )}
+                          {levelData.damagePercent !== undefined && (
+                            <div className="flex justify-between text-white/60 text-xs">
+                              <span>({Math.round((battleCharacterMaxHp * levelData.damagePercent) / 100)} HP / tur)</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null
+                  })()}
+
+                  {/* Stat Bonuses */}
+                  {selectedEffect.definition && selectedEffect.definition.levels && (() => {
+                    const defaultLevel = selectedEffect.definition.defaultLevel || 1
+                    const levelData = selectedEffect.definition.levels[defaultLevel] || selectedEffect.definition.levels[1]
+                    return levelData && levelData.statBonus ? (
+                      <div className="mb-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <p className="text-xs font-bold text-blue-400 mb-2">📊 STAT BONUS:</p>
+                        <div className="space-y-1 text-xs text-white/80">
+                          {levelData.statBonus.atk !== undefined && (
+                            <div className="flex justify-between">
+                              <span>Saldırı:</span>
+                              <span className={levelData.statBonus.atk > 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+                                {levelData.statBonus.atk > 0 ? '+' : ''}{levelData.statBonus.atk}%
+                              </span>
+                            </div>
+                          )}
+                          {levelData.statBonus.def !== undefined && (
+                            <div className="flex justify-between">
+                              <span>Savunma:</span>
+                              <span className={levelData.statBonus.def > 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+                                {levelData.statBonus.def > 0 ? '+' : ''}{levelData.statBonus.def}%
+                              </span>
+                            </div>
+                          )}
+                          {levelData.statBonus.spd !== undefined && (
+                            <div className="flex justify-between">
+                              <span>Hız:</span>
+                              <span className={levelData.statBonus.spd > 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+                                {levelData.statBonus.spd > 0 ? '+' : ''}{levelData.statBonus.spd}%
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null
+                  })()}
                 </>
               )}
 

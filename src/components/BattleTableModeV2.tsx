@@ -196,9 +196,9 @@ export default function BattleTableModeV2({ dino, onBack, onRefresh }: BattleTab
                 </div>
 
                 <div className="glass-dark neon-border-pink rounded-xl p-4">
-                  <p className="text-xs font-black text-neon-pink mb-3 text-center">AKTIF EFEKTLER ({battleState.player.effects.length}/2)</p>
-                  <div className="flex gap-2">
-                    {[0, 1].map(idx => (
+                  <p className="text-xs font-black text-neon-pink mb-3 text-center">AKTIF EFEKTLER ({battleState.player.effects.length}/5)</p>
+                  <div className="flex gap-2 overflow-x-auto">
+                    {[0, 1, 2, 3, 4].map(idx => (
                       <div key={idx} className="flex-1">
                         {battleState.player.effects[idx] ? (
                           <motion.div

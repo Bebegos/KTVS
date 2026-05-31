@@ -235,9 +235,9 @@ export default function BattleTableMode({ dino, onBack, onRefresh }: BattleTable
 
             {/* Aktif Efektler */}
             <div className="mb-4 bg-white border-3 border-purple-300 rounded-lg p-2">
-              <p className="text-xs font-bold text-purple-700 mb-1">AKTIF EFEKTLER ({character.effects.length}/2)</p>
-              <div className="flex gap-2 min-h-16">
-                {[0, 1].map(idx => (
+              <p className="text-xs font-bold text-purple-700 mb-1">AKTIF EFEKTLER ({character.effects.length}/5)</p>
+              <div className="flex gap-2 min-h-16 overflow-x-auto">
+                {[0, 1, 2, 3, 4].map(idx => (
                   <div key={idx} className="flex-1 relative">
                     {character.effects[idx] ? (
                       <motion.button

@@ -291,7 +291,7 @@ export default function AdventureBattleScreen({
               </div>
 
               <div className="mb-3 p-3 bg-neon-cyan/5 rounded-lg border border-neon-cyan/20">
-                <EffectsDisplay effects={battleState.player.effects} />
+                <EffectsDisplay effects={battleState.player.effects} battleCharacterMaxHp={playerDino.maxHp} />
               </div>
             </div>
 
@@ -471,6 +471,17 @@ export default function AdventureBattleScreen({
               cooldown={battleState.player.cooldowns[selectedAbilityInfo.idx] || 0}
               isOpen={abilityInfoOpen}
               onClose={() => setAbilityInfoOpen(false)}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {effectInfoOpen && selectedEffectInfo && (
+            <EffectInfoModal
+              effect={selectedEffectInfo}
+              battleCharacterMaxHp={playerDino.maxHp}
+              isOpen={effectInfoOpen}
+              onClose={() => setEffectInfoOpen(false)}
             />
           )}
         </AnimatePresence>

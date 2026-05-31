@@ -6,17 +6,20 @@ import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-tra
 
 interface EffectInfoModalProps {
   effect: ActiveEffect
+  battleCharacterMaxHp?: number
   isOpen: boolean
   onClose: () => void
 }
 
-export default function EffectInfoModal({ effect, isOpen, onClose }: EffectInfoModalProps) {
+export default function EffectInfoModal({ effect, battleCharacterMaxHp = 100, isOpen, onClose }: EffectInfoModalProps) {
   if (!isOpen) return null
 
   const effectDef = getEffect(effect.type)
   if (!effectDef) return null
 
   const duration = getEffectDuration(effect.type, 1)
+  const defaultLevel = effectDef.defaultLevel || 1
+  const levelData = effectDef.levels[defaultLevel] || effectDef.levels[1]
 
   return (
     <motion.div
@@ -93,6 +96,77 @@ export default function EffectInfoModal({ effect, isOpen, onClose }: EffectInfoM
         }`}>
           <p className="text-sm text-white/80 leading-relaxed">{effectDef.fullDescription}</p>
         </div>
+
+        {/* Damage Details */}
+        {levelData && (levelData.damage !== undefined || levelData.damagePercent !== undefined) && (
+          <div className={`mb-4 p-3 rounded-lg border ${
+            isBuffEffect(effect.type)
+              ? 'bg-blue-500/10 border-blue-500/20'
+              : 'bg-orange-500/10 border-orange-500/20'
+          }`}>
+            <p className="text-xs font-bold mb-2" style={{ color: isBuffEffect(effect.type) ? '#60a5fa' : '#fb923c' }}>
+              ⚡ HASAR DETAYLARI:
+            </p>
+            <div className="space-y-1 text-xs">
+              {levelData.damage !== undefined && (
+                <div className="flex justify-between">
+                  <span>Sabit Hasar:</span>
+                  <span className="font-bold">{levelData.damage} / tur</span>
+                </div>
+              )}
+              {levelData.damagePercent !== undefined && (
+                <div className="flex justify-between">
+                  <span>Yüzde Hasar:</span>
+                  <span className="font-bold">{levelData.damagePercent}% / tur</span>
+                </div>
+              )}
+              {levelData.damagePercent !== undefined && battleCharacterMaxHp && (
+                <div className="flex justify-between text-white/60">
+                  <span>({Math.round((battleCharacterMaxHp * levelData.damagePercent) / 100)} HP / tur)</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Stat Bonuses */}
+        {levelData && levelData.statBonus && (
+          <div className={`mb-4 p-3 rounded-lg border ${
+            isBuffEffect(effect.type)
+              ? 'bg-blue-500/10 border-blue-500/20'
+              : 'bg-orange-500/10 border-orange-500/20'
+          }`}>
+            <p className="text-xs font-bold mb-2" style={{ color: isBuffEffect(effect.type) ? '#60a5fa' : '#fb923c' }}>
+              📊 STAT BONUS:
+            </p>
+            <div className="space-y-1 text-xs">
+              {levelData.statBonus.atk !== undefined && (
+                <div className="flex justify-between">
+                  <span>Saldırı:</span>
+                  <span className={`font-bold ${levelData.statBonus.atk > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {levelData.statBonus.atk > 0 ? '+' : ''}{levelData.statBonus.atk}%
+                  </span>
+                </div>
+              )}
+              {levelData.statBonus.def !== undefined && (
+                <div className="flex justify-between">
+                  <span>Savunma:</span>
+                  <span className={`font-bold ${levelData.statBonus.def > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {levelData.statBonus.def > 0 ? '+' : ''}{levelData.statBonus.def}%
+                  </span>
+                </div>
+              )}
+              {levelData.statBonus.spd !== undefined && (
+                <div className="flex justify-between">
+                  <span>Hız:</span>
+                  <span className={`font-bold ${levelData.statBonus.spd > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {levelData.statBonus.spd > 0 ? '+' : ''}{levelData.statBonus.spd}%
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Effect Type */}
         <div className={`mb-4 p-3 rounded-lg border ${
