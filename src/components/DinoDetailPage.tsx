@@ -5,6 +5,9 @@ import { abilityDefinitionService } from '../lib/services'
 import DinoCard from './DinoCard'
 import AbilityIcon from './AbilityIcon'
 import SvgIcon from './SvgIcon'
+import MedallionIcon from './MedallionIcon'
+import StatDisplay from './StatDisplay'
+import { getClassIcon, getSpecIcon } from '../lib/icons'
 import { getEffectEmoji } from '../lib/effect-translations'
 import RewardSpendingModal from './RewardSpendingModal'
 import StatBonusAllocator from './StatBonusAllocator'
@@ -48,21 +51,15 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
 
         {/* Main Dinosaur Card */}
         <div className="mb-6 max-w-2xl">
-          <DinoCard
-            dino={dino}
-            mode="display"
-            actions={
-              hasPendingRewards
-                ? [
-                    {
-                      label: 'Ödülü Kullan',
-                      onClick: () => setRewardModalOpen(true),
-                      variant: 'green' as const,
-                    },
-                  ]
-                : []
-            }
-          />
+          <DinoCard dino={dino} mode="display" />
+          {hasPendingRewards && (
+            <button
+              onClick={() => setRewardModalOpen(true)}
+              className="hs-btn hs-btn-green hs-btn-block mt-3"
+            >
+              <span>Ödülü Kullan</span>
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

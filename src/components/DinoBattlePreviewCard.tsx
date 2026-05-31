@@ -35,13 +35,13 @@ export default function DinoBattlePreviewCard({
           <div className="battle-preview-badges">
             {dino.class && (
               <div className="battle-preview-badge class-badge">
-                <MedallionIcon id={dino.class} type="class" size="xs" />
+                <MedallionIcon id={dino.class} type="class" size="sm" />
                 <span>{getClassIcon(dino.class)?.label || 'Class'}</span>
               </div>
             )}
             {dino.spec && (
               <div className="battle-preview-badge spec-badge">
-                <MedallionIcon id={dino.spec} type="spec" size="xs" />
+                <MedallionIcon id={dino.spec} type="spec" size="sm" />
                 <span>{getSpecIcon(dino.spec)?.label || 'Spec'}</span>
               </div>
             )}
