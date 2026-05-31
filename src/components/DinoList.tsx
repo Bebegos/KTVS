@@ -67,10 +67,10 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
           onClick={onBack}
           className="hs-btn"
         >
-          ← Geri
+          Geri
         </button>
 
-        <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">🦖 Dinozorlarım</h1>
+        <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">Dinozorlarım</h1>
 
         {dinos.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-center mt-8">
@@ -100,15 +100,13 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                       animate={{ scale: 1, rotate: 0 }}
                       className="absolute -top-3 -right-3 bg-yellow-500 text-yellow-900 rounded-full w-12 h-12 flex items-center justify-center font-black text-lg shadow-lg"
                     >
-                      ⚡
+                      ⬆
                     </motion.div>
                   )}
-
-                  <div className="text-5xl mb-3">🦖</div>
                   <h2 className="text-3xl font-black bg-gradient-to-r from-gold-light to-gold-mid bg-clip-text text-transparent mb-2">{dino.name}</h2>
                   <p className="text-sm text-gold-light/80 mb-4 font-semibold">
                     {dino.element && `${dino.element} • `}
-                    ⭐ Seviye {dino.level}
+                    Seviye {dino.level}
                   </p>
 
                   {/* Class & Spec Medallions */}
@@ -162,7 +160,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
 
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-xs font-bold text-gold-light">✨ DENEYIM</p>
+                    <p className="text-xs font-bold text-gold-light">DENEYIM</p>
                     <p className="text-xs font-bold text-gold-light">{dino.xp}/100</p>
                   </div>
                   <div className="w-full bg-gradient-to-r from-slate-900 to-slate-800 rounded-full h-3 overflow-hidden border border-gold-dark/40">
@@ -175,7 +173,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
 
                 {dino.abilityIds && dino.abilityIds.length > 0 && (
                   <div className="mb-4">
-                    <p className="font-bold text-gold-light mb-3 text-xs">⚡ YETENEKLER ({dino.abilityIds.filter(id => id).length})</p>
+                    <p className="font-bold text-gold-light mb-3 text-xs">YETENEKLER ({dino.abilityIds.filter(id => id).length})</p>
                     <div className="space-y-2">
                       {dino.abilityIds.map((abilityId: string, idx: number) => {
                         if (!abilityId) return null
@@ -195,12 +193,12 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                                   <p>Saldırı • ×{ability.damageMultiplier || 1}</p>
                                 ) : (
                                   <p className={isBuffEffect((ability.effects[0] as any)) ? 'text-green-400' : 'text-red-400'}>
-                                    {isBuffEffect((ability.effects[0] as any)) ? '⬆️ Buff' : '⬇️ Debuff'} • ×{ability.damageMultiplier || 1}
+                                    {isBuffEffect((ability.effects[0] as any)) ? 'Buff' : 'Debuff'} • ×{ability.damageMultiplier || 1}
                                   </p>
                                 )}
                                 {ability.effects && ability.effects.length > 0 && (
                                   <span className="flex items-center gap-1">
-                                    <SvgIcon id={ability.effects[0] as any} type="effect" size="xs" fallback={getEffectEmoji((ability.effects[0] as any))} />
+                                    <SvgIcon id={ability.effects[0] as any} type="effect" size="xs" fallback="" />
                                     <span className="font-bold text-neon-cyan">{getEffectNameTR((ability.effects[0] as any))}</span>
                                   </span>
                                 )}
@@ -219,14 +217,14 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                     onClick={() => handleOpenDetail(dino)}
                     className="hs-btn flex-1"
                   >
-                    ℹ️ Detaylar
+                    Detaylar
                   </button>
                   {onEdit && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onEdit(dino) }}
                       className="hs-btn hs-btn-purple flex-1"
                     >
-                      ✏️ Düzen
+                      Düzen
                     </button>
                   )}
                   <button
@@ -234,7 +232,7 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
                     disabled={deleting === dino.id}
                     className="hs-btn hs-btn-red flex-1"
                   >
-                    {deleting === dino.id ? '⏳' : '🗑️'}
+                    {deleting === dino.id ? 'Siliniyor...' : 'Sil'}
                   </button>
                 </div>
                 </motion.div>

@@ -5,6 +5,7 @@ import { STAT_DEFINITIONS, StatKey, getStatOrder } from '../lib/stat-system'
 import { pendingRewardsService } from '../lib/services'
 import { updateDino } from '../lib/supabase'
 import SvgIcon from './SvgIcon'
+import StatIcon from './StatIcon'
 
 interface StatBonusAllocatorProps {
   dino: Dino
@@ -100,7 +101,7 @@ export default function StatBonusAllocator({
       {/* Header */}
       <div className="text-center space-y-2">
         <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-yellow to-gold-light">
-          ⚡ SEVİYE ATLADI!
+          SEVİYE ATLADI!
         </p>
         <p className="text-sm text-neon-yellow/70">
           {bonusPoints} stat puanını dağıt
@@ -124,7 +125,7 @@ export default function StatBonusAllocator({
               {/* Stat Label */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">{def.emoji}</span>
+                  <StatIcon stat={statKey as any} size="lg" />
                   <div>
                     <p className="font-black text-sm text-slate-100">{def.labelTr}</p>
                     <p className={`text-xs ${def.textColor}`}>{current} → {current + allocated}</p>
@@ -181,7 +182,7 @@ export default function StatBonusAllocator({
         }`}
       >
         <p className={`font-black text-2xl ${remaining === 0 ? 'text-green-300' : 'text-red-300'}`}>
-          {remaining === 0 ? '✓ Tamamlandı!' : `${remaining} puan kaldı`}
+          {remaining === 0 ? 'Tamamlandı!' : `${remaining} puan kaldı`}
         </p>
       </div>
 
@@ -198,7 +199,7 @@ export default function StatBonusAllocator({
           disabled={allocated !== bonusPoints || saving}
           className="hs-btn hs-btn-green flex-1"
         >
-          {saving ? '💾 Kaydediliyor...' : '✓ Kaydet'}
+          {saving ? 'Kaydediliyor...' : 'Kaydet'}
         </button>
       </div>
     </div>
