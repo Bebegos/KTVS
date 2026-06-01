@@ -332,8 +332,14 @@ export default function AdventureBattleScreen({
   // IN BATTLE
   if (inBattle && battleState) {
     return (
-      <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 p-4 overflow-y-auto relative">
-        {/* New immersive effect overlay */}
+      <div className="w-full h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden relative">
+        {/* Background effects */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-1/4 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+        </div>
+
+        {/* NEW IMMERSIVE EFFECTS (Absolute positioned - no layout impact) */}
         <AnimatePresence>
           {activeEffectOverlay && currentVisualEffects && (
             <BattleEffectOverlay
@@ -344,7 +350,6 @@ export default function AdventureBattleScreen({
           )}
         </AnimatePresence>
 
-        {/* Floating damage numbers */}
         <AnimatePresence>
           {floatingDamages.map((damage) => (
             <FloatingDamageNumber
@@ -358,37 +363,18 @@ export default function AdventureBattleScreen({
           ))}
         </AnimatePresence>
 
-        <BattleEffectVisuals effectType={currentEffectVisual} isVisible={showEffectVisual} />
-
-        {/* Enhanced turn indicator */}
         <AnimatePresence>
           <TurnIndicator round={battleState.round} isPlayerTurn={battleState.round % 2 === 1} />
         </AnimatePresence>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          {/* Player */}
-          <div>
-            <div className="hs-battle-frame hs-battle-frame-player mb-3">
-              <div className="glass-dark neon-border-cyan rounded-lg p-4">
-                <p className="text-xs font-bold text-neon-cyan mb-2">OYUNCU</p>
-                <BattleDinoHUD
-                  dinoName={playerDino.name}
-                  currentHp={playerCurrentHp}
-                  maxHp={playerDino.maxHp}
-                  effects={battleState.player.effects}
-                  isPlayer={true}
-                />
-              </div>
-            </div>
+        {/* BATTLE ARENA CONTAINER - Fixed layout */}
+        <div className="relative flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
 
-            <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
-          </div>
-
-          {/* Enemy */}
-          <div>
-            <div className="hs-battle-frame hs-battle-frame-opponent mb-3">
-              <div className="glass-dark neon-border-purple rounded-lg p-4">
-                <p className="text-xs font-bold text-neon-purple mb-2">DÜŞMAN</p>
+          {/* OPPONENT SIDE (Top on mobile, Left on desktop) */}
+          <div className="w-full lg:w-1/3 flex flex-col gap-2">
+            <div className="hs-battle-frame hs-battle-frame-opponent">
+              <div className="glass-dark neon-border-purple rounded-lg p-3">
+                <p className="text-xs font-bold text-neon-purple mb-1">DÜŞMAN</p>
                 <BattleDinoHUD
                   dinoName={battleState.opponent.dino.name}
                   currentHp={battleState.opponent.currentHp}
@@ -398,61 +384,98 @@ export default function AdventureBattleScreen({
                 />
               </div>
             </div>
-
             <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
           </div>
-        </div>
 
-        <div className="mb-6">
-          <p className="text-xs font-bold text-neon-cyan mb-2 uppercase tracking-widest">⚔️ Yetenek Seç</p>
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            {[0, 1, 2, 3, 4].map((idx) => {
-              const ability = battleState.player.abilities[idx]
-              const isLocked = slotService.isSlotLocked(playerDino, idx)
-              const canUse = !isLocked && battleEngine?.canUseAbility('player', idx)
-              const isSelected = selectedAbility === idx
-              const cooldown = battleState.player.cooldowns[idx] || 0
-
-              return (
-                <PremiumAbilityButton
-                  key={idx}
-                  ability={ability || null}
-                  index={idx}
-                  isSelected={isSelected}
-                  isLocked={isLocked}
-                  canUse={canUse}
-                  cooldown={cooldown}
-                  maxCooldown={ability?.maxCd || 0}
-                  disabled={selectedAbility !== null || !canUse || roundInProgress}
-                  onClick={() => selectAbility(idx)}
-                  onInfo={() => openAbilityInfo(battleState.player.abilityIds[idx], idx)}
-                  lockedLevel={isLocked ? slotService.getSlotRequiredLevel(idx) : undefined}
-                />
-              )
-            })}
+          {/* CENTER ARENA (Hidden on mobile, shown on desktop) */}
+          <div className="hidden lg:flex lg:w-1/3 flex-col items-center justify-center">
+            <div className="text-center space-y-4">
+              <div className="text-6xl opacity-20">⚔️</div>
+              <p className="text-neon-cyan/40 text-sm font-bold uppercase tracking-wider">Savaş Alanı</p>
+            </div>
           </div>
 
-          {/* Ultimate Slot */}
-          <PremiumAbilityButton
-            ability={battleState.player.abilities[5] || null}
-            index={5}
-            isUltimate={true}
-            isSelected={selectedAbility === 5}
-            isLocked={slotService.isSlotLocked(playerDino, 5)}
-            canUse={battleEngine?.canUseAbility('player', 5) || false}
-            cooldown={battleState.player.cooldowns[5] || 0}
-            maxCooldown={battleState.player.abilities[5]?.maxCd || 0}
-            disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
-            onClick={() => selectAbility(5)}
-            onInfo={() => openAbilityInfo(battleState.player.abilityIds[5], 5)}
-            lockedLevel={slotService.isSlotLocked(playerDino, 5) ? slotService.getSlotRequiredLevel(5) : undefined}
-          />
+          {/* PLAYER SIDE (Bottom on mobile, Right on desktop) */}
+          <div className="w-full lg:w-1/3 flex flex-col gap-2">
+            <div className="hs-battle-frame hs-battle-frame-player">
+              <div className="glass-dark neon-border-cyan rounded-lg p-3">
+                <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
+                <BattleDinoHUD
+                  dinoName={playerDino.name}
+                  currentHp={playerCurrentHp}
+                  maxHp={playerDino.maxHp}
+                  effects={battleState.player.effects}
+                  isPlayer={true}
+                />
+              </div>
+            </div>
+            <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
+          </div>
         </div>
 
-        <div className="flex-1">
-          <EnhancedBattleLog entries={battleLog} maxEntries={6} />
+        {/* BOTTOM CONTROL PANEL - Fixed size sections */}
+        <div className="flex flex-col lg:flex-row gap-3 p-3 bg-gradient-to-t from-slate-900/80 to-transparent">
+
+          {/* BATTLE LOG (Left side on desktop, full width on mobile) */}
+          <div className="w-full lg:w-2/5 h-40 lg:h-32">
+            <EnhancedBattleLog entries={battleLog} maxEntries={6} />
+          </div>
+
+          {/* ABILITY SELECTION (Right side on desktop, full width below on mobile) */}
+          <div className="w-full lg:w-3/5">
+            <div className="space-y-2 h-full">
+              <p className="text-xs font-bold text-neon-cyan uppercase tracking-widest">⚔️ Yetenek Seç</p>
+
+              {/* Regular Abilities Grid - Fixed 2x3 layout */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 h-32 lg:h-28">
+                {[0, 1, 2, 3, 4].map((idx) => {
+                  const ability = battleState.player.abilities[idx]
+                  const isLocked = slotService.isSlotLocked(playerDino, idx)
+                  const canUse = !isLocked && battleEngine?.canUseAbility('player', idx)
+                  const isSelected = selectedAbility === idx
+                  const cooldown = battleState.player.cooldowns[idx] || 0
+
+                  return (
+                    <PremiumAbilityButton
+                      key={idx}
+                      ability={ability || null}
+                      index={idx}
+                      isSelected={isSelected}
+                      isLocked={isLocked}
+                      canUse={canUse}
+                      cooldown={cooldown}
+                      maxCooldown={ability?.maxCd || 0}
+                      disabled={selectedAbility !== null || !canUse || roundInProgress}
+                      onClick={() => selectAbility(idx)}
+                      onInfo={() => openAbilityInfo(battleState.player.abilityIds[idx], idx)}
+                      lockedLevel={isLocked ? slotService.getSlotRequiredLevel(idx) : undefined}
+                    />
+                  )
+                })}
+              </div>
+
+              {/* Ultimate Slot - Full width below regular abilities */}
+              <div className="h-16 lg:h-12">
+                <PremiumAbilityButton
+                  ability={battleState.player.abilities[5] || null}
+                  index={5}
+                  isUltimate={true}
+                  isSelected={selectedAbility === 5}
+                  isLocked={slotService.isSlotLocked(playerDino, 5)}
+                  canUse={battleEngine?.canUseAbility('player', 5) || false}
+                  cooldown={battleState.player.cooldowns[5] || 0}
+                  maxCooldown={battleState.player.abilities[5]?.maxCd || 0}
+                  disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
+                  onClick={() => selectAbility(5)}
+                  onInfo={() => openAbilityInfo(battleState.player.abilityIds[5], 5)}
+                  lockedLevel={slotService.isSlotLocked(playerDino, 5) ? slotService.getSlotRequiredLevel(5) : undefined}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
+        {/* MODALS */}
         <AnimatePresence>
           {abilityInfoOpen && selectedAbilityInfo && (
             <AbilityInfoModal
