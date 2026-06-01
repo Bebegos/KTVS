@@ -37,17 +37,33 @@ export default function PremiumAbilityButton({
 }: PremiumAbilityButtonProps) {
   const [isHovering, setIsHovering] = useState(false)
   const [isTouching, setIsTouching] = useState(false)
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isTouchingRef = useRef(false)
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!disabled && ability) {
       e.preventDefault()
-      // Show preview immediately on touch start
-      setIsTouching(true)
+      isTouchingRef.current = true
+
+      // Show preview after 2 seconds of holding
+      touchTimeoutRef.current = setTimeout(() => {
+        if (isTouchingRef.current) {
+          setIsTouching(true)
+        }
+      }, 2000)
     }
   }
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     e.preventDefault()
+    isTouchingRef.current = false
+
+    // Clear timeout if finger released before 2 seconds
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current)
+      touchTimeoutRef.current = null
+    }
+
     // Hide preview when finger releases
     setIsTouching(false)
   }

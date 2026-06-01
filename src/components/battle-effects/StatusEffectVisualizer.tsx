@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react'
 import { ActiveEffect, EffectKind } from '../../game/types'
 import SvgIcon from '../SvgIcon'
 import { getEffectNameTR } from '../../lib/effect-translations'
@@ -9,6 +10,8 @@ interface StatusEffectVisualizerProps {
 }
 
 export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectVisualizerProps) {
+  const [selectedEffect, setSelectedEffect] = useState<EffectKind | null>(null)
+
   if (!effects || effects.length === 0) {
     return null
   }
@@ -41,8 +44,11 @@ export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectV
               className="absolute"
               style={{ left: `${offset}px` }}
             >
-              <div
-                className="w-12 h-12 rounded-full border-2 flex items-center justify-center"
+              <motion.button
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedEffect(effectType)}
+                className="w-12 h-12 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all"
                 style={{
                   borderColor: color,
                   boxShadow: `0 0 15px ${color}40`,
@@ -50,7 +56,7 @@ export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectV
                 }}
               >
                 <SvgIcon id={effectType} type="effect" size="sm" fallback={getEffectEmoji(effectType)} />
-              </div>
+              </motion.button>
 
               {/* Pulsing ring animation */}
               <motion.div
@@ -110,6 +116,95 @@ export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectV
           )
         })}
       </div>
+
+      {/* Effect detail modal */}
+      <AnimatePresence>
+        {selectedEffect && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedEffect(null)}
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
+            >
+              <div className="bg-slate-900/95 backdrop-blur border-t-2 rounded-t-2xl p-4 space-y-3">
+                {(() => {
+                  const effect = effects.find((e) => e.type === selectedEffect)
+                  if (!effect) return null
+
+                  const color = getEffectColor(selectedEffect)
+                  const durationType = getEffectDurationType(selectedEffect)
+
+                  return (
+                    <>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-12 h-12 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                          style={{
+                            borderColor: color,
+                            background: `${color}15`,
+                          }}
+                        >
+                          <SvgIcon
+                            id={selectedEffect}
+                            type="effect"
+                            size="sm"
+                            fallback={getEffectEmoji(selectedEffect)}
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-black text-sm" style={{ color }}>
+                            {getEffectNameTR(selectedEffect)}
+                          </h3>
+                          <p className="text-xs opacity-70">
+                            {durationType}: {effect.duration} {durationType === 'Turn' ? 'turn' : 'duration'}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setSelectedEffect(null)}
+                          className="text-xl opacity-60 hover:opacity-100 transition"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        <p className="text-neon-cyan/80 italic leading-relaxed">
+                          {getEffectDescription(selectedEffect)}
+                        </p>
+
+                        <div
+                          className="p-2 rounded border"
+                          style={{
+                            borderColor: `${color}40`,
+                            background: `${color}10`,
+                            color: color,
+                          }}
+                        >
+                          <p className="font-bold text-xs">Effect Power: {effect.magnitude || 1}</p>
+                          <p className="text-xs opacity-70">
+                            {getEffectImpactDescription(selectedEffect)}
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )
+                })()}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -153,4 +248,38 @@ function getEffectEmoji(effectType: EffectKind): string {
     none: '•',
   }
   return emojis[effectType]
+}
+
+function getEffectDescription(effectType: EffectKind): string {
+  const descriptions: Record<EffectKind, string> = {
+    poison: 'Causes damage over time. Reduces HP each turn.',
+    stun: 'Prevents action next turn. Cannot attack or use abilities.',
+    stop: 'Freezes the character. Unable to move or act.',
+    power: 'Increases attack power. Deals more damage with abilities.',
+    speed: 'Increases movement and action speed. Acts sooner in turn order.',
+    shield: 'Reduces damage taken. Absorbs incoming harm.',
+    heal: 'Restores HP. Recovers lost health.',
+    regen: 'Regenerates HP over time. Heals each turn.',
+    defense_down: 'Reduces defense. Takes increased damage.',
+    paralyze: 'Paralyzed state. Reduces action effectiveness.',
+    none: 'No effect.',
+  }
+  return descriptions[effectType]
+}
+
+function getEffectImpactDescription(effectType: EffectKind): string {
+  const impacts: Record<EffectKind, string> = {
+    poison: '1-2 damage per turn',
+    stun: 'Skips next action',
+    stop: 'Complete inability to act',
+    power: '+15-20% damage boost',
+    speed: '+20% faster actions',
+    shield: '20-30% damage reduction',
+    heal: 'Recovers health immediately',
+    regen: '1-2 HP per turn',
+    defense_down: '+10-15% damage taken',
+    paralyze: '-30% action accuracy',
+    none: 'No effect',
+  }
+  return impacts[effectType]
 }

@@ -21,25 +21,56 @@ export default function BattleDinoHUD({
   const isDanger = hpPercent < 30
   const isWounded = hpPercent < 60
 
+  const getHpColor = () => {
+    if (isDanger) return { bg: 'from-red-600 to-red-400', glow: 'shadow-red-500/50' }
+    if (isWounded) return { bg: 'from-yellow-600 to-yellow-400', glow: 'shadow-yellow-500/30' }
+    return { bg: 'from-green-600 to-green-400', glow: 'shadow-green-500/30' }
+  }
+
+  const colors = getHpColor()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: isPlayer ? 20 : -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-2"
+      className="space-y-2 lg:space-y-2"
     >
-      {/* Name and HP */}
-      <div className="space-y-1">
+      {/* Name and HP - Enhanced for mobile */}
+      <div className="space-y-2 lg:space-y-1">
         <div className="flex items-center justify-between">
-          <h3 className={`text-sm font-black ${isPlayer ? 'text-neon-cyan' : 'text-neon-purple'}`}>
+          <h3
+            className={`text-sm lg:text-sm font-black ${
+              isPlayer ? 'text-neon-cyan' : 'text-neon-purple'
+            }`}
+          >
             {dinoName}
           </h3>
-          <span className="text-xs font-bold text-neon-cyan/70">
-            {currentHp}/{maxHp}
-          </span>
+          <motion.span
+            key={`${currentHp}`}
+            initial={{ scale: 1.2 }}
+            animate={{ scale: 1 }}
+            className={`text-xs lg:text-xs font-bold ${
+              isDanger
+                ? 'text-red-300'
+                : isWounded
+                ? 'text-yellow-300'
+                : 'text-green-300'
+            }`}
+          >
+            {currentHp}/{maxHp} ({Math.round(hpPercent)}%)
+          </motion.span>
         </div>
 
-        {/* HP Bar with gradient */}
-        <div className="relative h-6 bg-slate-800/60 border border-slate-600/40 rounded-lg overflow-hidden">
+        {/* HP Bar - Mobile optimized with larger height */}
+        <div
+          className={`relative lg:h-6 h-8 bg-slate-800/60 border-2 lg:border rounded-lg lg:rounded-lg overflow-hidden ${
+            isDanger
+              ? 'border-red-500/60 shadow-lg shadow-red-500/30'
+              : isWounded
+              ? 'border-yellow-500/60 shadow-lg shadow-yellow-500/30'
+              : 'border-green-500/60 shadow-lg shadow-green-500/30'
+          }`}
+        >
           {/* Damage flash */}
           <motion.div
             className="absolute inset-0 bg-red-500/30"
@@ -53,28 +84,29 @@ export default function BattleDinoHUD({
             initial={{ width: `${hpPercent}%` }}
             animate={{ width: `${hpPercent}%` }}
             transition={{ duration: 0.4, type: 'spring', bounce: 0.2 }}
-            className={`h-full transition-all ${
-              isDanger
-                ? 'bg-gradient-to-r from-red-600 to-red-400 shadow-lg shadow-red-500/50'
-                : isWounded
-                ? 'bg-gradient-to-r from-yellow-600 to-yellow-400 shadow-lg shadow-yellow-500/30'
-                : 'bg-gradient-to-r from-green-600 to-green-400 shadow-lg shadow-green-500/30'
+            className={`h-full transition-all bg-gradient-to-r ${colors.bg} shadow-lg ${
+              colors.glow
             }`}
           >
             {/* HP shimmer */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse" />
           </motion.div>
 
+          {/* Center HP percentage on mobile */}
+          {hpPercent < 99 && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center font-black text-xs lg:hidden"
+              style={{
+                color: isDanger ? '#fca5a5' : isWounded ? '#fef08a' : '#86efac',
+                textShadow: '0 2px 4px rgba(0,0,0,0.8)',
+              }}
+            >
+              {Math.round(hpPercent)}%
+            </motion.div>
+          )}
+
           {/* Border glow effect */}
-          <div
-            className={`absolute inset-0 rounded-lg border border-transparent pointer-events-none ${
-              isDanger
-                ? 'shadow-inset shadow-red-500/20'
-                : isWounded
-                ? 'shadow-inset shadow-yellow-500/10'
-                : 'shadow-inset shadow-green-500/10'
-            }`}
-          />
+          <div className="absolute inset-0 rounded-lg border border-transparent pointer-events-none" />
         </div>
       </div>
 
