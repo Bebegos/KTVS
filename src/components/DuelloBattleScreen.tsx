@@ -460,8 +460,8 @@ export default function DuelloBattleScreen({
         <TurnIndicator round={battleState.round} isPlayerTurn={battleState.round % 2 === 1} />
       </AnimatePresence>
 
-      {/* HEADER - Abandon button */}
-      <div className="px-3 pt-3 flex justify-end z-10">
+      {/* HEADER - Abandon button (Desktop only) */}
+      <div className="hidden lg:flex px-3 pt-3 justify-end z-10">
         <button
           onClick={() => setShowAbandonModal(true)}
           className="hs-btn hs-btn-red hs-btn-sm"
@@ -470,11 +470,10 @@ export default function DuelloBattleScreen({
         </button>
       </div>
 
-      {/* BATTLE ARENA CONTAINER - Fixed layout */}
-      <div className="relative flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
-
-        {/* PLAYER SIDE (Left on desktop, Top on mobile) */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-2">
+      {/* DESKTOP: 3-COLUMN LAYOUT */}
+      <div className="hidden lg:relative lg:flex-1 lg:flex lg:flex-row lg:gap-3 lg:p-3 lg:overflow-hidden">
+        {/* Player side */}
+        <div className="w-1/3 flex flex-col gap-2">
           <div className="hs-battle-frame hs-battle-frame-player">
             <div className="glass-dark neon-border-cyan rounded-lg p-3">
               <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
@@ -490,16 +489,16 @@ export default function DuelloBattleScreen({
           <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
         </div>
 
-        {/* CENTER ARENA (Hidden on mobile, shown on desktop) */}
-        <div className="hidden lg:flex lg:w-1/3 flex-col items-center justify-center">
+        {/* Center arena */}
+        <div className="w-1/3 flex flex-col items-center justify-center">
           <div className="text-center space-y-4">
             <div className="text-6xl opacity-20">⚔️</div>
             <p className="text-neon-cyan/40 text-sm font-bold uppercase tracking-wider">Düello Alanı</p>
           </div>
         </div>
 
-        {/* OPPONENT SIDE (Right on desktop, Bottom on mobile) */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-2">
+        {/* Opponent side */}
+        <div className="w-1/3 flex flex-col gap-2">
           <div className="hs-battle-frame hs-battle-frame-opponent">
             <div className="glass-dark neon-border-purple rounded-lg p-3">
               <p className="text-xs font-bold text-neon-purple mb-1">RAKİP</p>
@@ -516,14 +515,72 @@ export default function DuelloBattleScreen({
         </div>
       </div>
 
-      {/* BOTTOM CONTROL PANEL - Fixed size sections */}
-      <div className="flex flex-col lg:flex-row gap-3 p-3 bg-gradient-to-t from-slate-900/80 to-transparent">
+      {/* MOBILE: VERTICAL STACKED LAYOUT (lg:hidden) */}
+      <div className="flex flex-col flex-1 gap-2 p-2 overflow-y-auto lg:hidden">
+        {/* Abandon button (Mobile) */}
+        <button
+          onClick={() => setShowAbandonModal(true)}
+          className="hs-btn hs-btn-red hs-btn-sm w-full"
+        >
+          🚪 Terk Et
+        </button>
 
-        {/* ABILITY SELECTION (Left on desktop, full width on mobile) */}
+        {/* PLAYER */}
+        <div className="flex-shrink-0">
+          <div className="hs-battle-frame hs-battle-frame-player">
+            <div className="glass-dark neon-border-cyan rounded-lg p-2">
+              <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
+              <BattleDinoHUD
+                dinoName={playerDino.name}
+                currentHp={battleState.player.currentHp}
+                maxHp={battleState.player.dino.maxHp}
+                effects={battleState.player.effects}
+                isPlayer={true}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* PLAYER STATS */}
+        <div className="flex-shrink-0">
+          <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
+        </div>
+
+        {/* OPPONENT */}
+        <div className="flex-shrink-0">
+          <div className="hs-battle-frame hs-battle-frame-opponent">
+            <div className="glass-dark neon-border-purple rounded-lg p-2">
+              <p className="text-xs font-bold text-neon-purple mb-1">RAKİP</p>
+              <BattleDinoHUD
+                dinoName={opponentDino.name}
+                currentHp={battleState.opponent.currentHp}
+                maxHp={battleState.opponent.dino.maxHp}
+                effects={battleState.opponent.effects}
+                isPlayer={false}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* OPPONENT STATS */}
+        <div className="flex-shrink-0">
+          <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
+        </div>
+
+        {/* BATTLE LOG */}
+        <div className="flex-shrink-0 h-24">
+          <EnhancedBattleLog entries={battleState.battleLog} maxEntries={4} />
+        </div>
+      </div>
+
+      {/* BOTTOM CONTROL PANEL */}
+      <div className="flex-shrink-0 flex flex-col lg:flex-row gap-3 p-3 bg-gradient-to-t from-slate-900/90 to-transparent border-t border-neon-cyan/10">
+
+        {/* ABILITY SELECTION */}
         <div className="w-full lg:w-2/5">
           <div className="space-y-2">
-            <p className="text-xs font-bold text-neon-cyan mb-1 uppercase tracking-widest">⚔️ Yetenek Seç (1/Tur)</p>
-            <div className="grid grid-cols-3 gap-1.5 h-32 lg:h-28">
+            <p className="text-xs font-bold text-neon-cyan uppercase tracking-widest">⚔️ Yetenek Seç (1/Tur)</p>
+            <div className="grid grid-cols-3 gap-1.5">
               {battleState.player.abilities.map((ability, idx) => {
                 const canUse = engine.canUseAbility('player', idx)
                 const isSelected = playerSelectedAbility === idx
@@ -545,57 +602,45 @@ export default function DuelloBattleScreen({
                 )
               })}
             </div>
-            <div className="glass-dark border border-neon-cyan/30 rounded-lg p-2 text-center h-10 flex items-center justify-center">
-              <p className="text-xs font-bold text-neon-cyan">
-                {playerSelectedAbility !== null && opponentSelectedAbility === null
-                  ? 'Rakip beklemede...'
-                  : playerSelectedAbility === null && opponentSelectedAbility === null
-                  ? 'Yetenek seç'
-                  : 'Savaş başlamak üzere...'}
-              </p>
+            <div className="glass-dark border border-neon-cyan/30 rounded-lg p-2 text-center text-xs h-8 flex items-center justify-center font-bold text-neon-cyan">
+              {playerSelectedAbility !== null && opponentSelectedAbility === null
+                ? 'Rakip beklemede...'
+                : playerSelectedAbility === null && opponentSelectedAbility === null
+                ? 'Yetenek seç'
+                : 'Savaş başlamak üzere...'}
             </div>
           </div>
         </div>
 
-        {/* BATTLE LOG (Right on desktop, full width below on mobile) */}
-        <div className="w-full lg:w-3/5">
-          <div className="space-y-1 h-full flex flex-col">
-            <div className="flex justify-between items-center">
-              <p className="text-xs font-bold text-neon-purple uppercase tracking-wide">
-                {showDebug ? '🔧 DEBUG' : '📋 SAVAŞ GÜNLÜĞÜ'}
-              </p>
-              <button
-                onClick={() => setShowDebug(!showDebug)}
-                className="hs-btn hs-btn-xs"
-              >
-                {showDebug ? '📋' : '🔧'}
-              </button>
-            </div>
+        {/* BATTLE LOG (Desktop only) */}
+        <div className="hidden lg:block lg:w-3/5 lg:h-32">
+          <EnhancedBattleLog entries={battleState.battleLog} maxEntries={6} />
+        </div>
 
-            {showDebug ? (
-              <div className="glass-dark border border-neon-purple/30 rounded-lg p-2 flex-1 overflow-y-auto">
-                <div className="space-y-1 text-xs">
-                  {debugLogs.map((log, idx) => (
-                    <motion.p
-                      key={idx}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="font-bold break-words text-neon-cyan/80"
-                    >
-                      {log}
-                    </motion.p>
-                  ))}
-                  {debugLogs.length === 0 && (
-                    <p className="text-neon-cyan/50 italic text-xs">Log yok...</p>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="flex-1">
-                <EnhancedBattleLog entries={battleState.battleLog} maxEntries={6} />
-              </div>
-            )}
+        {/* DEBUG TOGGLE (Desktop only) */}
+        <div className="hidden lg:flex lg:w-3/5 flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold text-neon-purple uppercase">
+              {showDebug ? '🔧 DEBUG' : '📋 LOG'}
+            </p>
+            <button
+              onClick={() => setShowDebug(!showDebug)}
+              className="hs-btn hs-btn-xs"
+            >
+              {showDebug ? '📋' : '🔧'}
+            </button>
           </div>
+          {showDebug && (
+            <div className="glass-dark border border-neon-purple/30 rounded-lg p-2 flex-1 overflow-y-auto max-h-24">
+              <div className="space-y-1 text-xs">
+                {debugLogs.slice(0, 8).map((log, idx) => (
+                  <p key={idx} className="font-bold text-neon-cyan/80 break-words">
+                    {log}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

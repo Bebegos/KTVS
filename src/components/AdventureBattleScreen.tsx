@@ -339,7 +339,7 @@ export default function AdventureBattleScreen({
           <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
         </div>
 
-        {/* NEW IMMERSIVE EFFECTS (Absolute positioned - no layout impact) */}
+        {/* ABSOLUTE POSITIONED EFFECTS (No layout impact) */}
         <AnimatePresence>
           {activeEffectOverlay && currentVisualEffects && (
             <BattleEffectOverlay
@@ -367,11 +367,10 @@ export default function AdventureBattleScreen({
           <TurnIndicator round={battleState.round} isPlayerTurn={battleState.round % 2 === 1} />
         </AnimatePresence>
 
-        {/* BATTLE ARENA CONTAINER - Fixed layout */}
-        <div className="relative flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
-
-          {/* OPPONENT SIDE (Top on mobile, Left on desktop) */}
-          <div className="w-full lg:w-1/3 flex flex-col gap-2">
+        {/* DESKTOP: 3-COLUMN LAYOUT */}
+        <div className="hidden lg:relative lg:flex-1 lg:flex lg:flex-row lg:gap-3 lg:p-3 lg:overflow-hidden">
+          {/* Opponent side */}
+          <div className="w-1/3 flex flex-col gap-2">
             <div className="hs-battle-frame hs-battle-frame-opponent">
               <div className="glass-dark neon-border-purple rounded-lg p-3">
                 <p className="text-xs font-bold text-neon-purple mb-1">DÜŞMAN</p>
@@ -387,16 +386,16 @@ export default function AdventureBattleScreen({
             <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
           </div>
 
-          {/* CENTER ARENA (Hidden on mobile, shown on desktop) */}
-          <div className="hidden lg:flex lg:w-1/3 flex-col items-center justify-center">
+          {/* Center arena */}
+          <div className="w-1/3 flex flex-col items-center justify-center">
             <div className="text-center space-y-4">
               <div className="text-6xl opacity-20">⚔️</div>
               <p className="text-neon-cyan/40 text-sm font-bold uppercase tracking-wider">Savaş Alanı</p>
             </div>
           </div>
 
-          {/* PLAYER SIDE (Bottom on mobile, Right on desktop) */}
-          <div className="w-full lg:w-1/3 flex flex-col gap-2">
+          {/* Player side */}
+          <div className="w-1/3 flex flex-col gap-2">
             <div className="hs-battle-frame hs-battle-frame-player">
               <div className="glass-dark neon-border-cyan rounded-lg p-3">
                 <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
@@ -413,21 +412,71 @@ export default function AdventureBattleScreen({
           </div>
         </div>
 
-        {/* BOTTOM CONTROL PANEL - Fixed size sections */}
-        <div className="flex flex-col lg:flex-row gap-3 p-3 bg-gradient-to-t from-slate-900/80 to-transparent">
+        {/* MOBILE: VERTICAL STACKED LAYOUT (lg:hidden) */}
+        <div className="flex flex-col flex-1 gap-3 p-3 overflow-y-auto lg:hidden">
+          {/* OPPONENT */}
+          <div className="flex-shrink-0">
+            <div className="hs-battle-frame hs-battle-frame-opponent">
+              <div className="glass-dark neon-border-purple rounded-lg p-2">
+                <p className="text-xs font-bold text-neon-purple mb-1">DÜŞMAN</p>
+                <BattleDinoHUD
+                  dinoName={battleState.opponent.dino.name}
+                  currentHp={battleState.opponent.currentHp}
+                  maxHp={battleState.opponent.dino.maxHp}
+                  effects={battleState.opponent.effects}
+                  isPlayer={false}
+                />
+              </div>
+            </div>
+          </div>
 
-          {/* BATTLE LOG (Left side on desktop, full width on mobile) */}
-          <div className="w-full lg:w-2/5 h-40 lg:h-32">
+          {/* OPPONENT STATS */}
+          <div className="flex-shrink-0">
+            <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
+          </div>
+
+          {/* BATTLE LOG */}
+          <div className="flex-shrink-0 h-32">
             <EnhancedBattleLog entries={battleLog} maxEntries={6} />
           </div>
 
-          {/* ABILITY SELECTION (Right side on desktop, full width below on mobile) */}
+          {/* PLAYER */}
+          <div className="flex-shrink-0">
+            <div className="hs-battle-frame hs-battle-frame-player">
+              <div className="glass-dark neon-border-cyan rounded-lg p-2">
+                <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
+                <BattleDinoHUD
+                  dinoName={playerDino.name}
+                  currentHp={playerCurrentHp}
+                  maxHp={playerDino.maxHp}
+                  effects={battleState.player.effects}
+                  isPlayer={true}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* PLAYER STATS */}
+          <div className="flex-shrink-0">
+            <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
+          </div>
+        </div>
+
+        {/* BOTTOM CONTROL PANEL */}
+        <div className="flex-shrink-0 flex flex-col lg:flex-row gap-3 p-3 bg-gradient-to-t from-slate-900/90 to-transparent border-t border-neon-cyan/10">
+
+          {/* BATTLE LOG (Desktop only) */}
+          <div className="hidden lg:block lg:w-2/5 lg:h-32">
+            <EnhancedBattleLog entries={battleLog} maxEntries={6} />
+          </div>
+
+          {/* ABILITY SELECTION */}
           <div className="w-full lg:w-3/5">
-            <div className="space-y-2 h-full">
+            <div className="space-y-2">
               <p className="text-xs font-bold text-neon-cyan uppercase tracking-widest">⚔️ Yetenek Seç</p>
 
-              {/* Regular Abilities Grid - Fixed 2x3 layout */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 h-32 lg:h-28">
+              {/* Regular Abilities Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
                 {[0, 1, 2, 3, 4].map((idx) => {
                   const ability = battleState.player.abilities[idx]
                   const isLocked = slotService.isSlotLocked(playerDino, idx)
@@ -454,8 +503,8 @@ export default function AdventureBattleScreen({
                 })}
               </div>
 
-              {/* Ultimate Slot - Full width below regular abilities */}
-              <div className="h-16 lg:h-12">
+              {/* Ultimate Slot */}
+              <div className="col-span-2 sm:col-span-3">
                 <PremiumAbilityButton
                   ability={battleState.player.abilities[5] || null}
                   index={5}
