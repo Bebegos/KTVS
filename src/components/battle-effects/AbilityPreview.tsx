@@ -61,13 +61,36 @@ export default function AbilityPreview({
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-2 text-xs">
-          {/* Damage */}
-          <div className="bg-red-500/10 border border-red-500/30 rounded p-2">
-            <p className="text-red-400/70">Damage</p>
-            <p className="font-black text-red-300">
-              {Math.floor((ability.multiplier || 1) * 5)} - {Math.floor((ability.multiplier || 1) * 6)}
-            </p>
-          </div>
+          {/* Damage/Heal/Effect Power */}
+          {ability.kind === 'heal' ? (
+            <div className="bg-green-500/10 border border-green-500/30 rounded p-2">
+              <p className="text-green-400/70">Healing</p>
+              <p className="font-black text-green-300">
+                {Math.floor((ability.multiplier || 1) * 5)} - {Math.floor((ability.multiplier || 1) * 6)}
+              </p>
+            </div>
+          ) : ability.kind === 'buff' ? (
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded p-2">
+              <p className="text-blue-400/70">Buff Power</p>
+              <p className="font-black text-blue-300">
+                {Math.floor((ability.multiplier || 1) * 5)} - {Math.floor((ability.multiplier || 1) * 6)}
+              </p>
+            </div>
+          ) : ability.kind === 'debuff' ? (
+            <div className="bg-purple-500/10 border border-purple-500/30 rounded p-2">
+              <p className="text-purple-400/70">Debuff Power</p>
+              <p className="font-black text-purple-300">
+                {Math.floor((ability.multiplier || 1) * 5)} - {Math.floor((ability.multiplier || 1) * 6)}
+              </p>
+            </div>
+          ) : (
+            <div className="bg-red-500/10 border border-red-500/30 rounded p-2">
+              <p className="text-red-400/70">Damage</p>
+              <p className="font-black text-red-300">
+                {Math.floor((ability.multiplier || 1) * 5)} - {Math.floor((ability.multiplier || 1) * 6)}
+              </p>
+            </div>
+          )}
 
           {/* Cooldown */}
           <div

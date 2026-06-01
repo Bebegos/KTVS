@@ -67,7 +67,28 @@ export default function PremiumAbilityButton({
 
   const hasCooldown = cooldown > 0
   const cooldownPercent = maxCooldown > 0 ? (cooldown / maxCooldown) * 100 : 0
-  const damage = Math.floor((ability.multiplier || 1) * 5) // Assuming base damage of 5
+
+  // Calculate display value based on ability type
+  const displayValue = Math.floor((ability.multiplier || 1) * 5)
+  const getAbilityLabel = () => {
+    switch (ability.kind) {
+      case 'heal':
+        return '💚 HEAL'
+      case 'buff':
+        return '✨ BUFF'
+      case 'debuff':
+        return '⚫ DEBUFF'
+      case 'utility':
+        return '🔧 UTILITY'
+      case 'ultimate':
+        return '👑 ULTIMATE'
+      case 'passive':
+        return '🛡️ PASSIVE'
+      case 'attack':
+      default:
+        return '⚔️ DMG'
+    }
+  }
 
   return (
     <div
@@ -147,12 +168,12 @@ export default function PremiumAbilityButton({
         </p>
       </div>
 
-      {/* Damage and cooldown info */}
+      {/* Damage/Heal/Effect info and cooldown */}
       <div className={`text-xs space-y-1 w-full z-20 ${
         isUltimate ? 'text-yellow-200' : 'text-neon-cyan/80'
       }`}>
         <div className="flex items-center justify-between gap-2">
-          <span className="font-bold">⚔️ {damage} DMG</span>
+          <span className="font-bold">{getAbilityLabel()} {ability.kind !== 'buff' && ability.kind !== 'debuff' && ability.kind !== 'utility' && ability.kind !== 'passive' ? displayValue : ''}</span>
           {ability.cd && ability.cd > 0 && (
             <span className="text-right text-xs">CD: {ability.cd}t</span>
           )}
