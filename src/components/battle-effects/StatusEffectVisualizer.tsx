@@ -191,7 +191,6 @@ export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectV
                             color: color,
                           }}
                         >
-                          <p className="font-bold text-xs">Effect Power: {effect.magnitude || 1}</p>
                           <p className="text-xs opacity-70">
                             {getEffectImpactDescription(selectedEffect)}
                           </p>

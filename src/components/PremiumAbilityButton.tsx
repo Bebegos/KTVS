@@ -37,7 +37,7 @@ export default function PremiumAbilityButton({
 }: PremiumAbilityButtonProps) {
   const [isHovering, setIsHovering] = useState(false)
   const [isTouching, setIsTouching] = useState(false)
-  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const touchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isTouchingRef = useRef(false)
 
   const handleTouchStart = (e: React.TouchEvent) => {
