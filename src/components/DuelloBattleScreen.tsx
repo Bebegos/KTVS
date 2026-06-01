@@ -11,6 +11,8 @@ import EffectsDisplay from './EffectsDisplay'
 import BattleStatsCard from './BattleStatsCard'
 import HealthBar from './HealthBar'
 import PremiumAbilityButton from './PremiumAbilityButton'
+import PremiumButton from './PremiumButton'
+import { modalAssets } from '../lib/gameAssets'
 import BattleEffectOverlay from './battle-effects/BattleEffectOverlay'
 import FloatingDamageNumber from './battle-effects/FloatingDamageNumber'
 import BattleDinoHUD from './battle-effects/BattleDinoHUD'
@@ -393,31 +395,43 @@ export default function DuelloBattleScreen({
 
   if (showAbandonModal) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative bg-gradient-to-br from-slate-900 to-slate-800">
+      <div
+        className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative"
+        style={{
+          backgroundImage: `url('${modalAssets.background}')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="glass-dark neon-border-cyan rounded-xl p-8 max-w-sm text-center"
+          className="relative max-w-sm w-full text-center"
+          style={{
+            backgroundImage: `url('${modalAssets.frame}')`,
+            backgroundSize: '100% 100%',
+            backgroundRepeat: 'no-repeat',
+          }}
         >
-          <div className="text-3xl font-black text-red-500 mb-4">!</div>
-          <h2 className="text-2xl font-black text-neon-cyan mb-4">Düelloyu Terk Et?</h2>
-          <p className="text-neon-cyan/80 mb-6">
-            Eğer çıkarsan <span className="font-black text-red-400">KAYBEDECEKSIN</span> ve rakip XP kazanacak.
-          </p>
+          <div className="px-10 py-10 space-y-4">
+            <div className="text-3xl font-black text-red-600">!</div>
+            <h2 className="text-2xl font-black text-amber-950">Düelloyu Terk Et?</h2>
+            <p className="text-amber-950/80 font-semibold text-sm">
+              Eğer çıkarsan <span className="font-black text-red-600">KAYBEDECEKSIN</span> ve rakip XP
+              kazanacak.
+            </p>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowAbandonModal(false)}
-              className="hs-btn flex-1"
-            >
-              ← Devam Et
-            </button>
-            <button
-              onClick={handleAbandonBattle}
-              className="hs-btn hs-btn-red flex-1"
-            >
-              💀 Terk Et
-            </button>
+            <div className="flex gap-3 pt-2">
+              <PremiumButton onClick={() => setShowAbandonModal(false)} className="flex-1 h-14">
+                ← Devam Et
+              </PremiumButton>
+              <button
+                onClick={handleAbandonBattle}
+                className="hs-btn hs-btn-red flex-1"
+              >
+                💀 Terk Et
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>

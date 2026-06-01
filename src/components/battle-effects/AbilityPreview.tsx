@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Ability } from '../../game/types'
 import { battleVisualService } from '../../lib/services/battleVisualService'
 import AbilityIcon from '../AbilityIcon'
-import SvgIcon from '../SvgIcon'
+import EffectIcon from '../EffectIcon'
 import { getEffectNameTR } from '../../lib/effect-translations'
 
 interface AbilityPreviewProps {
@@ -117,7 +117,7 @@ export default function AbilityPreview({
                   key={effect}
                   className="flex items-center gap-1 bg-purple-500/10 border border-purple-500/30 rounded px-2 py-1"
                 >
-                  <SvgIcon id={effect} type="effect" size="xs" fallback="•" />
+                  <EffectIcon effect={effect} size="xs" />
                   <span className="text-xs text-purple-300">{getEffectNameTR(effect)}</span>
                 </div>
               ))}

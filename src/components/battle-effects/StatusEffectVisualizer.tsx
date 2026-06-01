@@ -1,8 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { ActiveEffect, EffectKind } from '../../game/types'
-import SvgIcon from '../SvgIcon'
+import EffectIcon from '../EffectIcon'
 import { getEffectNameTR } from '../../lib/effect-translations'
+import { modalAssets } from '../../lib/gameAssets'
 
 interface StatusEffectVisualizerProps {
   effects: ActiveEffect[]
@@ -55,7 +56,7 @@ export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectV
                   background: `${color}15`,
                 }}
               >
-                <SvgIcon id={effectType} type="effect" size="sm" fallback={getEffectEmoji(effectType)} />
+                <EffectIcon effect={effectType} size="md" />
               </motion.button>
 
               {/* Pulsing ring animation */}
@@ -121,85 +122,93 @@ export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectV
       <AnimatePresence>
         {selectedEffect && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop (premium darkening overlay) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedEffect(null)}
-              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            />
-
-            {/* Modal */}
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
+              className="fixed inset-0 z-40 flex items-center justify-center p-6"
+              style={{
+                backgroundImage: `url('${modalAssets.background}')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
-              <div className="bg-slate-900/95 backdrop-blur border-t-2 rounded-t-2xl p-4 space-y-3">
-                {(() => {
-                  const effect = effects.find((e) => e.type === selectedEffect)
-                  if (!effect) return null
+              {/* Modal framed in the premium parchment card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-sm"
+                style={{
+                  backgroundImage: `url('${modalAssets.frame}')`,
+                  backgroundSize: '100% 100%',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              >
+                {/* Close button (PNG) */}
+                <button
+                  onClick={() => setSelectedEffect(null)}
+                  className="absolute -top-2 -right-2 w-10 h-10 z-10 transition hover:scale-110"
+                  style={{
+                    backgroundImage: `url('${modalAssets.close}')`,
+                    backgroundSize: 'contain',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                  }}
+                  aria-label="Close"
+                />
 
-                  const color = getEffectColor(selectedEffect)
-                  const durationType = getEffectDurationType(selectedEffect)
+                {/* Content inset over the parchment center */}
+                <div className="px-8 py-8 space-y-3">
+                  {(() => {
+                    const effect = effects.find((e) => e.type === selectedEffect)
+                    if (!effect) return null
 
-                  return (
-                    <>
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-12 h-12 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                          style={{
-                            borderColor: color,
-                            background: `${color}15`,
-                          }}
-                        >
-                          <SvgIcon
-                            id={selectedEffect}
-                            type="effect"
-                            size="sm"
-                            fallback={getEffectEmoji(selectedEffect)}
-                          />
+                    const color = getEffectColor(selectedEffect)
+                    const durationType = getEffectDurationType(selectedEffect)
+
+                    return (
+                      <>
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-12 h-12 rounded-full border-2 flex items-center justify-center flex-shrink-0 bg-white/40"
+                            style={{ borderColor: color }}
+                          >
+                            <EffectIcon effect={selectedEffect} size="md" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-black text-base" style={{ color }}>
+                              {getEffectNameTR(selectedEffect)}
+                            </h3>
+                            <p className="text-xs text-amber-950/70 font-bold">
+                              {durationType}: {effect.duration}{' '}
+                              {durationType === 'Turn' ? 'turn' : 'duration'}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-black text-sm" style={{ color }}>
-                            {getEffectNameTR(selectedEffect)}
-                          </h3>
-                          <p className="text-xs opacity-70">
-                            {durationType}: {effect.duration} {durationType === 'Turn' ? 'turn' : 'duration'}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => setSelectedEffect(null)}
-                          className="text-xl opacity-60 hover:opacity-100 transition"
-                        >
-                          ✕
-                        </button>
-                      </div>
 
-                      <div className="space-y-2 text-xs">
-                        <p className="text-neon-cyan/80 italic leading-relaxed">
+                        <p className="text-xs text-amber-950/90 italic leading-relaxed font-semibold">
                           {getEffectDescription(selectedEffect)}
                         </p>
 
                         <div
-                          className="p-2 rounded border"
+                          className="p-2 rounded border font-bold"
                           style={{
-                            borderColor: `${color}40`,
-                            background: `${color}10`,
+                            borderColor: `${color}50`,
+                            background: `${color}15`,
                             color: color,
                           }}
                         >
-                          <p className="text-xs opacity-70">
-                            {getEffectImpactDescription(selectedEffect)}
-                          </p>
+                          <p className="text-xs">{getEffectImpactDescription(selectedEffect)}</p>
                         </div>
-                      </div>
-                    </>
-                  )
-                })()}
-              </div>
+                      </>
+                    )
+                  })()}
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}
@@ -230,23 +239,6 @@ function getEffectDurationType(effectType: EffectKind): string {
     return 'Turn'
   }
   return 'Duration'
-}
-
-function getEffectEmoji(effectType: EffectKind): string {
-  const emojis: Record<EffectKind, string> = {
-    poison: '☠️',
-    stun: '⚡',
-    stop: '❄️',
-    power: '💪',
-    speed: '🏃',
-    shield: '🛡️',
-    heal: '💚',
-    regen: '🌿',
-    defense_down: '📉',
-    paralyze: '⚡',
-    none: '•',
-  }
-  return emojis[effectType]
 }
 
 function getEffectDescription(effectType: EffectKind): string {

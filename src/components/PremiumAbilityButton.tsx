@@ -3,8 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Ability } from '../game/types'
 import AbilityIcon from './AbilityIcon'
 import AbilityPreview from './battle-effects/AbilityPreview'
-import SvgIcon from './SvgIcon'
-import { getEffectEmoji } from '../lib/effect-translations'
+import AbilityTypeIcon from './AbilityTypeIcon'
+import EffectIcon from './EffectIcon'
+import {
+  abilityButtonAssets,
+  ultimateButtonAssets,
+  badgeAssets,
+  borderGlowAssets,
+} from '../lib/gameAssets'
 
 interface PremiumAbilityButtonProps {
   ability: Ability | null
@@ -68,66 +74,66 @@ export default function PremiumAbilityButton({
     setIsTouching(false)
   }
 
+  // Resolve which frame PNG to show for the current state.
+  const getFrameImage = () => {
+    if (isUltimate) {
+      if (isLocked || disabled || !canUse) return ultimateButtonAssets.disabled
+      if (isSelected) return ultimateButtonAssets.selected
+      return ultimateButtonAssets.base
+    }
+    if (isLocked) return abilityButtonAssets.disabled
+    if (!ability) return abilityButtonAssets.empty
+    if (disabled || !canUse) return abilityButtonAssets.disabled
+    if (isSelected) return abilityButtonAssets.selected
+    if (isHovering) return abilityButtonAssets.hover
+    return abilityButtonAssets.base
+  }
+
+  const heightClass = isUltimate ? 'h-16' : 'h-24'
+
+  const frameStyle = {
+    backgroundImage: `url('${getFrameImage()}')`,
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
+  }
+
+  // ----- Locked slot -----
   if (isLocked) {
     return (
-      <div className={`relative ${isUltimate ? 'h-16' : 'h-24'}`}>
-        <motion.button
-          disabled
-          className={`relative w-full h-full p-2 rounded-xl font-bold transition flex flex-col items-center justify-center gap-1 overflow-hidden ${
-            isUltimate ? 'col-span-2' : ''
-          } bg-gradient-to-b from-slate-700/20 to-slate-800/40 border-2 border-dashed border-slate-500/30 text-slate-400 opacity-40 cursor-not-allowed`}
+      <div className={`relative ${heightClass}`}>
+        <div
+          className="relative w-full h-full flex flex-col items-center justify-center gap-1 opacity-80"
+          style={frameStyle}
         >
-          <span className="text-xl sm:text-2xl">🔒</span>
-          <p className="text-[10px] sm:text-xs font-bold line-clamp-1">Kilitli</p>
-          {lockedLevel && <p className="text-[9px] text-slate-400">Lvl {lockedLevel}</p>}
-        </motion.button>
+          <img src={badgeAssets.locked} alt="locked" className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
+          {lockedLevel && (
+            <p className="text-[9px] sm:text-[10px] font-black text-amber-950/80">Lvl {lockedLevel}</p>
+          )}
+        </div>
       </div>
     )
   }
 
+  // ----- Empty slot -----
   if (!ability) {
     return (
-      <div className={`relative ${isUltimate ? 'h-16' : 'h-24'}`}>
-        <motion.button
-          disabled
-          className={`relative w-full h-full p-2 rounded-xl font-bold transition flex flex-col items-center justify-center gap-1 overflow-hidden ${
-            isUltimate ? 'col-span-2' : ''
-          } bg-gradient-to-b from-slate-800/30 to-slate-900/40 border-2 border-dashed border-neon-purple/20 text-neon-purple/40 opacity-60 cursor-not-allowed`}
+      <div className={`relative ${heightClass}`}>
+        <div
+          className="relative w-full h-full flex flex-col items-center justify-center gap-1 opacity-90"
+          style={frameStyle}
         >
-          <span className="text-xl sm:text-2xl">➕</span>
-          <p className="text-[10px] sm:text-xs font-bold">Boş</p>
-        </motion.button>
+          <span className="text-xl sm:text-2xl text-amber-900/50 font-black">+</span>
+          <p className="text-[9px] sm:text-[10px] font-bold text-amber-900/50">Boş</p>
+        </div>
       </div>
     )
   }
 
   const hasCooldown = cooldown > 0
-  const cooldownPercent = maxCooldown > 0 ? (cooldown / maxCooldown) * 100 : 0
-
-  // Get ability type emoji
-  const getAbilityEmoji = () => {
-    switch (ability.kind) {
-      case 'heal':
-        return '💚'
-      case 'buff':
-        return '✨'
-      case 'debuff':
-        return '⚫'
-      case 'utility':
-        return '🔧'
-      case 'ultimate':
-        return '👑'
-      case 'passive':
-        return '🛡️'
-      case 'attack':
-      default:
-        return '⚔️'
-    }
-  }
 
   return (
     <div
-      className={`relative ${isUltimate ? 'h-16' : 'h-24'}`}
+      className={`relative ${heightClass}`}
       onMouseEnter={() => !disabled && setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onTouchStart={handleTouchStart}
@@ -138,125 +144,90 @@ export default function PremiumAbilityButton({
         whileTap={{ scale: !disabled && !isSelected && canUse ? 0.97 : 1 }}
         onClick={() => !disabled && canUse && onClick?.()}
         disabled={disabled || !canUse}
-        className={`relative w-full h-full p-2 sm:p-3 rounded-xl font-bold transition flex flex-col items-start gap-1 overflow-hidden justify-between ${
-          isUltimate ? 'col-span-2' : ''
-        } ${
-          isSelected
-            ? `bg-gradient-to-b ${
-                isUltimate ? 'from-yellow-500/40 to-orange-600/40' : 'from-neon-cyan/40 to-neon-purple/40'
-              } border-2 ${
-                isUltimate ? 'border-yellow-400' : 'border-neon-cyan'
-              } shadow-lg scale-105`
-            : !canUse
-            ? 'bg-gradient-to-b from-slate-700/20 to-slate-800/30 border-2 border-slate-500/30 text-slate-400 opacity-50 cursor-not-allowed'
-            : `bg-gradient-to-b ${
-                isUltimate
-                  ? 'from-yellow-600/30 to-orange-700/30'
-                  : 'from-neon-cyan/20 to-neon-purple/20'
-              } border-2 ${
-                isUltimate ? 'border-yellow-500/60' : 'border-neon-cyan/60'
-              } hover:shadow-lg`
+        className={`relative w-full h-full flex flex-col items-start justify-between overflow-hidden bg-transparent border-0 ${
+          !canUse ? 'cursor-not-allowed' : ''
         }`}
+        style={frameStyle}
       >
-        {/* Background pattern */}
-        <div
-          className={`absolute inset-0 ${
-            isUltimate ? 'bg-yellow-500/5' : 'bg-neon-cyan/5'
-          } pointer-events-none`}
-        />
-
-        {/* Info button */}
-        <motion.button
-          whileHover={{ scale: 1.2 }}
-          onClick={(e) => {
-            e.stopPropagation()
-            onInfo?.()
-          }}
-          className={`absolute top-1 right-1 sm:top-2 sm:right-2 text-xs sm:text-lg transition font-bold z-10 ${
-            isUltimate ? 'text-yellow-400 hover:text-yellow-300' : 'text-neon-cyan hover:text-neon-cyan/80'
-          }`}
-        >
-          ⓘ
-        </motion.button>
-
-        {/* Slot label for non-ultimates */}
-        {!isUltimate && (
-          <div className={`absolute top-1 left-1 sm:top-2 sm:left-2 text-[10px] sm:text-xs font-black ${
-            isUltimate ? 'text-yellow-400' : 'text-neon-cyan'
-          }`}>
-            {index + 1}
-          </div>
+        {/* Neon glow overlay when selected */}
+        {isSelected && (
+          <img
+            src={isUltimate ? borderGlowAssets.gold : borderGlowAssets.cyan}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 w-full h-full object-fill pointer-events-none animate-pulse z-10"
+          />
         )}
 
-        {/* Ultimate label */}
-        {isUltimate && (
-          <div className="absolute top-1 left-1/2 -translate-x-1/2 text-[9px] sm:text-xs font-black text-yellow-400 px-1 py-0.5 bg-yellow-600/30 rounded">
-            👑 ULT
+        {/* Content padded inside the ornate frame */}
+        <div className="relative z-20 w-full h-full flex flex-col items-start justify-between px-2.5 py-2 sm:px-3">
+          {/* Top row: slot index / ult badge + info */}
+          <div className="flex items-center justify-between w-full">
+            {isUltimate ? (
+              <img src={badgeAssets.ultimate} alt="ULT" className="h-4 sm:h-5 object-contain" />
+            ) : (
+              <span className="text-[10px] sm:text-xs font-black text-amber-950/70">{index + 1}</span>
+            )}
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onInfo?.()
+              }}
+              className="text-xs sm:text-sm font-bold text-amber-900/60 hover:text-amber-900 transition leading-none"
+            >
+              ⓘ
+            </button>
           </div>
-        )}
 
-        {/* Icon and name */}
-        <div className="flex items-center gap-1 w-full mt-0.5 z-20 flex-1 min-w-0">
-          <AbilityIcon iconId={ability.icon} size={isUltimate ? 'md' : 'sm'} />
-          <p className={`font-black text-[9px] sm:text-xs line-clamp-2 flex-1 ${
-            isUltimate ? 'text-yellow-300' : 'text-neon-cyan'
-          }`}>
-            {ability.name}
-          </p>
-        </div>
+          {/* Middle: ability icon + name */}
+          <div className="flex items-center gap-1.5 w-full min-w-0 flex-1 py-0.5">
+            <AbilityIcon iconId={ability.icon} size={isUltimate ? 'md' : 'sm'} />
+            <p className="font-black text-[9px] sm:text-xs line-clamp-2 flex-1 text-amber-950 leading-tight">
+              {ability.name}
+            </p>
+          </div>
 
-        {/* Bottom info section */}
-        <div className={`text-[8px] sm:text-xs w-full z-20 flex items-center gap-1 justify-between ${
-          isUltimate ? 'text-yellow-200' : 'text-neon-cyan/80'
-        }`}>
-          <div className="flex items-center gap-0.5">
-            <span className="text-sm">{getAbilityEmoji()}</span>
-            {ability.cd && ability.cd > 0 && (
-              <span className="text-[7px] sm:text-xs">CD:{ability.cd}</span>
+          {/* Bottom: type icon + cooldown + effect icons */}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-1">
+              <AbilityTypeIcon kind={ability.kind} size="xs" />
+              {ability.cd > 0 && (
+                <span className="text-[7px] sm:text-[9px] font-bold text-amber-900/70">
+                  CD{ability.cd}
+                </span>
+              )}
+            </div>
+
+            {ability.effects && ability.effects.length > 0 && (
+              <div className="flex gap-0.5">
+                {ability.effects.slice(0, 3).map((effectKind, idx) => (
+                  <EffectIcon key={idx} effect={effectKind} size="xs" />
+                ))}
+              </div>
             )}
           </div>
-
-          {/* Effect icons */}
-          {ability.effects && ability.effects.length > 0 && (
-            <div className="flex gap-0.5">
-              {ability.effects.slice(0, 2).map((effectKind, idx) => (
-                <SvgIcon
-                  key={idx}
-                  id={effectKind}
-                  type="effect"
-                  size="xs"
-                  fallback={getEffectEmoji(effectKind)}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Cooldown overlay */}
+        {/* Cooldown overlay with badge art */}
         {hasCooldown && (
-          <div className="absolute inset-0 bg-slate-900/60 z-30 flex items-center justify-center rounded-xl">
-            <div className="text-center">
+          <div className="absolute inset-0 bg-slate-900/55 z-30 flex items-center justify-center">
+            <div
+              className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center"
+              style={{
+                backgroundImage: `url('${badgeAssets.cooldown}')`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+              }}
+            >
               <p className="text-lg sm:text-2xl font-black text-white drop-shadow-lg">{cooldown}</p>
-              <p className="text-[9px] sm:text-xs font-bold text-slate-300">CD</p>
             </div>
-          </div>
-        )}
-
-        {/* Cooldown progress bar */}
-        {maxCooldown > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-slate-700/50 z-20 rounded-b-xl overflow-hidden">
-            <motion.div
-              initial={{ width: '100%' }}
-              animate={{ width: `${100 - cooldownPercent}%` }}
-              className={`h-full ${
-                isUltimate ? 'bg-yellow-500' : 'bg-neon-cyan'
-              }`}
-            />
           </div>
         )}
       </motion.button>
 
-      {/* Ability preview on hover (desktop) or touch (mobile) */}
+      {/* Ability preview on hover (desktop) or 2s long-press (mobile) */}
       <AnimatePresence>
         {(isHovering || isTouching) && ability && (
           <AbilityPreview

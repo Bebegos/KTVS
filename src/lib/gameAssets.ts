@@ -1,0 +1,94 @@
+// Centralized registry for all Hearthstone-style PNG UI assets.
+// Files live under /public/assests (note: folder spelling matches uploaded assets).
+
+import { EffectKind, AbilityType } from '../game/types'
+
+const BASE = '/assests'
+
+// ---------- Ability slot button frames ----------
+export const abilityButtonAssets = {
+  base: `${BASE}/buttons/ability/ability-button-base.png`,
+  hover: `${BASE}/buttons/ability/ability-button-hover.png`,
+  selected: `${BASE}/buttons/ability/ability-button-selected.png`,
+  disabled: `${BASE}/buttons/ability/ability-button-disabled.png`,
+  empty: `${BASE}/buttons/ability/empty-slot-button.png`,
+}
+
+export const ultimateButtonAssets = {
+  base: `${BASE}/buttons/ultimate/ultimate-button-base.png`,
+  selected: `${BASE}/buttons/ultimate/ultimate-button-selected.png`,
+  disabled: `${BASE}/buttons/ultimate/ultimate-button-disabled.png`,
+}
+
+// ---------- Menu buttons (wide + square) ----------
+export const menuButtonAssets = {
+  base: `${BASE}/buttons/menu/menu-button-base.png`,
+  hover: `${BASE}/buttons/menu/menu-button-hover.png`,
+  pressed: `${BASE}/buttons/menu/menu-button-pressed.png`,
+  disabled: `${BASE}/buttons/menu/menu-button-disabled.png`,
+}
+
+export const squareMenuButtonAssets = {
+  base: `${BASE}/buttons/menu/menu-button-square-base.png`,
+  hover: `${BASE}/buttons/menu/menu-button-square-hover.png`,
+  pressed: `${BASE}/buttons/menu/menu-button-square-pressed.png`,
+  disabled: `${BASE}/buttons/menu/menu-button-square-disabled.png`,
+}
+
+// ---------- HP bar ----------
+export const hpBarAssets = {
+  background: `${BASE}/hp-bars/hp-bar-background.png`,
+  healthy: `${BASE}/hp-bars/hp-fill-healthy.png`,
+  wounded: `${BASE}/hp-bars/hp-fill-wounded.png`,
+  danger: `${BASE}/hp-bars/hp-fill-danger.png`,
+}
+
+// ---------- Status effect icons (small 48px / large 64px) ----------
+export function getEffectIconUrl(effect: EffectKind, size: 'sm' | 'lg' = 'sm'): string | null {
+  if (effect === 'none') return null
+  const folder = size === 'lg' ? 'large' : 'small'
+  return `${BASE}/effects/${folder}/effect-${effect.replace('_', '-')}-${size}.png`
+}
+
+// ---------- Ability type icons (replace emoji) ----------
+const abilityTypeIconMap: Record<AbilityType, string> = {
+  attack: `${BASE}/icons/icon-attack.png`,
+  heal: `${BASE}/icons/icon-heal.png`,
+  buff: `${BASE}/icons/icon-buff.png`,
+  debuff: `${BASE}/icons/icon-debuff.png`,
+  utility: `${BASE}/icons/icon-utility.png`,
+  passive: `${BASE}/icons/icon-passive.png`,
+  ultimate: `${BASE}/icons/icon-ultimate.png`,
+}
+
+export function getAbilityTypeIconUrl(kind: AbilityType): string {
+  return abilityTypeIconMap[kind] ?? abilityTypeIconMap.attack
+}
+
+// ---------- Badges & labels ----------
+export const badgeAssets = {
+  ultimate: `${BASE}/badges-labels/badge-ultimate.png`,
+  cooldown: `${BASE}/badges-labels/badge-cooldown.png`,
+  locked: `${BASE}/badges-labels/locked-icon.png`,
+}
+
+// ---------- Decorations ----------
+export const borderGlowAssets = {
+  cyan: `${BASE}/decorations/borders/border-glow-cyan.png`,
+  purple: `${BASE}/decorations/borders/border-glow-purple.png`,
+  gold: `${BASE}/decorations/borders/border-glow-gold.png`,
+}
+
+export const cornerAssets = {
+  tl: `${BASE}/decorations/corners/corner-tl.png`,
+  tr: `${BASE}/decorations/corners/corner-tr.png`,
+  bl: `${BASE}/decorations/corners/corner-bl.png`,
+  br: `${BASE}/decorations/corners/corner-br.png`,
+}
+
+// ---------- Modal ----------
+export const modalAssets = {
+  background: `${BASE}/modal/modal-background.png`,
+  frame: `${BASE}/modal/modal-frame.png`,
+  close: `${BASE}/modal/modal-close-button.png`,
+}

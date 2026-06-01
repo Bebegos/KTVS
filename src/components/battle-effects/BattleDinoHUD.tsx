@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ActiveEffect } from '../../game/types'
 import StatusEffectVisualizer from './StatusEffectVisualizer'
+import { hpBarAssets } from '../../lib/gameAssets'
 
 interface BattleDinoHUDProps {
   dinoName: string
@@ -17,17 +18,15 @@ export default function BattleDinoHUD({
   effects,
   isPlayer = false,
 }: BattleDinoHUDProps) {
-  const hpPercent = (currentHp / maxHp) * 100
+  const hpPercent = Math.max(0, (currentHp / maxHp) * 100)
   const isDanger = hpPercent < 30
   const isWounded = hpPercent < 60
 
-  const getHpColor = () => {
-    if (isDanger) return { bg: 'from-red-600 to-red-400', glow: 'shadow-red-500/50' }
-    if (isWounded) return { bg: 'from-yellow-600 to-yellow-400', glow: 'shadow-yellow-500/30' }
-    return { bg: 'from-green-600 to-green-400', glow: 'shadow-green-500/30' }
-  }
-
-  const colors = getHpColor()
+  const fillImage = isDanger
+    ? hpBarAssets.danger
+    : isWounded
+    ? hpBarAssets.wounded
+    : hpBarAssets.healthy
 
   return (
     <motion.div
@@ -61,52 +60,54 @@ export default function BattleDinoHUD({
           </motion.span>
         </div>
 
-        {/* HP Bar - Mobile optimized with larger height */}
+        {/* HP Bar - premium framed art with PNG fill */}
         <div
-          className={`relative lg:h-6 h-8 bg-slate-800/60 border-2 lg:border rounded-lg lg:rounded-lg overflow-hidden ${
-            isDanger
-              ? 'border-red-500/60 shadow-lg shadow-red-500/30'
-              : isWounded
-              ? 'border-yellow-500/60 shadow-lg shadow-yellow-500/30'
-              : 'border-green-500/60 shadow-lg shadow-green-500/30'
-          }`}
+          className="relative lg:h-7 h-9 rounded-lg overflow-hidden"
+          style={{
+            backgroundImage: `url('${hpBarAssets.background}')`,
+            backgroundSize: '100% 100%',
+            backgroundRepeat: 'no-repeat',
+          }}
         >
-          {/* Damage flash */}
-          <motion.div
-            className="absolute inset-0 bg-red-500/30"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ duration: 0.6 }}
-          />
+          {/* Inset fill track — keeps the colored fill inside the frame bevel */}
+          <div className="absolute inset-y-[18%] left-[3%] right-[3%] rounded-md overflow-hidden">
+            {/* Damage flash */}
+            <motion.div
+              className="absolute inset-0 bg-red-500/40 z-20 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 0.6 }}
+            />
 
-          {/* HP Fill */}
-          <motion.div
-            initial={{ width: `${hpPercent}%` }}
-            animate={{ width: `${hpPercent}%` }}
-            transition={{ duration: 0.4, type: 'spring', bounce: 0.2 }}
-            className={`h-full transition-all bg-gradient-to-r ${colors.bg} shadow-lg ${
-              colors.glow
-            }`}
-          >
-            {/* HP shimmer */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse" />
-          </motion.div>
+            {/* HP Fill (PNG art, width animated to current HP) */}
+            <motion.div
+              initial={{ width: `${hpPercent}%` }}
+              animate={{ width: `${hpPercent}%` }}
+              transition={{ duration: 0.4, type: 'spring', bounce: 0.2 }}
+              className="h-full"
+              style={{
+                backgroundImage: `url('${fillImage}')`,
+                backgroundSize: 'auto 100%',
+                backgroundRepeat: 'repeat-x',
+              }}
+            >
+              {/* Moving shimmer highlight */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+            </motion.div>
+          </div>
 
           {/* Center HP percentage on mobile */}
           {hpPercent < 99 && (
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center font-black text-xs lg:hidden"
+            <div
+              className="absolute inset-0 flex items-center justify-center font-black text-xs lg:hidden z-30 pointer-events-none"
               style={{
                 color: isDanger ? '#fca5a5' : isWounded ? '#fef08a' : '#86efac',
-                textShadow: '0 2px 4px rgba(0,0,0,0.8)',
+                textShadow: '0 2px 4px rgba(0,0,0,0.9)',
               }}
             >
               {Math.round(hpPercent)}%
-            </motion.div>
+            </div>
           )}
-
-          {/* Border glow effect */}
-          <div className="absolute inset-0 rounded-lg border border-transparent pointer-events-none" />
         </div>
       </div>
 
