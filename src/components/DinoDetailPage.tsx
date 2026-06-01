@@ -180,16 +180,24 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
               transition={{ delay: 0.2 }}
               className="bg-gradient-to-br from-slate-800/60 to-slate-800/40 border border-gold-dark/30 rounded-xl p-4 space-y-3"
             >
-              <div className="flex justify-between items-center">
-                <p className="text-xs font-bold text-gold-light">✨ DENEYIM</p>
-                <p className="text-xs font-bold text-gold-light">{dino.xp}/100</p>
-              </div>
-              <div className="w-full bg-gradient-to-r from-slate-900 to-slate-800 rounded-full h-4 overflow-hidden border border-gold-dark/40">
-                <div
-                  className="bg-gradient-to-r from-gold-light via-gold-mid to-gold-dark h-full transition-all duration-500"
-                  style={{ width: `${(dino.xp / 100) * 100}%` }}
-                />
-              </div>
+              {(() => {
+                const maxXpForLevel = Math.floor(100 * Math.pow(dino.level, 1.5))
+                const xpPercent = (dino.xp / maxXpForLevel) * 100
+                return (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs font-bold text-gold-light">✨ DENEYIM</p>
+                      <p className="text-xs font-bold text-gold-light">{dino.xp}/{maxXpForLevel}</p>
+                    </div>
+                    <div className="w-full bg-gradient-to-r from-slate-900 to-slate-800 rounded-full h-4 overflow-hidden border border-gold-dark/40">
+                      <div
+                        className="bg-gradient-to-r from-gold-light via-gold-mid to-gold-dark h-full transition-all duration-500"
+                        style={{ width: `${xpPercent}%` }}
+                      />
+                    </div>
+                  </>
+                )
+              })()}
             </motion.div>
           </div>
 
@@ -284,16 +292,26 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                   const ability = abilityId ? abilityDefinitionService.getAbility(abilityId) : null
 
                   if (ability) {
+                    const baseValue = Math.floor((ability.damageMultiplier || 1) * dino.atk)
+                    const displayLabel = ability.kind === 'heal' ? '💚' : ability.kind === 'buff' ? '✨' : ability.kind === 'debuff' ? '⚫' : '⚔️'
+                    const displayValue = ability.kind === 'buff' || ability.kind === 'debuff' ? ability.damageMultiplier || 1 : baseValue
+
                     return (
                       <div
                         key={slotIdx}
-                        className="bg-gradient-to-b from-neon-purple/30 to-neon-purple/10 border-2 border-neon-purple/50 rounded-lg p-3 space-y-2"
+                        className="bg-gradient-to-b from-neon-purple/30 to-neon-purple/10 border-2 border-neon-purple/50 rounded-lg p-3 space-y-2 hover:from-neon-purple/40 hover:to-neon-purple/20 transition"
                       >
                         <div className="flex justify-center">
                           <AbilityIcon iconId={ability.icon} size="md" />
                         </div>
                         <p className="text-xs font-black text-neon-purple text-center line-clamp-2">{ability.name}</p>
-                        <p className="text-xs text-neon-purple/70 text-center">×{ability.damageMultiplier || 1}</p>
+                        <div className="text-center">
+                          <p className="text-2xl">{displayLabel}</p>
+                          <p className="text-xs font-black text-neon-purple/90">{displayValue}</p>
+                        </div>
+                        {ability.cooldown && ability.cooldown > 0 && (
+                          <p className="text-xs text-neon-purple/60 text-center">CD: {ability.cooldown}t</p>
+                        )}
                       </div>
                     )
                   }
@@ -317,16 +335,33 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                   const ability = abilityId ? abilityDefinitionService.getAbility(abilityId) : null
 
                   if (ability) {
+                    const baseValue = Math.floor((ability.damageMultiplier || 1) * dino.atk)
+                    const displayLabel = ability.kind === 'heal' ? '💚' : ability.kind === 'buff' ? '✨' : ability.kind === 'debuff' ? '⚫' : '⚔️'
+                    const displayValue = ability.kind === 'buff' || ability.kind === 'debuff' ? ability.damageMultiplier || 1 : baseValue
+
                     return (
                       <div
                         key={5}
-                        className="col-span-2 sm:col-span-3 bg-gradient-to-b from-orange-500/30 to-red-600/20 border-2 border-orange-400/60 rounded-lg p-3 space-y-2"
+                        className="col-span-2 sm:col-span-3 bg-gradient-to-b from-orange-500/30 to-red-600/20 border-2 border-orange-400/60 rounded-lg p-4 space-y-2 hover:from-orange-500/40 hover:to-red-600/30 transition"
                       >
                         <div className="flex justify-center">
                           <AbilityIcon iconId={ability.icon} size="lg" />
                         </div>
                         <p className="text-sm font-black text-orange-300 text-center">👑 {ability.name}</p>
-                        <p className="text-xs text-orange-300/70 text-center">×{ability.damageMultiplier || 1}</p>
+                        <div className="text-center">
+                          <p className="text-4xl">{displayLabel}</p>
+                          <p className="text-sm font-black text-orange-200">{displayValue}</p>
+                        </div>
+                        {ability.cooldown && ability.cooldown > 0 && (
+                          <p className="text-xs text-orange-300/70 text-center">CD: {ability.cooldown}t</p>
+                        )}
+                        {ability.effects && ability.effects.length > 0 && (
+                          <div className="flex justify-center gap-1 flex-wrap">
+                            {ability.effects.slice(0, 3).map((effect) => (
+                              <SvgIcon key={effect} id={effect} type="effect" size="xs" fallback={getEffectEmoji(effect)} />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )
                   }
@@ -354,19 +389,45 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                     const ability = abilityDefinitionService.getAbility(abilityId)
                     if (!ability) return null
 
+                    const baseValue = Math.floor((ability.damageMultiplier || 1) * dino.atk)
+                    const displayLabel = ability.kind === 'heal' ? '💚 Healing' : ability.kind === 'buff' ? '✨ Buff Power' : ability.kind === 'debuff' ? '⚫ Debuff Power' : '⚔️ Damage'
+                    const displayValue = ability.kind === 'buff' || ability.kind === 'debuff' ? ability.damageMultiplier || 1 : baseValue
+
                     return (
                       <div
                         key={idx}
-                        className="bg-neon-purple/5 border border-neon-purple/20 rounded-lg p-3 space-y-1"
+                        className="bg-gradient-to-r from-neon-purple/10 to-neon-purple/5 border border-neon-purple/30 rounded-lg p-4 space-y-2 hover:from-neon-purple/15 hover:to-neon-purple/10 transition"
                       >
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-black text-neon-purple/70">Slot {idx + 1}:</p>
-                          <p className="font-bold text-neon-purple text-sm">{ability.name}</p>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-xs font-black text-neon-purple/60 uppercase tracking-wide">Slot {idx + 1}</p>
+                              <p className="font-bold text-neon-purple text-sm">{ability.name}</p>
+                            </div>
+                            <p className="text-xs text-neon-purple/70 leading-relaxed">{ability.description}</p>
+                          </div>
+                          <div className="text-right space-y-1">
+                            <div className="bg-neon-purple/20 rounded px-2 py-1">
+                              <p className="text-2xl">{ability.kind === 'heal' ? '💚' : ability.kind === 'buff' ? '✨' : ability.kind === 'debuff' ? '⚫' : '⚔️'}</p>
+                              <p className="font-black text-neon-purple text-sm">{displayValue}</p>
+                              <p className="text-xs text-neon-purple/60">{displayLabel}</p>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-xs text-neon-purple/70">{ability.description}</p>
-                        <div className="text-xs text-neon-purple/60 flex gap-3">
-                          <span>×{ability.damageMultiplier || 1} DMG</span>
-                          {ability.cooldown && ability.cooldown > 0 && <span>CD: {ability.cooldown}t</span>}
+                        <div className="flex flex-wrap gap-2 items-center">
+                          {ability.effects && ability.effects.length > 0 && (
+                            <div className="flex gap-1">
+                              {ability.effects.map((effect) => (
+                                <div key={effect} className="flex items-center gap-1 bg-purple-500/20 border border-purple-500/30 rounded px-2 py-0.5">
+                                  <SvgIcon id={effect} type="effect" size="xs" fallback={getEffectEmoji(effect)} />
+                                  <span className="text-xs text-purple-300">{effect}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex gap-2 text-xs">
+                            {ability.cooldown && ability.cooldown > 0 && <span className="text-neon-purple/60">CD: {ability.cooldown}t</span>}
+                          </div>
                         </div>
                       </div>
                     )

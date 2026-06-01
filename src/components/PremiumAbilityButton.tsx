@@ -36,6 +36,14 @@ export default function PremiumAbilityButton({
   lockedLevel,
 }: PremiumAbilityButtonProps) {
   const [isHovering, setIsHovering] = useState(false)
+  const [showPreviewOnMobile, setShowPreviewOnMobile] = useState(false)
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault()
+    if (!disabled && ability) {
+      setShowPreviewOnMobile(!showPreviewOnMobile)
+    }
+  }
   if (isLocked) {
     return (
       <motion.button
@@ -95,6 +103,7 @@ export default function PremiumAbilityButton({
       className="relative"
       onMouseEnter={() => !disabled && setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onTouchEnd={handleTouchEnd}
     >
       <motion.button
         whileHover={{ scale: !disabled && !isSelected && canUse ? 1.03 : 1 }}
@@ -222,9 +231,9 @@ export default function PremiumAbilityButton({
       )}
       </motion.button>
 
-      {/* Ability preview on hover */}
+      {/* Ability preview on hover (desktop) or tap (mobile) */}
       <AnimatePresence>
-        {isHovering && ability && (
+        {(isHovering || showPreviewOnMobile) && ability && (
           <AbilityPreview
             ability={ability}
             cooldown={cooldown}
