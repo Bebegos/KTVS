@@ -1,9 +1,8 @@
 import { motion } from 'framer-motion'
 import { AbilityDefinition } from '../lib/services/abilityDefinitionService'
-import AbilityIcon from './AbilityIcon'
-import AbilityTypeIcon from './AbilityTypeIcon'
-import EffectIcon from './EffectIcon'
+import AbilityButtonInsetContent from './AbilityButtonInsetContent'
 import { abilityButtonAssets, ultimateButtonAssets } from '../lib/gameAssets'
+import { EffectKind } from '../game/types'
 
 interface AbilitySlotDisplayProps {
   ability: AbilityDefinition | null
@@ -16,11 +15,8 @@ interface AbilitySlotDisplayProps {
 /**
  * Display-only ability slot rendered on the premium PNG button frame.
  *
- * Content is positioned with percentage insets onto the frame's painted zones
- * (icon square, name belt, two value boxes) and uses container-query (cqw)
- * units so it scales with the button at any size. The ability name is forced
- * to a single line, auto-shrinking its font with length and ellipsis-truncating
- * if still too long.
+ * Content placement is delegated to the shared AbilityButtonInsetContent so the
+ * Dino Detail slots and the in-battle ability buttons stay pixel-aligned.
  */
 export default function AbilitySlotDisplay({
   ability,
@@ -52,10 +48,7 @@ export default function AbilitySlotDisplay({
   const baseValue = Math.floor((ability.damageMultiplier || 1) * atk)
   const isPower = ability.kind === 'buff' || ability.kind === 'debuff'
   const displayValue = isPower ? ability.damageMultiplier || 1 : baseValue
-  const firstEffect = ability.effects?.[0]
-
-  // Single-line name: shrink font as the name gets longer (cqw), ellipsis if needed.
-  const nameSize = Math.max(5, Math.min(9.5, 120 / Math.max(1, ability.name.length)))
+  const firstEffect = ability.effects?.[0] as EffectKind | undefined
 
   return (
     <motion.button
@@ -65,34 +58,13 @@ export default function AbilitySlotDisplay({
       className="relative aspect-square bg-transparent border-0 p-0 cursor-pointer"
       style={rootStyle}
     >
-      {/* Ability icon — seated in the painted square indent (slightly inset + lowered) */}
-      <div className="absolute left-[36%] top-[25%] w-[28%] h-[20%]">
-        <AbilityIcon iconId={ability.icon} fill />
-      </div>
-
-      {/* Ability name — single line, centered on the belt, auto-shrink + ellipsis */}
-      <div className="absolute left-[17.5%] right-[17.5%] top-[57%] -translate-y-1/2 text-center">
-        <span
-          className="block truncate text-amber-950 font-black leading-none"
-          style={{ fontSize: `${nameSize}cqw` }}
-        >
-          {ability.name}
-        </span>
-      </div>
-
-      {/* Left value box — direct damage / heal / power, centered on the painted indent */}
-      <div className="absolute left-[37.5%] top-[63%] w-[11%] h-[14%] flex items-center justify-center">
-        <span className="text-amber-950 font-black leading-none text-[9cqw]">{displayValue}</span>
-      </div>
-
-      {/* Right value box — first effect icon (or ability-type icon as fallback) */}
-      <div className="absolute left-[51.5%] top-[63%] w-[11%] h-[14%] flex items-center justify-center overflow-hidden">
-        {firstEffect ? (
-          <EffectIcon effect={firstEffect} fill />
-        ) : (
-          <AbilityTypeIcon kind={ability.kind} fill />
-        )}
-      </div>
+      <AbilityButtonInsetContent
+        icon={ability.icon}
+        name={ability.name}
+        kind={ability.kind}
+        displayValue={displayValue}
+        firstEffect={firstEffect}
+      />
     </motion.button>
   )
 }

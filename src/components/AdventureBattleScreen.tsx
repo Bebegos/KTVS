@@ -489,6 +489,7 @@ export default function AdventureBattleScreen({
                       key={idx}
                       ability={ability || null}
                       index={idx}
+                      atk={battleState.player.atk}
                       isSelected={isSelected}
                       isLocked={isLocked}
                       canUse={canUse}
@@ -503,22 +504,25 @@ export default function AdventureBattleScreen({
                 })}
               </div>
 
-              {/* Ultimate Slot */}
-              <div className="col-span-2 sm:col-span-3">
-                <PremiumAbilityButton
-                  ability={battleState.player.abilities[5] || null}
-                  index={5}
-                  isUltimate={true}
-                  isSelected={selectedAbility === 5}
-                  isLocked={slotService.isSlotLocked(playerDino, 5)}
-                  canUse={battleEngine?.canUseAbility('player', 5) || false}
-                  cooldown={battleState.player.cooldowns[5] || 0}
-                  maxCooldown={battleState.player.abilities[5]?.maxCd || 0}
-                  disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
-                  onClick={() => selectAbility(5)}
-                  onInfo={() => openAbilityInfo(battleState.player.abilityIds[5], 5)}
-                  lockedLevel={slotService.isSlotLocked(playerDino, 5) ? slotService.getSlotRequiredLevel(5) : undefined}
-                />
+              {/* Ultimate Slot — centered square, matching the Dino Detail layout */}
+              <div className="flex justify-center pt-1">
+                <div className="w-1/3 sm:w-1/4">
+                  <PremiumAbilityButton
+                    ability={battleState.player.abilities[5] || null}
+                    index={5}
+                    atk={battleState.player.atk}
+                    isUltimate={true}
+                    isSelected={selectedAbility === 5}
+                    isLocked={slotService.isSlotLocked(playerDino, 5)}
+                    canUse={battleEngine?.canUseAbility('player', 5) || false}
+                    cooldown={battleState.player.cooldowns[5] || 0}
+                    maxCooldown={battleState.player.abilities[5]?.maxCd || 0}
+                    disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
+                    onClick={() => selectAbility(5)}
+                    onInfo={() => openAbilityInfo(battleState.player.abilityIds[5], 5)}
+                    lockedLevel={slotService.isSlotLocked(playerDino, 5) ? slotService.getSlotRequiredLevel(5) : undefined}
+                  />
+                </div>
               </div>
             </div>
           </div>

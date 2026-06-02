@@ -605,6 +605,8 @@ export default function DuelloBattleScreen({
                     key={idx}
                     ability={ability}
                     index={idx}
+                    atk={playerDino.atk}
+                    isUltimate={idx === 5}
                     isSelected={isSelected}
                     isLocked={false}
                     canUse={canUse}
