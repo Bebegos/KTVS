@@ -1,23 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Dino, BattleVisualEffects } from '../game/types'
+import { Dino, BattleVisualEffects, ActiveEffect } from '../game/types'
 import { BattleEngine } from '../lib/battleEngine'
-import { getEffectNameTR } from '../lib/effect-translations'
 import { supabase, addXpToDino, recordDuelloMatch, abandonDuelloSession } from '../lib/supabase'
-import { slotService, battleVisualService } from '../lib/services'
-import AbilityIcon from './AbilityIcon'
-import BattleEffectVisuals from './BattleEffectVisuals'
-import EffectsDisplay from './EffectsDisplay'
-import BattleStatsCard from './BattleStatsCard'
-import HealthBar from './HealthBar'
-import PremiumAbilityButton from './PremiumAbilityButton'
+import { battleVisualService } from '../lib/services'
 import PremiumButton from './PremiumButton'
+import EffectInfoModal from './EffectInfoModal'
+import BattleArena, { BattleArenaSlot } from './battle/BattleArena'
 import { modalAssets } from '../lib/gameAssets'
-import BattleEffectOverlay from './battle-effects/BattleEffectOverlay'
-import FloatingDamageNumber from './battle-effects/FloatingDamageNumber'
-import BattleDinoHUD from './battle-effects/BattleDinoHUD'
-import TurnIndicator from './battle-effects/TurnIndicator'
-import EnhancedBattleLog from './battle-effects/EnhancedBattleLog'
 
 interface DuelloBattleScreenProps {
   playerDino: Dino
@@ -52,7 +42,14 @@ export default function DuelloBattleScreen({
   const [matchRecordingError, setMatchRecordingError] = useState<string | null>(null)
   const [playerSelectedAbility, setPlayerSelectedAbility] = useState<number | null>(null)
   const [opponentSelectedAbility, setOpponentSelectedAbility] = useState<number | null>(null)
+  const [effectInfoOpen, setEffectInfoOpen] = useState(false)
+  const [selectedEffectInfo, setSelectedEffectInfo] = useState<ActiveEffect | null>(null)
   const subscriptionRef = useRef<any>(null)
+
+  const openEffectInfo = (effect: ActiveEffect) => {
+    setSelectedEffectInfo(effect)
+    setEffectInfoOpen(true)
+  }
 
   // New immersive battle effect system
   const [activeEffectOverlay, setActiveEffectOverlay] = useState(false)
@@ -438,227 +435,69 @@ export default function DuelloBattleScreen({
     )
   }
 
-  return (
-    <div className="w-full h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden relative">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-      </div>
+  const slots: BattleArenaSlot[] = battleState.player.abilities.map((ability, idx) => {
+    const canUse = engine.canUseAbility('player', idx)
+    return {
+      ability,
+      index: idx,
+      isUltimate: idx === 5,
+      isSelected: playerSelectedAbility === idx,
+      isLocked: false,
+      canUse,
+      cooldown: battleState.player.cooldowns[idx] || 0,
+      maxCooldown: ability.maxCd || 0,
+      disabled: playerSelectedAbility !== null || !canUse || roundInProgress,
+    }
+  })
 
-      {/* IMMERSIVE EFFECTS (Absolute positioned) */}
+  const statusText =
+    playerSelectedAbility !== null && opponentSelectedAbility === null
+      ? 'Rakip beklemede...'
+      : playerSelectedAbility === null && opponentSelectedAbility === null
+      ? 'Yetenek seç'
+      : 'Savaş başlamak üzere...'
+
+  return (
+    <>
+      <BattleArena
+        player={{
+          name: playerDino.name,
+          level: playerDino.level,
+          currentHp: battleState.player.currentHp,
+          maxHp: battleState.player.dino.maxHp,
+          effects: battleState.player.effects,
+        }}
+        opponent={{
+          name: opponentDino.name,
+          level: opponentDino.level,
+          currentHp: battleState.opponent.currentHp,
+          maxHp: battleState.opponent.dino.maxHp,
+          effects: battleState.opponent.effects,
+        }}
+        playerAtk={playerDino.atk}
+        round={battleState.round}
+        battleLog={battleState.battleLog}
+        slots={slots}
+        onSelectAbility={selectAbility}
+        onEffectClick={openEffectInfo}
+        statusText={statusText}
+        onAbandon={() => setShowAbandonModal(true)}
+        activeEffectOverlay={activeEffectOverlay}
+        currentVisualEffects={currentVisualEffects}
+        onEffectOverlayComplete={() => setActiveEffectOverlay(false)}
+        floatingDamages={floatingDamages}
+      />
+
       <AnimatePresence>
-        {activeEffectOverlay && currentVisualEffects && (
-          <BattleEffectOverlay
-            isActive={activeEffectOverlay}
-            visualEffects={currentVisualEffects}
-            onComplete={() => setActiveEffectOverlay(false)}
+        {effectInfoOpen && selectedEffectInfo && (
+          <EffectInfoModal
+            effect={selectedEffectInfo}
+            battleCharacterMaxHp={playerDino.maxHp}
+            isOpen={effectInfoOpen}
+            onClose={() => setEffectInfoOpen(false)}
           />
         )}
       </AnimatePresence>
-
-      <AnimatePresence>
-        {floatingDamages.map((damage) => (
-          <FloatingDamageNumber
-            key={damage.id}
-            damage={damage.damage}
-            isCritical={damage.isCritical}
-            isHealing={damage.isHealing}
-            x={damage.x}
-            y={damage.y}
-          />
-        ))}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        <TurnIndicator round={battleState.round} isPlayerTurn={battleState.round % 2 === 1} />
-      </AnimatePresence>
-
-      {/* HEADER - Abandon button (Desktop only) */}
-      <div className="hidden lg:flex px-3 pt-3 justify-end z-10">
-        <button
-          onClick={() => setShowAbandonModal(true)}
-          className="hs-btn hs-btn-red hs-btn-sm"
-        >
-          🚪 Terk Et
-        </button>
-      </div>
-
-      {/* DESKTOP: 3-COLUMN LAYOUT */}
-      <div className="hidden lg:relative lg:flex-1 lg:flex lg:flex-row lg:gap-3 lg:p-3 lg:overflow-hidden">
-        {/* Player side */}
-        <div className="w-1/3 flex flex-col gap-2">
-          <div className="hs-battle-frame hs-battle-frame-player">
-            <div className="glass-dark neon-border-cyan rounded-lg p-3">
-              <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
-              <BattleDinoHUD
-                dinoName={playerDino.name}
-                currentHp={battleState.player.currentHp}
-                maxHp={battleState.player.dino.maxHp}
-                effects={battleState.player.effects}
-                isPlayer={true}
-              />
-            </div>
-          </div>
-          <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
-        </div>
-
-        {/* Center arena */}
-        <div className="w-1/3 flex flex-col items-center justify-center">
-          <div className="text-center space-y-4">
-            <div className="text-6xl opacity-20">⚔️</div>
-            <p className="text-neon-cyan/40 text-sm font-bold uppercase tracking-wider">Düello Alanı</p>
-          </div>
-        </div>
-
-        {/* Opponent side */}
-        <div className="w-1/3 flex flex-col gap-2">
-          <div className="hs-battle-frame hs-battle-frame-opponent">
-            <div className="glass-dark neon-border-purple rounded-lg p-3">
-              <p className="text-xs font-bold text-neon-purple mb-1">RAKİP</p>
-              <BattleDinoHUD
-                dinoName={opponentDino.name}
-                currentHp={battleState.opponent.currentHp}
-                maxHp={battleState.opponent.dino.maxHp}
-                effects={battleState.opponent.effects}
-                isPlayer={false}
-              />
-            </div>
-          </div>
-          <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
-        </div>
-      </div>
-
-      {/* MOBILE: VERTICAL STACKED LAYOUT (lg:hidden) */}
-      <div className="flex flex-col flex-1 gap-2 p-2 overflow-y-auto lg:hidden">
-        {/* Abandon button (Mobile) */}
-        <button
-          onClick={() => setShowAbandonModal(true)}
-          className="hs-btn hs-btn-red hs-btn-sm w-full"
-        >
-          🚪 Terk Et
-        </button>
-
-        {/* PLAYER */}
-        <div className="flex-shrink-0">
-          <div className="hs-battle-frame hs-battle-frame-player">
-            <div className="glass-dark neon-border-cyan rounded-lg p-2">
-              <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
-              <BattleDinoHUD
-                dinoName={playerDino.name}
-                currentHp={battleState.player.currentHp}
-                maxHp={battleState.player.dino.maxHp}
-                effects={battleState.player.effects}
-                isPlayer={true}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* PLAYER STATS */}
-        <div className="flex-shrink-0">
-          <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
-        </div>
-
-        {/* OPPONENT */}
-        <div className="flex-shrink-0">
-          <div className="hs-battle-frame hs-battle-frame-opponent">
-            <div className="glass-dark neon-border-purple rounded-lg p-2">
-              <p className="text-xs font-bold text-neon-purple mb-1">RAKİP</p>
-              <BattleDinoHUD
-                dinoName={opponentDino.name}
-                currentHp={battleState.opponent.currentHp}
-                maxHp={battleState.opponent.dino.maxHp}
-                effects={battleState.opponent.effects}
-                isPlayer={false}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* OPPONENT STATS */}
-        <div className="flex-shrink-0">
-          <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
-        </div>
-
-        {/* BATTLE LOG */}
-        <div className="flex-shrink-0 h-24">
-          <EnhancedBattleLog entries={battleState.battleLog} maxEntries={4} />
-        </div>
-      </div>
-
-      {/* BOTTOM CONTROL PANEL */}
-      <div className="flex-shrink-0 flex flex-col lg:flex-row gap-3 p-3 bg-gradient-to-t from-slate-900/90 to-transparent border-t border-neon-cyan/10">
-
-        {/* ABILITY SELECTION */}
-        <div className="w-full lg:w-2/5">
-          <div className="space-y-2">
-            <p className="text-xs font-bold text-neon-cyan uppercase tracking-widest">⚔️ Yetenek Seç (1/Tur)</p>
-            <div className="grid grid-cols-3 gap-1.5">
-              {battleState.player.abilities.map((ability, idx) => {
-                const canUse = engine.canUseAbility('player', idx)
-                const isSelected = playerSelectedAbility === idx
-                const cooldown = battleState.player.cooldowns[idx] || 0
-
-                return (
-                  <PremiumAbilityButton
-                    key={idx}
-                    ability={ability}
-                    index={idx}
-                    atk={playerDino.atk}
-                    isUltimate={idx === 5}
-                    isSelected={isSelected}
-                    isLocked={false}
-                    canUse={canUse}
-                    cooldown={cooldown}
-                    maxCooldown={ability.maxCd || 0}
-                    disabled={playerSelectedAbility !== null || !canUse || roundInProgress}
-                    onClick={() => selectAbility(idx)}
-                  />
-                )
-              })}
-            </div>
-            <div className="glass-dark border border-neon-cyan/30 rounded-lg p-2 text-center text-xs h-8 flex items-center justify-center font-bold text-neon-cyan">
-              {playerSelectedAbility !== null && opponentSelectedAbility === null
-                ? 'Rakip beklemede...'
-                : playerSelectedAbility === null && opponentSelectedAbility === null
-                ? 'Yetenek seç'
-                : 'Savaş başlamak üzere...'}
-            </div>
-          </div>
-        </div>
-
-        {/* BATTLE LOG (Desktop only) */}
-        <div className="hidden lg:block lg:w-3/5 lg:h-32">
-          <EnhancedBattleLog entries={battleState.battleLog} maxEntries={6} />
-        </div>
-
-        {/* DEBUG TOGGLE (Desktop only) */}
-        <div className="hidden lg:flex lg:w-3/5 flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-neon-purple uppercase">
-              {showDebug ? '🔧 DEBUG' : '📋 LOG'}
-            </p>
-            <button
-              onClick={() => setShowDebug(!showDebug)}
-              className="hs-btn hs-btn-xs"
-            >
-              {showDebug ? '📋' : '🔧'}
-            </button>
-          </div>
-          {showDebug && (
-            <div className="glass-dark border border-neon-purple/30 rounded-lg p-2 flex-1 overflow-y-auto max-h-24">
-              <div className="space-y-1 text-xs">
-                {debugLogs.slice(0, 8).map((log, idx) => (
-                  <p key={idx} className="font-bold text-neon-cyan/80 break-words">
-                    {log}
-                  </p>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
