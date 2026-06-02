@@ -44,22 +44,22 @@ export default function StatCardPremium({ stat, dino, value }: StatCardPremiumPr
         className="w-full text-left"
       >
         <PremiumCard variant="panel">
-          <div className="flex items-center gap-3 px-3 py-2.5 justify-center">
+          <div className="flex items-center gap-3 px-6 py-2.5">
             <span
-              className="flex items-center justify-center w-11 h-11 rounded-full flex-shrink-0"
+              className="flex items-center justify-center w-14 h-14 rounded-full flex-shrink-0"
               style={{ background: `${color}1a`, border: `1.5px solid ${color}55` }}
             >
-              <StatIcon stat={stat} size="md" />
+              <StatIcon stat={stat} size="lg" />
             </span>
 
-            <span className="font-black text-amber-950 text-sm">{def.labelTr}</span>
+            <span className="font-black text-amber-950 text-base flex-1">{def.labelTr}</span>
 
-            <div className="text-right leading-none ml-auto">
-              <span className="font-black text-lg" style={{ color }}>
+            <div className="text-right leading-none">
+              <span className="font-black text-xl" style={{ color }}>
                 {value}
               </span>
               {isStamina && derivedHp != null && (
-                <span className="block text-[10px] font-bold text-red-700/80 mt-0.5">
+                <span className="block text-[11px] font-bold text-red-700/80 mt-0.5">
                   ❤ {derivedHp} HP
                 </span>
               )}

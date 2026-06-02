@@ -65,13 +65,13 @@ export default function AbilitySlotDisplay({
       className="relative aspect-square bg-transparent border-0 p-0 cursor-pointer"
       style={rootStyle}
     >
-      {/* Ability icon — fills the painted square inset */}
-      <div className="absolute left-[32%] top-[20%] w-[36%] h-[26%]">
+      {/* Ability icon — seated in the painted square indent (slightly inset + lowered) */}
+      <div className="absolute left-[36%] top-[25%] w-[28%] h-[20%]">
         <AbilityIcon iconId={ability.icon} fill />
       </div>
 
       {/* Ability name — single line, centered on the belt, auto-shrink + ellipsis */}
-      <div className="absolute left-[14%] right-[14%] top-[57%] -translate-y-1/2 text-center">
+      <div className="absolute left-[17.5%] right-[17.5%] top-[57%] -translate-y-1/2 text-center">
         <span
           className="block truncate text-amber-950 font-black leading-none"
           style={{ fontSize: `${nameSize}cqw` }}
@@ -80,13 +80,13 @@ export default function AbilitySlotDisplay({
         </span>
       </div>
 
-      {/* Left value box — the direct damage / heal / power value */}
-      <div className="absolute left-[30%] top-[69%] w-[19%] h-[15%] flex items-center justify-center">
-        <span className="text-amber-950 font-black leading-none text-[11cqw]">{displayValue}</span>
+      {/* Left value box — direct damage / heal / power, centered on the painted indent */}
+      <div className="absolute left-[37.5%] top-[63%] w-[11%] h-[14%] flex items-center justify-center">
+        <span className="text-amber-950 font-black leading-none text-[9cqw]">{displayValue}</span>
       </div>
 
       {/* Right value box — first effect icon (or ability-type icon as fallback) */}
-      <div className="absolute left-[51%] top-[69%] w-[19%] h-[15%] flex items-center justify-center overflow-hidden">
+      <div className="absolute left-[51.5%] top-[63%] w-[11%] h-[14%] flex items-center justify-center overflow-hidden">
         {firstEffect ? (
           <EffectIcon effect={firstEffect} fill />
         ) : (
