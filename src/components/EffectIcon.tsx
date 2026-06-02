@@ -8,6 +8,8 @@ interface EffectIconProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   /** Use the larger 64px source art (recommended for md and up). */
   large?: boolean
+  /** When true the icon fills its parent box (use for scalable inset placement). */
+  fill?: boolean
   className?: string
 }
 
@@ -35,16 +37,18 @@ export default function EffectIcon({
   effect,
   size = 'sm',
   large,
+  fill = false,
   className = '',
 }: EffectIconProps) {
   const [failed, setFailed] = useState(false)
-  const useLarge = large ?? (size === 'md' || size === 'lg' || size === 'xl')
+  const useLarge = large ?? (fill || size === 'md' || size === 'lg' || size === 'xl')
   const url = getEffectIconUrl(effect, useLarge ? 'lg' : 'sm')
+  const boxClass = fill ? 'w-full h-full' : sizeMap[size]
 
   if (!url || failed) {
     return (
       <span
-        className={`${sizeMap[size]} ${emojiTextSize[size]} flex items-center justify-center flex-shrink-0 ${className}`}
+        className={`${boxClass} ${fill ? 'text-base sm:text-lg' : emojiTextSize[size]} flex items-center justify-center flex-shrink-0 ${className}`}
       >
         {getEffectEmoji(effect)}
       </span>
@@ -56,7 +60,7 @@ export default function EffectIcon({
       src={url}
       alt={effect}
       onError={() => setFailed(true)}
-      className={`${sizeMap[size]} object-contain flex-shrink-0 ${className}`}
+      className={`${boxClass} object-contain flex-shrink-0 ${className}`}
       draggable={false}
     />
   )

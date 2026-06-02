@@ -139,18 +139,18 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
               </motion.div>
             )}
 
-            {/* Stats Grid */}
+            {/* Stats Grid — taller card, each stat in its own personal card */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <PremiumCard variant="frame">
-                <div className="space-y-3">
+                <div className="space-y-4 py-2">
                   <p className="text-xs font-black text-amber-900 uppercase tracking-wide">
                     İstatistikler
                   </p>
-                  <div className="space-y-2">
-                    <StatDisplay stat="sta" dino={dino} value={dino.sta || 0} size="md" showBonus={false} showDetailButton />
-                    <StatDisplay stat="atk" dino={dino} value={dino.atk} size="md" showDetailButton />
-                    <StatDisplay stat="def" dino={dino} value={dino.def} size="md" showDetailButton />
-                    <StatDisplay stat="spd" dino={dino} value={dino.spd} size="md" showDetailButton />
+                  <div className="space-y-3">
+                    <StatDisplay stat="sta" dino={dino} value={dino.sta || 0} size="lg" showBonus={false} showDetailButton />
+                    <StatDisplay stat="atk" dino={dino} value={dino.atk} size="lg" showDetailButton />
+                    <StatDisplay stat="def" dino={dino} value={dino.def} size="lg" showDetailButton />
+                    <StatDisplay stat="spd" dino={dino} value={dino.spd} size="lg" showDetailButton />
                   </div>
                 </div>
               </PremiumCard>
@@ -180,12 +180,23 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                             backgroundRepeat: 'no-repeat',
                           }}
                         >
-                          <div className="absolute inset-y-[20%] left-[3%] right-[3%] rounded-md overflow-hidden">
+                          {/* Fill track aligned to the painted dark channel */}
+                          <div className="absolute inset-y-[26%] left-[4.5%] right-[4.5%] rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 transition-all duration-500"
-                              style={{ width: `${xpPercent}%` }}
+                              className="relative h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${xpPercent}%`,
+                                minWidth: xpPercent > 0 ? '6%' : '0%',
+                                background:
+                                  'linear-gradient(180deg, #fde68a 0%, #fbbf24 45%, #d97706 100%)',
+                                boxShadow:
+                                  '0 0 6px rgba(251,191,36,0.7), inset 0 1px 1px rgba(255,255,255,0.6)',
+                              }}
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+                              {/* Top glossy highlight */}
+                              <div className="absolute inset-x-0 top-0 h-1/2 rounded-full bg-white/30" />
+                              {/* Moving shimmer */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse" />
                             </div>
                           </div>
                         </div>
@@ -225,8 +236,8 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                     YETENEKLER ({filledAbilities}/6)
                   </h2>
 
-                  {/* Slot Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {/* Slot Grid — compact (≈half size); content scales via container queries */}
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
                     {[0, 1, 2, 3, 4].map((slotIdx) => {
                       const abilityId = dino.abilityIds?.[slotIdx]
                       const ability = abilityId ? abilityDefinitionService.getAbility(abilityId) : null
@@ -239,21 +250,21 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                         />
                       )
                     })}
+                  </div>
 
-                    {/* Ultimate slot spans full width */}
-                    <div className="col-span-2 sm:col-span-3">
+                  {/* Ultimate slot — centered, same compact cell size */}
+                  <div className="flex justify-center pt-1">
+                    <div className="w-1/3 sm:w-1/5">
                       {(() => {
                         const abilityId = dino.abilityIds?.[5]
                         const ability = abilityId ? abilityDefinitionService.getAbility(abilityId) : null
                         return (
-                          <div className="max-w-[10rem] mx-auto">
-                            <AbilitySlotDisplay
-                              ability={ability}
-                              slotIndex={5}
-                              atk={dino.atk}
-                              isUltimate
-                            />
-                          </div>
+                          <AbilitySlotDisplay
+                            ability={ability}
+                            slotIndex={5}
+                            atk={dino.atk}
+                            isUltimate
+                          />
                         )
                       })()}
                     </div>

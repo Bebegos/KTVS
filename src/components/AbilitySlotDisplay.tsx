@@ -19,9 +19,11 @@ interface AbilitySlotDisplayProps {
 
 /**
  * Display-only ability slot rendered on the premium PNG button frame.
- * The frame art is square (256x256) and shown with a locked 1:1 aspect ratio
- * so it is never distorted. Filled slots use the base frame, empty slots use
- * the empty-slot art (ability) or disabled frame (ultimate).
+ *
+ * All content is positioned with PERCENTAGE insets that line up with the
+ * painted regions of the frame art (icon square, name "belt", and the two
+ * value boxes at the bottom), and font sizes use container-query units (cqw)
+ * so everything scales perfectly with the button at any rendered size.
  */
 export default function AbilitySlotDisplay({
   ability,
@@ -38,25 +40,24 @@ export default function AbilitySlotDisplay({
     ? ultimateButtonAssets.disabled
     : abilityButtonAssets.empty
 
-  const frameStyle = {
+  const rootStyle = {
     backgroundImage: `url('${frame}')`,
     backgroundSize: '100% 100%',
     backgroundRepeat: 'no-repeat',
+    containerType: 'inline-size' as const,
   }
 
-  // Empty slot
+  // ---- Empty slot ----
   if (!ability) {
     return (
-      <div className="relative aspect-square" style={frameStyle}>
-        <div className="absolute inset-[16%] flex flex-col items-center justify-center text-center">
-          {isUltimate ? (
-            <img src={badgeAssets.ultimate} alt="ULT" className="h-4 sm:h-5 object-contain opacity-50" />
-          ) : (
-            <span className="text-2xl sm:text-3xl text-amber-900/40 font-black">+</span>
-          )}
-          <p className="text-[9px] sm:text-[10px] font-bold text-amber-900/40 mt-1">
-            {isUltimate ? 'Ultimate Slot' : `Slot ${slotIndex + 1}`}
-          </p>
+      <div className="relative aspect-square" style={rootStyle}>
+        {/* Slot label (sits high, on the parchment top) */}
+        <div className="absolute top-[11%] inset-x-0 text-center text-amber-900/55 font-black text-[8cqw]">
+          {isUltimate ? 'ULTIMATE' : `Slot ${slotIndex + 1}`}
+        </div>
+        {/* Big empty icon box */}
+        <div className="absolute left-[34%] top-[24%] w-[32%] h-[30%] flex items-center justify-center text-amber-900/30 font-black text-[26cqw]">
+          +
         </div>
       </div>
     )
@@ -65,6 +66,7 @@ export default function AbilitySlotDisplay({
   const baseValue = Math.floor((ability.damageMultiplier || 1) * atk)
   const isPower = ability.kind === 'buff' || ability.kind === 'debuff'
   const displayValue = isPower ? ability.damageMultiplier || 1 : baseValue
+  const firstEffect = ability.effects?.[0]
 
   return (
     <motion.button
@@ -72,43 +74,43 @@ export default function AbilitySlotDisplay({
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
       className="relative aspect-square bg-transparent border-0 p-0 cursor-pointer"
-      style={frameStyle}
+      style={rootStyle}
     >
-      {/* Content inset onto the parchment center */}
-      <div className="absolute inset-[14%] flex flex-col items-center justify-between">
-        {/* Top: slot label / ult badge */}
-        <div className="w-full flex items-center justify-center">
-          {isUltimate ? (
-            <img src={badgeAssets.ultimate} alt="ULT" className="h-3.5 sm:h-4 object-contain" />
-          ) : (
-            <span className="text-[9px] sm:text-[10px] font-black text-amber-950/60">
-              Slot {slotIndex + 1}
-            </span>
-          )}
-        </div>
+      {/* Slot label / ULT badge — sits high on the parchment */}
+      <div className="absolute top-[10%] inset-x-0 flex items-center justify-center">
+        {isUltimate ? (
+          <img src={badgeAssets.ultimate} alt="ULT" className="h-[9cqw] object-contain" />
+        ) : (
+          <span className="text-amber-900/55 font-black text-[8cqw] leading-none">
+            Slot {slotIndex + 1}
+          </span>
+        )}
+      </div>
 
-        {/* Middle: ability icon + name */}
-        <div className="flex flex-col items-center gap-0.5 min-w-0">
-          <AbilityIcon iconId={ability.icon} size={isUltimate ? 'lg' : 'md'} />
-          <p className="text-[8px] sm:text-[10px] font-black text-amber-950 text-center line-clamp-2 leading-tight">
-            {ability.name}
-          </p>
-        </div>
+      {/* Ability icon — fills the painted square inset (~3x previous size) */}
+      <div className="absolute left-[34%] top-[23%] w-[32%] h-[30%]">
+        <AbilityIcon iconId={ability.icon} fill />
+      </div>
 
-        {/* Bottom: type icon + value, effect icons */}
-        <div className="w-full flex flex-col items-center gap-0.5">
-          <div className="flex items-center gap-1">
-            <AbilityTypeIcon kind={ability.kind} size="xs" />
-            <span className="text-[10px] sm:text-xs font-black text-amber-950">{displayValue}</span>
-          </div>
-          {ability.effects && ability.effects.length > 0 && (
-            <div className="flex gap-0.5">
-              {ability.effects.slice(0, 3).map((effect, idx) => (
-                <EffectIcon key={idx} effect={effect} size="xs" />
-              ))}
-            </div>
-          )}
-        </div>
+      {/* Ability name — vertically centered on the middle "belt" inset, larger & lower */}
+      <div className="absolute left-[11%] right-[11%] top-[61%] -translate-y-1/2 text-center">
+        <span className="block text-amber-950 font-black text-[9.5cqw] leading-[1.05] line-clamp-2">
+          {ability.name}
+        </span>
+      </div>
+
+      {/* Left value box — the direct damage / heal / power value */}
+      <div className="absolute left-[33.5%] top-[71%] w-[15%] h-[15%] flex items-center justify-center">
+        <span className="text-amber-950 font-black text-[11cqw] leading-none">{displayValue}</span>
+      </div>
+
+      {/* Right value box — first effect icon (filled, ~3x previous size) */}
+      <div className="absolute left-[51.5%] top-[71%] w-[15%] h-[15%] flex items-center justify-center">
+        {firstEffect ? (
+          <EffectIcon effect={firstEffect} fill />
+        ) : (
+          <AbilityTypeIcon kind={ability.kind} fill />
+        )}
       </div>
     </motion.button>
   )
