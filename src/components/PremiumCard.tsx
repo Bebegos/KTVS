@@ -35,6 +35,7 @@ export default function PremiumCard({
     return (
       <div className={`relative ${className}`}>
         <div
+          className="h-full"
           style={{
             borderStyle: 'solid',
             borderWidth: '26px',
@@ -43,7 +44,7 @@ export default function PremiumCard({
             borderImageRepeat: 'stretch',
           }}
         >
-          <div className={`relative ${bodyClassName}`}>{children}</div>
+          <div className={`relative h-full ${bodyClassName}`}>{children}</div>
         </div>
         {glow && <GlowOverlay color={glow} />}
       </div>

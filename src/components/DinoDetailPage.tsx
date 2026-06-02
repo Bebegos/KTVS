@@ -31,6 +31,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
   const [showBonusAllocator, setShowBonusAllocator] = useState(false)
   const [showAbilityDiscovery, setShowAbilityDiscovery] = useState(false)
   const [effectModal, setEffectModal] = useState<EffectKind | null>(null)
+  const [detailsOpen, setDetailsOpen] = useState(false)
 
   const statPoints = dino.pendingRewards?.unspentStatPoints || 0
   const discoveryCount = discoveryService.getDiscoveries(dino).length
@@ -43,15 +44,62 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
 
   const filledAbilities = dino.abilityIds?.filter((id) => id).length || 0
 
+  // WoW-style segmented XP bar — reused inline on mobile and pinned to the
+  // bottom of the screen on desktop.
+  const renderXpBar = () => {
+    const maxXpForLevel = Math.floor(100 * Math.pow(dino.level, 1.5))
+    const xpPercent = Math.min(100, (dino.xp / maxXpForLevel) * 100)
+    return (
+      <div className="w-[90%] mx-auto space-y-2">
+        <div className="flex justify-between items-center">
+          <p className="flex items-center gap-1.5 text-xs font-black text-amber-900">
+            <img src={uiAssets.experience} alt="" className="w-5 h-5 object-contain" draggable={false} />
+            DENEYİM
+          </p>
+          <p className="text-xs font-black text-amber-900">
+            {dino.xp}/{maxXpForLevel}
+          </p>
+        </div>
+        {/* 10 healthy-fill pieces (each = 10%) */}
+        <div className="relative w-full h-6 bg-amber-950/40 rounded-sm border border-amber-900/30">
+          <div className="absolute inset-y-1 left-1 right-1 flex gap-1">
+            {Array.from({ length: 10 }).map((_, i) => {
+              const segFill = Math.max(0, Math.min(1, xpPercent / 10 - i))
+              return (
+                <div
+                  key={i}
+                  className="relative flex-1 overflow-hidden rounded-sm bg-amber-950/30 border border-amber-900/40"
+                >
+                  <div
+                    className="h-full transition-all duration-500"
+                    style={{
+                      width: `${segFill * 100}%`,
+                      backgroundImage: `url('${hpBarAssets.healthy}')`,
+                      backgroundSize: '1000% 100%',
+                      backgroundPosition: `${i * 11.1}% 0`,
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex-1 flex flex-col p-4 gap-6 overflow-y-auto relative bg-gradient-to-br from-stone-950 via-amber-950/20 to-stone-950">
+    <div className="flex-1 flex flex-col min-h-0 relative bg-gradient-to-br from-stone-950 via-amber-950/20 to-stone-950">
       {/* Ambient background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-96 h-96 bg-amber-500 opacity-5 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-amber-700 opacity-5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto space-y-4 lg:space-y-6">
+      {/* Scrollable content area (the pinned desktop XP bar lives outside this) */}
+      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto p-4">
+        <div className="w-full max-w-6xl mx-auto space-y-4 lg:space-y-6">
         {/* Back Button (premium PNG menu button) */}
         <PremiumButton onClick={onBack} className="w-32" contentClassName="text-sm">
           ← Geri
@@ -61,8 +109,8 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Hero Header Card */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-            <PremiumCard variant="frame">
-              <div className="text-center space-y-1 py-1">
+            <PremiumCard variant="frame" className="h-full">
+              <div className="h-full flex flex-col justify-center text-center space-y-1 py-2">
                 <h1 className="text-2xl sm:text-3xl font-black text-amber-950 drop-shadow-sm">
                   {dino.name}
                 </h1>
@@ -76,8 +124,8 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
           {/* Class & Spec */}
           {(dino.class || dino.spec) && (
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-              <PremiumCard variant="frame">
-                <div className="text-center space-y-3 py-1">
+              <PremiumCard variant="frame" className="h-full">
+                <div className="h-full flex flex-col justify-center text-center space-y-3 py-2">
                   <p className="text-xs font-black text-amber-900/80 uppercase tracking-wide">
                     Sınıf & Özelleştirme
                   </p>
@@ -224,12 +272,21 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                   </div>
                 </div>
 
-                {/* Detailed Ability List */}
+                {/* Detailed Ability List (collapsible) */}
                 {dino.abilityIds && dino.abilityIds.some((id) => id) && (
-                  <div className="mt-4 pt-4 border-t border-amber-900/20 space-y-3">
-                    <p className="text-xs font-black text-amber-900/80 uppercase tracking-wide">
-                      Yetenek Detayları
-                    </p>
+                  <div className="mt-4 pt-4 border-t border-amber-900/20">
+                    <button
+                      type="button"
+                      onClick={() => setDetailsOpen((o) => !o)}
+                      className="flex items-center justify-between w-full text-xs font-black text-amber-900/80 uppercase tracking-wide hover:text-amber-900 transition-colors"
+                      aria-expanded={detailsOpen}
+                    >
+                      <span>Yetenek Detayları</span>
+                      <span className={`text-sm transition-transform duration-200 ${detailsOpen ? 'rotate-180' : ''}`}>
+                        ▼
+                      </span>
+                    </button>
+                    <div className={`space-y-3 ${detailsOpen ? 'mt-3' : 'hidden'}`}>
                     {dino.abilityIds.map((abilityId, idx) => {
                       if (!abilityId) return null
                       const ability = abilityDefinitionService.getAbility(abilityId)
@@ -302,6 +359,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                         </div>
                       )
                     })}
+                    </div>
                   </div>
                 )}
               </div>
@@ -315,12 +373,12 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
             transition={{ delay: 0.15 }}
             className="w-full order-1 lg:order-2 lg:col-span-1"
           >
-            <PremiumCard variant="frame">
-              <div className="space-y-4 py-3">
+            <PremiumCard variant="frame" className="h-full">
+              <div className="h-full flex flex-col space-y-5 py-5">
                 <p className="text-xs font-black text-amber-900 uppercase tracking-wide">
                   İstatistikler
                 </p>
-                <div className="space-y-3">
+                <div className="flex-1 flex flex-col justify-between gap-4">
                   <StatCardPremium stat="sta" dino={dino} value={dino.sta || 0} />
                   <StatCardPremium stat="atk" dino={dino} value={dino.atk} />
                   <StatCardPremium stat="def" dino={dino} value={dino.def} />
@@ -330,60 +388,27 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
             </PremiumCard>
           </motion.div>
 
-          {/* Experience bar — full width row */}
+          {/* Experience bar — inline on mobile only (desktop pins it to the screen bottom) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="w-full order-2 lg:order-3 lg:col-span-3"
+            className="w-full order-2 lg:hidden"
           >
             <PremiumCard variant="panel">
-              <div className="p-4">
-                {(() => {
-                  const maxXpForLevel = Math.floor(100 * Math.pow(dino.level, 1.5))
-                  const xpPercent = Math.min(100, (dino.xp / maxXpForLevel) * 100)
-                  return (
-                    <div className="w-[90%] mx-auto space-y-2">
-                      <div className="flex justify-between items-center">
-                        <p className="flex items-center gap-1.5 text-xs font-black text-amber-900">
-                          <img src={uiAssets.experience} alt="" className="w-5 h-5 object-contain" draggable={false} />
-                          DENEYİM
-                        </p>
-                        <p className="text-xs font-black text-amber-900">
-                          {dino.xp}/{maxXpForLevel}
-                        </p>
-                      </div>
-                      {/* WoW-style segmented bar: 10 healthy-fill pieces (each = 10%) */}
-                      <div className="relative w-full h-6 bg-amber-950/40 rounded-sm border border-amber-900/30">
-                        <div className="absolute inset-y-1 left-1 right-1 flex gap-1">
-                          {Array.from({ length: 10 }).map((_, i) => {
-                            const segFill = Math.max(0, Math.min(1, xpPercent / 10 - i))
-                            return (
-                              <div
-                                key={i}
-                                className="relative flex-1 overflow-hidden rounded-sm bg-amber-950/30 border border-amber-900/40"
-                              >
-                                <div
-                                  className="h-full transition-all duration-500"
-                                  style={{
-                                    width: `${segFill * 100}%`,
-                                    backgroundImage: `url('${hpBarAssets.healthy}')`,
-                                    backgroundSize: '1000% 100%',
-                                    backgroundPosition: `${i * 11.1}% 0`,
-                                    backgroundRepeat: 'no-repeat',
-                                  }}
-                                />
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })()}
-              </div>
+              <div className="p-4">{renderXpBar()}</div>
             </PremiumCard>
           </motion.div>
+        </div>
+        </div>
+      </div>
+
+      {/* Desktop: experience bar pinned to the bottom of the screen (WoW-style) */}
+      <div className="hidden lg:block relative z-10 flex-shrink-0 border-t border-amber-900/40 bg-stone-950/70 backdrop-blur-sm px-4 py-2">
+        <div className="w-full max-w-6xl mx-auto">
+          <PremiumCard variant="panel">
+            <div className="py-2">{renderXpBar()}</div>
+          </PremiumCard>
         </div>
       </div>
 
