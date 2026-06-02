@@ -95,15 +95,23 @@ export default function BattleActionBar({
         <Ornament side="right" />
       </div>
 
-      {/* MOBILE — full width, ~2 rows of finger-sized buttons on plate tiles */}
-      <div className="grid lg:hidden grid-cols-3 gap-1.5 w-full px-2 pb-1">
-        {slots.map((slot) => (
-          <div key={slot.index} className="relative aspect-[320/256]" style={tileStyle}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-[80%] aspect-square min-h-[3rem]">
-                <SlotButton slot={slot} playerAtk={playerAtk} onSelectAbility={onSelectAbility} />
+      {/* MOBILE — full width, ~2 rows of interlocking plate tiles (like desktop) */}
+      <div className="flex flex-col items-center lg:hidden w-full">
+        {[slots.slice(0, 3), slots.slice(3, 6)].map((row, ri) => (
+          <div key={ri} className={`flex justify-center ${ri > 0 ? '-mt-2' : ''}`}>
+            {row.map((slot, ci) => (
+              <div
+                key={slot.index}
+                className={`relative flex-shrink-0 aspect-[320/256] h-24 sm:h-28 ${ci > 0 ? '-ml-3' : ''}`}
+                style={tileStyle}
+              >
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-[72%] aspect-square">
+                    <SlotButton slot={slot} playerAtk={playerAtk} onSelectAbility={onSelectAbility} />
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         ))}
       </div>

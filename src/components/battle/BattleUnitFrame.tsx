@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { ActiveEffect } from '../../game/types'
-import HealthBar from '../HealthBar'
 import EffectIcon from '../EffectIcon'
 import MedallionIcon from '../MedallionIcon'
 import { getEffectNameTR } from '../../lib/effect-translations'
@@ -13,24 +12,23 @@ interface BattleUnitFrameProps {
   currentHp: number
   maxHp: number
   effects: ActiveEffect[]
-  /** Spec medallion id for the portrait (preferred). */
+  /** Spec medallion id (small badge). */
   specId?: string
-  /** Class medallion id, used if no spec is available. */
+  /** Class medallion id (main portrait); falls back to a default class. */
   classId?: string
   onEffectClick: (effect: ActiveEffect) => void
 }
 
-/** Default class portrait when an enemy has neither spec nor class. */
+/** Default class portrait when a unit has no class of its own. */
 const DEFAULT_PORTRAIT_CLASS = 'big_carnivore'
 
 /**
- * WoW-style unit frame: the ornate PNG frame (portrait socket + recessed bar
- * channel) with the dino portrait seated in the socket and a Hearthstone health
- * bar in the channel, plus clickable status effects below.
+ * WoW-style unit frame: the ornate PNG frame with the class medallion seated in
+ * the portrait socket (a smaller spec medallion + level badge beneath it), a
+ * health bar in the recessed channel with the HP value overlaid, and a separate
+ * name card floating above the bar. Effects sit below, clickable.
  *
- * The player frame is used as-authored (socket left); the enemy frame is the
- * same art mirrored (socket right), so content insets flip accordingly. Falls
- * back to a plain CSS frame if the PNG is missing.
+ * Player art is used as-authored (socket left); the enemy reuses it mirrored.
  */
 export default function BattleUnitFrame({
   side,
@@ -47,53 +45,97 @@ export default function BattleUnitFrame({
   const [enemyArtFailed, setEnemyArtFailed] = useState(false)
   const isPlayer = side === 'player'
   const accent = isPlayer ? '#d4af37' : '#c08a4a'
-  // Enemy uses dedicated art if present, otherwise the player art mirrored.
   const useEnemyArt = side === 'enemy' && !enemyArtFailed
   const frameSrc = useEnemyArt ? battleAssets.unitFrameEnemy : battleAssets.unitFramePlayer
   const mirror = side === 'enemy' && enemyArtFailed
 
   // Painted-zone insets measured from the 640×220 frame art.
   const socket = isPlayer
-    ? { left: '3%', top: '15%', width: '22%', height: '68%' }
-    : { left: '75%', top: '15%', width: '22%', height: '68%' }
+    ? { left: '3%', top: '14%', width: '23%', height: '70%' }
+    : { left: '74%', top: '14%', width: '23%', height: '70%' }
   const bars = isPlayer
-    ? { left: '46%', right: '5%', top: '28%', height: '46%' }
-    : { right: '46%', left: '5%', top: '28%', height: '46%' }
+    ? { left: '46%', right: '7%', top: '40%', height: '27%' }
+    : { right: '46%', left: '7%', top: '40%', height: '27%' }
 
-  // Prefer the spec medallion, fall back to class, then a default class icon.
-  const medallionType: 'spec' | 'class' = specId ? 'spec' : 'class'
-  const medallionId = specId || classId || DEFAULT_PORTRAIT_CLASS
+  const pct = Math.max(0, Math.min(100, (currentHp / maxHp) * 100))
+  const shown = Math.max(0, Math.round(currentHp))
+  const badge = 'w-5 h-5 sm:w-7 sm:h-7'
 
   const portrait = (
-    <div className="absolute flex items-center justify-center" style={socket}>
-      <div className="relative w-full h-full rounded-full flex items-center justify-center p-[6%]">
-        <MedallionIcon id={medallionId} type={medallionType} fill />
+    <div className="absolute" style={socket}>
+      {/* Main class medallion fills the socket ring */}
+      <div className="absolute inset-[9%]">
+        <MedallionIcon id={classId || DEFAULT_PORTRAIT_CLASS} type="class" fill />
+      </div>
+      {/* Spec + level badges beneath the socket */}
+      <div className="absolute left-1/2 -translate-x-1/2 -bottom-[6%] flex items-center gap-1">
+        {specId && (
+          <div
+            className={`${badge} rounded-full overflow-hidden flex items-center justify-center bg-stone-900/80`}
+            style={{ border: `2px solid ${accent}` }}
+          >
+            <MedallionIcon id={specId} type="spec" fill />
+          </div>
+        )}
         {level != null && (
-          <span
-            className="absolute -bottom-0.5 right-0 min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-black text-amber-50 flex items-center justify-center leading-none"
-            style={{ background: '#2a1d0e', border: `1.5px solid ${accent}` }}
+          <div
+            className={`${badge} rounded-full flex items-center justify-center text-[10px] sm:text-xs font-black text-amber-100 bg-stone-900`}
+            style={{ border: `2px solid ${accent}` }}
           >
             {level}
-          </span>
+          </div>
         )}
       </div>
     </div>
   )
 
-  const barBlock = (
-    <div className="absolute flex flex-col justify-center gap-0.5" style={bars}>
-      <p
-        className={`font-black text-amber-100 text-[11px] sm:text-xs truncate leading-none ${isPlayer ? 'text-left' : 'text-right'}`}
-        style={{ textShadow: '0 1px 2px rgba(0,0,0,0.9)' }}
+  const healthBar = (
+    <div className="absolute" style={bars}>
+      <div
+        className="relative w-full h-full rounded-full overflow-hidden"
+        style={{
+          background: 'linear-gradient(180deg, #2a0c0c 0%, #471212 100%)',
+          boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.7)',
+          border: '1px solid rgba(0,0,0,0.5)',
+        }}
       >
-        {name}
-      </p>
-      <HealthBar current={currentHp} max={maxHp} variant={isPlayer ? 'player' : 'enemy'} size="sm" />
+        <div
+          className="h-full transition-[width] duration-500"
+          style={{
+            width: `${pct}%`,
+            background: isPlayer
+              ? 'linear-gradient(180deg, #ff6f5e 0%, #d63b2c 45%, #8b1a14 100%)'
+              : 'linear-gradient(180deg, #e0584a 0%, #b5392c 45%, #7a1d16 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-x-0 top-0 h-1/2 rounded-t-full pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.30), transparent)' }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span
+            className="text-[11px] sm:text-sm font-black text-white leading-none"
+            style={{ textShadow: '0 0 3px #000, 0 1px 2px #000, 0 0 6px rgba(0,0,0,0.9)' }}
+          >
+            {shown}
+          </span>
+        </div>
+      </div>
     </div>
   )
 
   return (
     <div className="w-60 sm:w-72 md:w-80 lg:w-[26rem] xl:w-[32rem] max-w-[46vw]">
+      {/* Name card floating above the bar (aligned over the channel side) */}
+      <div className={`flex ${isPlayer ? 'justify-end' : 'justify-start'} mb-1 px-[3%]`}>
+        <div
+          className="max-w-[62%] truncate px-3 py-0.5 rounded-md text-[11px] sm:text-xs font-black text-amber-950 text-center shadow"
+          style={{ background: 'linear-gradient(180deg, #efe0c0 0%, #cdb487 100%)', border: `1.5px solid ${accent}` }}
+        >
+          {name}
+        </div>
+      </div>
+
       {/* Frame + seated content */}
       <div className="relative w-full aspect-[640/220]">
         {!imgFailed ? (
@@ -116,7 +158,7 @@ export default function BattleUnitFrame({
           />
         )}
         {portrait}
-        {barBlock}
+        {healthBar}
       </div>
 
       {/* Effects row (clickable) */}
