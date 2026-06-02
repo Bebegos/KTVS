@@ -220,6 +220,7 @@ export default function StatusEffectVisualizer({ effects, maxHp }: StatusEffectV
 function getEffectColor(effectType: EffectKind): string {
   const colors: Record<EffectKind, string> = {
     poison: '#a855f7',
+    bleeding: '#dc2626',
     stun: '#fbbf24',
     stop: '#06b6d4',
     power: '#ef4444',
@@ -235,7 +236,7 @@ function getEffectColor(effectType: EffectKind): string {
 }
 
 function getEffectDurationType(effectType: EffectKind): string {
-  if (['poison', 'regen', 'defense_down'].includes(effectType)) {
+  if (['poison', 'bleeding', 'regen', 'defense_down'].includes(effectType)) {
     return 'Turn'
   }
   return 'Duration'
@@ -244,6 +245,7 @@ function getEffectDurationType(effectType: EffectKind): string {
 function getEffectDescription(effectType: EffectKind): string {
   const descriptions: Record<EffectKind, string> = {
     poison: 'Causes damage over time. Reduces HP each turn.',
+    bleeding: 'Bleeding wound. Deals damage each turn.',
     stun: 'Prevents action next turn. Cannot attack or use abilities.',
     stop: 'Freezes the character. Unable to move or act.',
     power: 'Increases attack power. Deals more damage with abilities.',
@@ -261,6 +263,7 @@ function getEffectDescription(effectType: EffectKind): string {
 function getEffectImpactDescription(effectType: EffectKind): string {
   const impacts: Record<EffectKind, string> = {
     poison: '1-2 damage per turn',
+    bleeding: '1-2 damage per turn',
     stun: 'Skips next action',
     stop: 'Complete inability to act',
     power: '+15-20% damage boost',

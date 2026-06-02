@@ -1,4 +1,4 @@
-export type EffectKind = 'poison' | 'stun' | 'stop' | 'power' | 'speed' | 'shield' | 'heal' | 'regen' | 'defense_down' | 'paralyze' | 'none'
+export type EffectKind = 'poison' | 'bleeding' | 'stun' | 'stop' | 'power' | 'speed' | 'shield' | 'heal' | 'regen' | 'defense_down' | 'paralyze' | 'none'
 export type AbilityType = 'attack' | 'buff' | 'debuff' | 'heal' | 'utility' | 'ultimate' | 'passive'
 
 // Battle effect visualization types
@@ -106,6 +106,16 @@ export const DEFAULT_BATTLE_VISUALS: Record<EffectKind | 'attack', BattleVisualE
     screenShake: { intensity: 0.2, duration: 200 },
     animationDuration: 2000,
     soundEffect: 'poison_cloud',
+  },
+  'bleeding': {
+    borderColor: '#dc2626',
+    borderGlow: true,
+    centerAnimation: 'generic_impact',
+    particleType: 'blood_splatter',
+    particleCount: 16,
+    screenShake: { intensity: 0.2, duration: 200 },
+    animationDuration: 1600,
+    soundEffect: 'slash_attack',
   },
   'stun': {
     borderColor: '#fbbf24',
