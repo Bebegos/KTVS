@@ -185,7 +185,7 @@ export default function StatBonusAllocator({
                         {def.descriptionTr}
                         {statKey === 'sta' && (
                           <span className="block mt-1 font-black" style={{ color: accent.sta }}>
-                            1 Dayanıklılık ≈ {Math.round((dino.staminaToHpMultiplier || 1) * 10)} HP
+                            1 Dayanıklılık ≈ {(dino.staminaToHpMultiplier || 1.5).toFixed(1)} HP
                           </span>
                         )}
                       </div>

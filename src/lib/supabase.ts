@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { calculateMaxHp, DEFAULT_HP_MULTIPLIER } from './stat-system'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -16,7 +17,8 @@ function mapDinoData(data: any): any {
 
   const transform = (item: any) => ({
     ...item,
-    maxHp: item.max_hp || item.sta || 30,
+    // HP is always derived centrally from stamina; the obsolete max_hp column is ignored.
+    maxHp: calculateMaxHp(item.sta ?? 0, item.stamina_to_hp_multiplier ?? DEFAULT_HP_MULTIPLIER),
     sta: item.sta,
     abilityIds: item.ability_ids || [],
     staminaToHpMultiplier: item.stamina_to_hp_multiplier,

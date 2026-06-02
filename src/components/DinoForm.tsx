@@ -35,7 +35,7 @@ export default function DinoForm({ onBack, onRefresh }: DinoFormProps) {
         name: form.name,
         element: form.element,
         passive: form.passive,
-        max_hp: form.maxHp,
+        sta: form.maxHp, // HP is derived from stamina; seed stamina from the entered HP value
         atk: form.atk,
         def: form.def,
         spd: form.spd,

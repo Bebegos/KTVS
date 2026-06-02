@@ -1,4 +1,4 @@
-import { StatKey, STAT_DEFINITIONS, calculateMaxHp } from '../lib/stat-system'
+import { StatKey, STAT_DEFINITIONS, getDinoMaxHp } from '../lib/stat-system'
 import { Dino } from '../game/types'
 import StatIcon from './StatIcon'
 import PremiumModal from './PremiumModal'
@@ -28,21 +28,18 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
   const currentValue = dino[stat] || 0
   const bonusValue = dino.pendingRewards?.unspentStatPoints || 0
 
-  let displayInfo: { label: string; value: string; source: string }[] = []
+  let displayInfo: { label: string; value: string; source?: string }[] = []
 
   if (stat === 'sta') {
-    const multiplier = dino.staminaToHpMultiplier || 1.5
-    const currentHp = calculateMaxHp(currentValue || 0, multiplier)
+    const currentHp = getDinoMaxHp(dino)
     displayInfo = [
       {
         label: 'Dayanıklılık Değeri',
         value: String(currentValue),
-        source: `Sınıf (${dino.class}) + Özelleştirme (${dino.spec})`,
       },
       {
         label: 'Maksimum HP',
         value: String(currentHp),
-        source: `${currentValue} × ${multiplier} (sınıftan gelen bonus)`,
       },
     ]
   } else {
@@ -50,7 +47,6 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
       {
         label: 'Mevcut Değer',
         value: String(currentValue),
-        source: 'Temel + Sınıf + Özelleştirme Bonusu',
       },
     ]
   }
@@ -90,7 +86,7 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
                 <p className="text-3xl font-black leading-none" style={{ color }}>
                   {info.value}
                 </p>
-                <p className="text-[11px] text-amber-800/70 pb-1">({info.source})</p>
+                {info.source && <p className="text-[11px] text-amber-800/70 pb-1">({info.source})</p>}
               </div>
             </div>
           ))}

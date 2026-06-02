@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { StatKey, STAT_DEFINITIONS, calculateMaxHp } from '../lib/stat-system'
+import { StatKey, STAT_DEFINITIONS, getDinoMaxHp } from '../lib/stat-system'
 import { Dino } from '../game/types'
 import StatDetailModal from './StatDetailModal'
 import StatIcon from './StatIcon'
@@ -31,11 +31,7 @@ export default function StatDisplay({
   // shown as a secondary line (previously the HP value replaced stamina, which
   // made stamina look like maxHp).
   const isStamina = stat === 'sta'
-  const derivedHp = isStamina && dino.staminaToHpMultiplier
-    ? calculateMaxHp(value, dino.staminaToHpMultiplier)
-    : isStamina
-      ? dino.maxHp
-      : null
+  const derivedHp = isStamina ? getDinoMaxHp(dino) : null
   const displayValue = value
 
   const sizeClasses = {

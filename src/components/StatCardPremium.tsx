@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { StatKey, STAT_DEFINITIONS, calculateMaxHp } from '../lib/stat-system'
+import { StatKey, STAT_DEFINITIONS, getDinoMaxHp } from '../lib/stat-system'
 import { Dino } from '../game/types'
 import StatIcon from './StatIcon'
 import StatDetailModal from './StatDetailModal'
@@ -30,11 +30,7 @@ export default function StatCardPremium({ stat, dino, value }: StatCardPremiumPr
   const color = accent[stat]
 
   const isStamina = stat === 'sta'
-  const derivedHp = isStamina
-    ? dino.staminaToHpMultiplier
-      ? calculateMaxHp(value, dino.staminaToHpMultiplier)
-      : dino.maxHp
-    : null
+  const derivedHp = isStamina ? getDinoMaxHp(dino) : null
 
   return (
     <>

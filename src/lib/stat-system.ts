@@ -84,11 +84,23 @@ export function getStatDef(key: StatKey): StatDefinition {
   return STAT_DEFINITIONS[key]
 }
 
+/** Default stamina→HP multiplier when a dino has none recorded. */
+export const DEFAULT_HP_MULTIPLIER = 1.5
+
 /**
- * Calculate maxHp from stamina and multiplier
+ * Calculate maxHp from stamina and its HP multiplier.
+ * HP = floor(stamina × multiplier).
  */
 export function calculateMaxHp(stamina: number, multiplier: number): number {
-  return Math.floor(stamina * multiplier * 10) // Base 10 HP per stamina point
+  return Math.floor(stamina * multiplier)
+}
+
+/**
+ * Centralized HP delivery: the single source of truth for a dino's max HP.
+ * Always derive max HP from stamina here — never read a stored max_hp column.
+ */
+export function getDinoMaxHp(dino: { sta?: number | null; staminaToHpMultiplier?: number | null }): number {
+  return calculateMaxHp(dino.sta ?? 0, dino.staminaToHpMultiplier ?? DEFAULT_HP_MULTIPLIER)
 }
 
 /**
