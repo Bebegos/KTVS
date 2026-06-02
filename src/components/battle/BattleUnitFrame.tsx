@@ -3,7 +3,7 @@ import { ActiveEffect } from '../../game/types'
 import EffectIcon from '../EffectIcon'
 import MedallionIcon from '../MedallionIcon'
 import { getEffectNameTR } from '../../lib/effect-translations'
-import { battleAssets } from '../../lib/gameAssets'
+import { battleAssets, menuButtonAssets } from '../../lib/gameAssets'
 
 interface BattleUnitFrameProps {
   side: 'player' | 'enemy'
@@ -54,8 +54,8 @@ export default function BattleUnitFrame({
     ? { left: '3%', top: '14%', width: '23%', height: '70%' }
     : { left: '74%', top: '14%', width: '23%', height: '70%' }
   const bars = isPlayer
-    ? { left: '46%', right: '7%', top: '40%', height: '27%' }
-    : { right: '46%', left: '7%', top: '40%', height: '27%' }
+    ? { left: '45%', right: '5%', top: '42%', height: '23%' }
+    : { right: '45%', left: '5%', top: '42%', height: '23%' }
 
   const pct = Math.max(0, Math.min(100, (currentHp / maxHp) * 100))
   const shown = Math.max(0, Math.round(currentHp))
@@ -126,13 +126,23 @@ export default function BattleUnitFrame({
 
   return (
     <div className="w-60 sm:w-72 md:w-80 lg:w-[26rem] xl:w-[32rem] max-w-[46vw]">
-      {/* Name card floating above the bar (aligned over the channel side) */}
-      <div className={`flex ${isPlayer ? 'justify-end' : 'justify-start'} mb-1 px-[3%]`}>
+      {/* Name plate (premium asset) floating just above the bar channel */}
+      <div className={`relative z-10 flex ${isPlayer ? 'justify-end' : 'justify-start'} -mb-[3%] px-[4%]`}>
         <div
-          className="max-w-[62%] truncate px-3 py-0.5 rounded-md text-[11px] sm:text-xs font-black text-amber-950 text-center shadow"
-          style={{ background: 'linear-gradient(180deg, #efe0c0 0%, #cdb487 100%)', border: `1.5px solid ${accent}` }}
+          className="relative w-[58%]"
+          style={{
+            aspectRatio: '819 / 249',
+            backgroundImage: `url('${menuButtonAssets.base}')`,
+            backgroundSize: '100% 100%',
+            backgroundRepeat: 'no-repeat',
+          }}
         >
-          {name}
+          <span
+            className="absolute inset-x-[12%] inset-y-[26%] flex items-center justify-center font-black text-amber-950 truncate text-sm sm:text-base lg:text-lg"
+            style={{ textShadow: '0 1px 1px rgba(255,255,255,0.4)' }}
+          >
+            {name}
+          </span>
         </div>
       </div>
 

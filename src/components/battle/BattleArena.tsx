@@ -133,7 +133,7 @@ export default function BattleArena({
         )}
       </AnimatePresence>
 
-      {/* TOP HUD: unit frames in the corners, toggles + center card below */}
+      {/* TOP HUD: unit frames in the corners */}
       <div className="absolute top-0 inset-x-0 z-20 p-2 sm:p-3 pointer-events-none">
         <div className="flex items-start justify-between gap-2">
           <div className="pointer-events-auto">
@@ -143,57 +143,55 @@ export default function BattleArena({
             <BattleUnitFrame side="enemy" name={opponent.name} level={opponent.level} currentHp={opponent.currentHp} maxHp={opponent.maxHp} effects={opponent.effects} specId={opponent.specId} classId={opponent.classId} onEffectClick={onEffectClick} />
           </div>
         </div>
+      </div>
 
-        {/* Center toggles + display card */}
-        <div className="mt-2 flex flex-col items-center gap-2 pointer-events-auto">
-          <div className="flex items-center gap-2">
-            <SquareIconButton
-              active={centerCard === 'log'}
-              onClick={() => setCenterCard((c) => (c === 'log' ? null : 'log'))}
-              title="Savaş Kaydı"
-            >
-              📜
-            </SquareIconButton>
-            {onAbandon && (
-              <SquareIconButton onClick={onAbandon} title="Terk Et">
-                🚪
-              </SquareIconButton>
+      {/* Top-center toggles, bound to the top of the screen (mirrors the bottom bar) */}
+      <div className="absolute top-1.5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2">
+        <SquareIconButton
+          active={centerCard === 'log'}
+          onClick={() => setCenterCard((c) => (c === 'log' ? null : 'log'))}
+          title="Savaş Kaydı"
+        >
+          📜
+        </SquareIconButton>
+        {onAbandon && (
+          <SquareIconButton onClick={onAbandon} title="Terk Et">
+            🚪
+          </SquareIconButton>
+        )}
+      </div>
+
+      {/* Battle log card (themed) — only when toggled on */}
+      {centerCard === 'log' && (
+        <div
+          className="absolute top-16 sm:top-20 left-1/2 -translate-x-1/2 z-30 w-[min(92vw,32rem)] p-3 sm:p-4"
+          style={{
+            borderStyle: 'solid',
+            borderWidth: '24px',
+            borderImageSource: `url('${modalAssets.frame}')`,
+            borderImageSlice: '58 fill',
+            borderImageRepeat: 'stretch',
+          }}
+        >
+          <p className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-amber-900 mb-2">
+            📜 Savaş Kaydı
+          </p>
+          <div className="h-32 overflow-y-auto pr-1 space-y-1">
+            {battleLog.length === 0 ? (
+              <p className="text-amber-900/50 text-sm text-center py-6">Savaş henüz başlamadı…</p>
+            ) : (
+              battleLog.slice(0, 8).map((msg, idx) => (
+                <p
+                  key={`${idx}-${msg.slice(0, 8)}`}
+                  className="text-xs font-semibold text-amber-950/90 bg-amber-900/10 border border-amber-900/20 rounded px-2 py-1 break-words"
+                >
+                  {msg}
+                </p>
+              ))
             )}
           </div>
-
-          {/* Battle log card (themed) — only when toggled on */}
-          {centerCard === 'log' && (
-            <div
-              className="w-[min(92vw,32rem)] p-3 sm:p-4"
-              style={{
-                borderStyle: 'solid',
-                borderWidth: '24px',
-                borderImageSource: `url('${modalAssets.frame}')`,
-                borderImageSlice: '58 fill',
-                borderImageRepeat: 'stretch',
-              }}
-            >
-              <p className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-amber-900 mb-2">
-                📜 Savaş Kaydı
-              </p>
-              <div className="h-32 overflow-y-auto pr-1 space-y-1">
-                {battleLog.length === 0 ? (
-                  <p className="text-amber-900/50 text-sm text-center py-6">Savaş henüz başlamadı…</p>
-                ) : (
-                  battleLog.slice(0, 8).map((msg, idx) => (
-                    <p
-                      key={`${idx}-${msg.slice(0, 8)}`}
-                      className="text-xs font-semibold text-amber-950/90 bg-amber-900/10 border border-amber-900/20 rounded px-2 py-1 break-words"
-                    >
-                      {msg}
-                    </p>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
 
       {/* BOTTOM ACTION BAR (fixed to screen bottom, WoW-style) */}
       <div className="absolute bottom-0 inset-x-0 z-30">

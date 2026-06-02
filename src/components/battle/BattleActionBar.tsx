@@ -95,18 +95,18 @@ export default function BattleActionBar({
         <Ornament side="right" />
       </div>
 
-      {/* MOBILE — full width, ~2 rows of interlocking plate tiles (like desktop) */}
-      <div className="flex flex-col items-center lg:hidden w-full">
+      {/* MOBILE — full-width interlocking plate tiles, ~2 rows */}
+      <div className="flex flex-col lg:hidden w-full">
         {[slots.slice(0, 3), slots.slice(3, 6)].map((row, ri) => (
-          <div key={ri} className={`flex justify-center ${ri > 0 ? '-mt-2' : ''}`}>
+          <div key={ri} className={`flex w-full ${ri > 0 ? '-mt-2' : ''}`}>
             {row.map((slot, ci) => (
               <div
                 key={slot.index}
-                className={`relative flex-shrink-0 aspect-[320/256] h-24 sm:h-28 ${ci > 0 ? '-ml-3' : ''}`}
+                className={`relative flex-1 min-w-0 aspect-[320/256] ${ci > 0 ? '-ml-3' : ''}`}
                 style={tileStyle}
               >
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-[72%] aspect-square">
+                  <div className="h-[76%] aspect-square translate-y-[4%]">
                     <SlotButton slot={slot} playerAtk={playerAtk} onSelectAbility={onSelectAbility} />
                   </div>
                 </div>
