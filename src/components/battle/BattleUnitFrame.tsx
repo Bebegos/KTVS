@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ActiveEffect } from '../../game/types'
 import HealthBar from '../HealthBar'
 import EffectIcon from '../EffectIcon'
+import MedallionIcon from '../MedallionIcon'
 import { getEffectNameTR } from '../../lib/effect-translations'
 import { battleAssets } from '../../lib/gameAssets'
 
@@ -12,8 +13,15 @@ interface BattleUnitFrameProps {
   currentHp: number
   maxHp: number
   effects: ActiveEffect[]
+  /** Spec medallion id for the portrait (preferred). */
+  specId?: string
+  /** Class medallion id, used if no spec is available. */
+  classId?: string
   onEffectClick: (effect: ActiveEffect) => void
 }
+
+/** Default class portrait when an enemy has neither spec nor class. */
+const DEFAULT_PORTRAIT_CLASS = 'big_carnivore'
 
 /**
  * WoW-style unit frame: the ornate PNG frame (portrait socket + recessed bar
@@ -31,6 +39,8 @@ export default function BattleUnitFrame({
   currentHp,
   maxHp,
   effects,
+  specId,
+  classId,
   onEffectClick,
 }: BattleUnitFrameProps) {
   const [imgFailed, setImgFailed] = useState(false)
@@ -50,10 +60,14 @@ export default function BattleUnitFrame({
     ? { left: '46%', right: '5%', top: '28%', height: '46%' }
     : { right: '46%', left: '5%', top: '28%', height: '46%' }
 
+  // Prefer the spec medallion, fall back to class, then a default class icon.
+  const medallionType: 'spec' | 'class' = specId ? 'spec' : 'class'
+  const medallionId = specId || classId || DEFAULT_PORTRAIT_CLASS
+
   const portrait = (
     <div className="absolute flex items-center justify-center" style={socket}>
-      <div className="relative w-full h-full rounded-full flex items-center justify-center">
-        <span className="text-2xl sm:text-3xl drop-shadow">🦖</span>
+      <div className="relative w-full h-full rounded-full flex items-center justify-center p-[6%]">
+        <MedallionIcon id={medallionId} type={medallionType} fill />
         {level != null && (
           <span
             className="absolute -bottom-0.5 right-0 min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-black text-amber-50 flex items-center justify-center leading-none"

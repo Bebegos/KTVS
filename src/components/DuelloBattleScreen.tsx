@@ -469,6 +469,8 @@ export default function DuelloBattleScreen({
           currentHp: battleState.player.currentHp,
           maxHp: battleState.player.dino.maxHp,
           effects: battleState.player.effects,
+          specId: playerDino.spec,
+          classId: playerDino.class,
         }}
         opponent={{
           name: opponentDino.name,
@@ -476,6 +478,8 @@ export default function DuelloBattleScreen({
           currentHp: battleState.opponent.currentHp,
           maxHp: battleState.opponent.dino.maxHp,
           effects: battleState.opponent.effects,
+          specId: opponentDino.spec,
+          classId: opponentDino.class,
         }}
         playerAtk={playerDino.atk}
         round={battleState.round}

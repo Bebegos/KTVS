@@ -3,13 +3,14 @@ import { battleAssets } from '../../lib/gameAssets'
 import PremiumAbilityButton from '../PremiumAbilityButton'
 import type { BattleArenaSlot } from './BattleArena'
 
-// One action-bar tile = a single stone plate piece at its native aspect.
-const TILE = 'relative flex-shrink-0 aspect-[320/256] h-14 sm:h-20 md:h-28 lg:h-36 xl:h-44'
 const tileStyle = {
   backgroundImage: `url('${battleAssets.actionBar.center}')`,
   backgroundSize: '100% 100%',
   backgroundRepeat: 'no-repeat',
 } as const
+
+// One desktop action-bar tile = a single stone plate piece at its native aspect.
+const DESKTOP_TILE = 'relative flex-shrink-0 aspect-[320/256] h-14 sm:h-20 md:h-28 lg:h-36 xl:h-44'
 // Negative margin so adjacent plates interlock at their gold edges.
 const OVERLAP = '-ml-2 sm:-ml-3 lg:-ml-5'
 
@@ -24,17 +25,47 @@ function Ornament({ side }: { side: 'left' | 'right' }) {
       aria-hidden
       onError={() => setFailed(true)}
       draggable={false}
-      className={`hidden lg:block relative z-20 self-end w-auto object-contain h-24 sm:h-32 md:h-44 lg:h-52 xl:h-60 ${
+      className={`relative z-20 self-end w-auto object-contain h-24 sm:h-32 md:h-44 lg:h-52 xl:h-60 ${
         side === 'left' ? '-mr-6 lg:-mr-10' : '-ml-6 lg:-ml-10'
       }`}
     />
   )
 }
 
+function SlotButton({
+  slot,
+  playerAtk,
+  onSelectAbility,
+}: {
+  slot: BattleArenaSlot
+  playerAtk: number
+  onSelectAbility: (idx: number) => void
+}) {
+  return (
+    <PremiumAbilityButton
+      ability={slot.ability}
+      index={slot.index}
+      atk={playerAtk}
+      isUltimate={slot.isUltimate}
+      isSelected={slot.isSelected}
+      isLocked={slot.isLocked}
+      canUse={slot.canUse}
+      cooldown={slot.cooldown}
+      maxCooldown={slot.maxCooldown}
+      disabled={slot.disabled}
+      lockedLevel={slot.lockedLevel}
+      onClick={() => onSelectAbility(slot.index)}
+      showPreview={false}
+    />
+  )
+}
+
 /**
- * WoW-style action bar: a guardian ornament at each end and a run of stone-plate
- * tiles that interlock at their edges. Each ability sits centered on its own
- * tile, with an empty bookend tile on the far left and right (desktop).
+ * WoW-style action bar.
+ *  - Desktop (lg+): guardian ornaments at each end and a row of interlocking
+ *    stone-plate tiles, one ability centered per tile, plus empty bookend tiles.
+ *  - Mobile (<lg): a full-width grid of plate tiles (≈2 rows) with finger-sized
+ *    ability buttons.
  */
 export default function BattleActionBar({
   slots,
@@ -46,40 +77,36 @@ export default function BattleActionBar({
   onSelectAbility: (idx: number) => void
 }) {
   return (
-    <div className="flex items-end justify-center w-full">
-      <Ornament side="left" />
-
-      {/* Empty left bookend tile (desktop) */}
-      <div className={`${TILE} hidden lg:block`} style={tileStyle} aria-hidden />
-
-      {slots.map((slot) => (
-        <div key={slot.index} className={`${TILE} ${OVERLAP}`} style={tileStyle}>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-[72%] aspect-square">
-              <PremiumAbilityButton
-                ability={slot.ability}
-                index={slot.index}
-                atk={playerAtk}
-                isUltimate={slot.isUltimate}
-                isSelected={slot.isSelected}
-                isLocked={slot.isLocked}
-                canUse={slot.canUse}
-                cooldown={slot.cooldown}
-                maxCooldown={slot.maxCooldown}
-                disabled={slot.disabled}
-                lockedLevel={slot.lockedLevel}
-                onClick={() => onSelectAbility(slot.index)}
-                showPreview={false}
-              />
+    <>
+      {/* DESKTOP */}
+      <div className="hidden lg:flex items-end justify-center w-full">
+        <Ornament side="left" />
+        <div className={DESKTOP_TILE} style={tileStyle} aria-hidden />
+        {slots.map((slot) => (
+          <div key={slot.index} className={`${DESKTOP_TILE} ${OVERLAP}`} style={tileStyle}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-[72%] aspect-square">
+                <SlotButton slot={slot} playerAtk={playerAtk} onSelectAbility={onSelectAbility} />
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+        <div className={`${DESKTOP_TILE} ${OVERLAP}`} style={tileStyle} aria-hidden />
+        <Ornament side="right" />
+      </div>
 
-      {/* Empty right bookend tile (desktop) */}
-      <div className={`${TILE} ${OVERLAP} hidden lg:block`} style={tileStyle} aria-hidden />
-
-      <Ornament side="right" />
-    </div>
+      {/* MOBILE — full width, ~2 rows of finger-sized buttons on plate tiles */}
+      <div className="grid lg:hidden grid-cols-3 gap-1.5 w-full px-2 pb-1">
+        {slots.map((slot) => (
+          <div key={slot.index} className="relative aspect-[320/256]" style={tileStyle}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-[80%] aspect-square min-h-[3rem]">
+                <SlotButton slot={slot} playerAtk={playerAtk} onSelectAbility={onSelectAbility} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
   )
 }

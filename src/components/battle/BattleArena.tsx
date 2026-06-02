@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Ability, ActiveEffect, BattleVisualEffects } from '../../game/types'
-import { battleAssets, modalAssets } from '../../lib/gameAssets'
+import { battleAssets, modalAssets, squareMenuButtonAssets } from '../../lib/gameAssets'
 import AbilityIcon from '../AbilityIcon'
 import BattleUnitFrame from './BattleUnitFrame'
 import BattleActionBar from './BattleActionBar'
-import BattleEffectOverlay from '../battle-effects/BattleEffectOverlay'
 import FloatingDamageNumber from '../battle-effects/FloatingDamageNumber'
-import TurnIndicator from '../battle-effects/TurnIndicator'
 
 export interface BattleArenaSlot {
   ability: Ability | null
@@ -28,6 +26,10 @@ export interface BattleArenaSide {
   currentHp: number
   maxHp: number
   effects: ActiveEffect[]
+  /** Spec medallion id for the portrait (preferred). */
+  specId?: string
+  /** Class medallion id, used if no spec is available. */
+  classId?: string
 }
 
 export interface FloatingDamage {
@@ -106,23 +108,11 @@ export default function BattleArena({
       )}
       <div className="absolute inset-0 bg-black/30 pointer-events-none" />
 
-      {/* Transient animation layers */}
-      <AnimatePresence>
-        {activeEffectOverlay && currentVisualEffects && (
-          <BattleEffectOverlay
-            isActive={activeEffectOverlay}
-            visualEffects={currentVisualEffects}
-            onComplete={onEffectOverlayComplete}
-          />
-        )}
-      </AnimatePresence>
+      {/* Floating damage numbers */}
       <AnimatePresence>
         {floatingDamages.map((d) => (
           <FloatingDamageNumber key={d.id} damage={d.damage} isCritical={d.isCritical} isHealing={d.isHealing} x={d.x} y={d.y} />
         ))}
-      </AnimatePresence>
-      <AnimatePresence>
-        <TurnIndicator round={round} isPlayerTurn={round % 2 === 1} />
       </AnimatePresence>
 
       {/* Center cast animation: the acting ability's icon zooms in */}
@@ -147,27 +137,27 @@ export default function BattleArena({
       <div className="absolute top-0 inset-x-0 z-20 p-2 sm:p-3 pointer-events-none">
         <div className="flex items-start justify-between gap-2">
           <div className="pointer-events-auto">
-            <BattleUnitFrame side="player" name={player.name} level={player.level} currentHp={player.currentHp} maxHp={player.maxHp} effects={player.effects} onEffectClick={onEffectClick} />
+            <BattleUnitFrame side="player" name={player.name} level={player.level} currentHp={player.currentHp} maxHp={player.maxHp} effects={player.effects} specId={player.specId} classId={player.classId} onEffectClick={onEffectClick} />
           </div>
           <div className="pointer-events-auto">
-            <BattleUnitFrame side="enemy" name={opponent.name} level={opponent.level} currentHp={opponent.currentHp} maxHp={opponent.maxHp} effects={opponent.effects} onEffectClick={onEffectClick} />
+            <BattleUnitFrame side="enemy" name={opponent.name} level={opponent.level} currentHp={opponent.currentHp} maxHp={opponent.maxHp} effects={opponent.effects} specId={opponent.specId} classId={opponent.classId} onEffectClick={onEffectClick} />
           </div>
         </div>
 
         {/* Center toggles + display card */}
         <div className="mt-2 flex flex-col items-center gap-2 pointer-events-auto">
           <div className="flex items-center gap-2">
-            <ToggleButton active={centerCard === 'log'} onClick={() => setCenterCard((c) => (c === 'log' ? null : 'log'))} title="Savaş Kaydı">
+            <SquareIconButton
+              active={centerCard === 'log'}
+              onClick={() => setCenterCard((c) => (c === 'log' ? null : 'log'))}
+              title="Savaş Kaydı"
+            >
               📜
-            </ToggleButton>
+            </SquareIconButton>
             {onAbandon && (
-              <button
-                onClick={onAbandon}
-                title="Terk Et"
-                className="w-10 h-10 rounded-lg bg-red-900/70 border border-red-500/60 text-lg hover:bg-red-800 transition-colors"
-              >
+              <SquareIconButton onClick={onAbandon} title="Terk Et">
                 🚪
-              </button>
+              </SquareIconButton>
             )}
           </div>
 
@@ -232,18 +222,39 @@ export default function BattleArena({
   )
 }
 
-function ToggleButton({ active, onClick, title, children }: { active: boolean; onClick: () => void; title: string; children: React.ReactNode }) {
+function SquareIconButton({
+  active = false,
+  onClick,
+  title,
+  children,
+}: {
+  active?: boolean
+  onClick: () => void
+  title: string
+  children: React.ReactNode
+}) {
+  const [hover, setHover] = useState(false)
+  const frame = active
+    ? squareMenuButtonAssets.pressed
+    : hover
+    ? squareMenuButtonAssets.hover
+    : squareMenuButtonAssets.base
   return (
     <button
       onClick={onClick}
       title={title}
-      className={`w-10 h-10 rounded-lg text-lg border transition-colors ${
-        active
-          ? 'bg-amber-500/30 border-amber-300 shadow-[0_0_10px_rgba(212,175,55,0.5)]'
-          : 'bg-stone-900/70 border-amber-800/60 hover:bg-stone-800'
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className={`relative w-11 h-11 sm:w-12 sm:h-12 bg-transparent border-0 p-0 transition-transform hover:scale-105 active:scale-95 ${
+        active ? 'drop-shadow-[0_0_10px_rgba(212,175,55,0.7)]' : ''
       }`}
+      style={{
+        backgroundImage: `url('${frame}')`,
+        backgroundSize: '100% 100%',
+        backgroundRepeat: 'no-repeat',
+      }}
     >
-      {children}
+      <span className="absolute inset-0 flex items-center justify-center text-base sm:text-lg">{children}</span>
     </button>
   )
 }

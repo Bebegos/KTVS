@@ -126,6 +126,8 @@ export default function BattleTableModeV2({ dino, onBack }: BattleTableModeV2Pro
           currentHp: battleState.player.currentHp,
           maxHp,
           effects: battleState.player.effects,
+          specId: dino.spec,
+          classId: dino.class,
         }}
         opponent={{
           name: battleState.opponent.dino.name,
@@ -133,6 +135,8 @@ export default function BattleTableModeV2({ dino, onBack }: BattleTableModeV2Pro
           currentHp: battleState.opponent.currentHp,
           maxHp: opponentDino.maxHp,
           effects: battleState.opponent.effects,
+          specId: opponentDino.spec,
+          classId: opponentDino.class,
         }}
         playerAtk={battleState.player.dino.atk}
         round={battleState.round}

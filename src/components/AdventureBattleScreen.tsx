@@ -314,6 +314,8 @@ export default function AdventureBattleScreen({
             currentHp: battleState.player.currentHp,
             maxHp: playerDino.maxHp,
             effects: battleState.player.effects,
+            specId: playerDino.spec,
+            classId: playerDino.class,
           }}
           opponent={{
             name: battleState.opponent.dino.name,
@@ -321,6 +323,8 @@ export default function AdventureBattleScreen({
             currentHp: battleState.opponent.currentHp,
             maxHp: battleState.opponent.dino.maxHp,
             effects: battleState.opponent.effects,
+            specId: battleState.opponent.dino.spec,
+            classId: battleState.opponent.dino.class,
           }}
           playerAtk={battleState.player.dino.atk}
           round={battleState.round}
