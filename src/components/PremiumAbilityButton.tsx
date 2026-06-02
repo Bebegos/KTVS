@@ -25,6 +25,8 @@ interface PremiumAbilityButtonProps {
   onClick?: () => void
   onInfo?: () => void
   lockedLevel?: number
+  /** When false, the hover/long-press ability preview is suppressed (battle bar). */
+  showPreview?: boolean
 }
 
 export default function PremiumAbilityButton({
@@ -41,6 +43,7 @@ export default function PremiumAbilityButton({
   onClick,
   onInfo,
   lockedLevel,
+  showPreview = true,
 }: PremiumAbilityButtonProps) {
   const [isHovering, setIsHovering] = useState(false)
   const [isTouching, setIsTouching] = useState(false)
@@ -203,7 +206,7 @@ export default function PremiumAbilityButton({
 
       {/* Ability preview on hover (desktop) or 2s long-press (mobile) */}
       <AnimatePresence>
-        {(isHovering || isTouching) && ability && (
+        {showPreview && (isHovering || isTouching) && ability && (
           <AbilityPreview
             ability={ability}
             cooldown={cooldown}

@@ -1,26 +1,14 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dino, ActiveEffect, BattleVisualEffects } from '../game/types'
-import { Adventure, AdventureScene, AdventureEnemy } from '../lib/adventures'
+import { Adventure, AdventureEnemy } from '../lib/adventures'
 import { BattleEngine } from '../lib/battleEngine'
 import { supabase, addXpToDino, addCoinsToUser } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
-import { slotService, abilityDefinitionService, battleVisualService } from '../lib/services'
-import BattleStatsCard from './BattleStatsCard'
-import EffectsDisplay from './EffectsDisplay'
-import AbilityIcon from './AbilityIcon'
+import { slotService, battleVisualService } from '../lib/services'
 import HealthBar from './HealthBar'
-import BattleEffectVisuals from './BattleEffectVisuals'
-import AbilityInfoModal from './AbilityInfoModal'
 import EffectInfoModal from './EffectInfoModal'
-import PremiumAbilityButton from './PremiumAbilityButton'
-import BattleEffectOverlay from './battle-effects/BattleEffectOverlay'
-import FloatingDamageNumber from './battle-effects/FloatingDamageNumber'
-import BattleDinoHUD from './battle-effects/BattleDinoHUD'
-import TurnIndicator from './battle-effects/TurnIndicator'
-import EnhancedBattleLog from './battle-effects/EnhancedBattleLog'
-import SvgIcon from './SvgIcon'
-import { getEffectNameTR } from '../lib/effect-translations'
+import BattleArena, { BattleArenaSlot } from './battle/BattleArena'
 
 interface AdventureBattleScreenProps {
   playerDino: Dino
@@ -42,22 +30,17 @@ export default function AdventureBattleScreen({
   const [playerCurrentHp, setPlayerCurrentHp] = useState(playerDino.maxHp)
   const [battleEngine, setBattleEngine] = useState<BattleEngine | null>(null)
   const [battleState, setBattleState] = useState<any>(null)
-  const [currentEffectVisual, setCurrentEffectVisual] = useState<'buff' | 'debuff' | 'damage' | null>(null)
-  const [showEffectVisual, setShowEffectVisual] = useState(false)
   const [selectedAbility, setSelectedAbility] = useState<number | null>(null)
   const [roundInProgress, setRoundInProgress] = useState(false)
   const [battleLog, setBattleLog] = useState<string[]>([])
   const [adventureEnded, setAdventureEnded] = useState(false)
   const [adventureWon, setAdventureWon] = useState(false)
-  const [recordingMatch, setRecordingMatch] = useState(false)
   const [totalXpGained, setTotalXpGained] = useState(0)
   const [totalCoinsGained, setTotalCoinsGained] = useState(0)
-  const [abilityInfoOpen, setAbilityInfoOpen] = useState(false)
-  const [selectedAbilityInfo, setSelectedAbilityInfo] = useState<any>(null)
   const [effectInfoOpen, setEffectInfoOpen] = useState(false)
   const [selectedEffectInfo, setSelectedEffectInfo] = useState<ActiveEffect | null>(null)
 
-  // New immersive battle effect system
+  // Immersive battle effect system
   const [activeEffectOverlay, setActiveEffectOverlay] = useState(false)
   const [currentVisualEffects, setCurrentVisualEffects] = useState<BattleVisualEffects | null>(null)
   const [floatingDamages, setFloatingDamages] = useState<
@@ -66,12 +49,6 @@ export default function AdventureBattleScreen({
 
   const currentScene = adventure.scenes[currentSceneIdx]
   const currentEnemyData = currentScene?.enemies[currentEnemyIdx]
-
-  // Helper functions for modals
-  const openAbilityInfo = (abilityId: string, idx: number) => {
-    setSelectedAbilityInfo({ abilityId, idx })
-    setAbilityInfoOpen(true)
-  }
 
   const openEffectInfo = (effect: ActiveEffect) => {
     setSelectedEffectInfo(effect)
@@ -82,10 +59,8 @@ export default function AdventureBattleScreen({
   useEffect(() => {
     if (inBattle && currentEnemyData && !battleEngine) {
       const opponentDino = generateOpponentFromData(playerDino, currentEnemyData)
-      // Set opponent HP based on previous battle result
       const engine = new BattleEngine(playerDino, opponentDino)
 
-      // Modify player's current HP in the engine
       const state = engine.getState()
       state.player.currentHp = playerCurrentHp
 
@@ -104,7 +79,6 @@ export default function AdventureBattleScreen({
   function selectAbility(abilityIdx: number) {
     if (roundInProgress || selectedAbility !== null || !battleEngine) return
 
-    // CRITICAL: Check if slot is locked before allowing execution
     if (slotService.isSlotLocked(playerDino, abilityIdx)) {
       const requiredLevel = slotService.getSlotRequiredLevel(abilityIdx)
       console.warn(`Slot ${abilityIdx} is locked. Requires level ${requiredLevel}`)
@@ -147,62 +121,52 @@ export default function AdventureBattleScreen({
       const playerAbility = battleState.player.abilities[playerAbilityIdx]
       const opponentAbility = battleState.opponent.abilities[opponentAbilityIdx]
 
-      // Get visual effects for both abilities upfront
       const playerVisuals = battleVisualService.getVisualEffects(playerAbility)
       const opponentVisuals = battleVisualService.getVisualEffects(opponentAbility)
 
       setBattleLog(prev => [result.playerAction.message, ...prev.slice(0, 14)])
 
-      // Show player ability effect overlay
       setCurrentVisualEffects(playerVisuals)
       setActiveEffectOverlay(true)
 
-      // Add floating damage numbers
       if (result.playerAction.damage > 0) {
-        const newDamage = {
+        setFloatingDamages(prev => [...prev, {
           id: `${Date.now()}-player`,
           damage: result.playerAction.damage,
-          isCritical: false, // TODO: Add isCrit to result type
+          isCritical: false,
           isHealing: false,
           x: window.innerWidth * 0.75,
           y: window.innerHeight * 0.3,
-        }
-        setFloatingDamages(prev => [...prev, newDamage])
+        }])
       }
 
       setTimeout(() => {
         setActiveEffectOverlay(false)
 
         if (!result.playerAction.targetDied) {
-          // Opponent's turn
           setBattleLog(prev => [result.opponentAction.message, ...prev.slice(0, 14)])
 
-          // Show opponent ability effect overlay
           setTimeout(() => {
             setCurrentVisualEffects(opponentVisuals)
             setActiveEffectOverlay(true)
 
-            // Add floating damage numbers for opponent
             if (result.opponentAction.damage > 0) {
-              const newDamage = {
+              setFloatingDamages(prev => [...prev, {
                 id: `${Date.now()}-opponent`,
                 damage: result.opponentAction.damage,
-                isCritical: false, // TODO: Add isCrit to result type
+                isCritical: false,
                 isHealing: false,
                 x: window.innerWidth * 0.25,
                 y: window.innerHeight * 0.3,
-              }
-              setFloatingDamages(prev => [...prev, newDamage])
+              }])
             }
           }, playerVisuals.animationDuration + 200)
 
-          // Hide opponent effect overlay
           setTimeout(() => {
             setActiveEffectOverlay(false)
           }, playerVisuals.animationDuration + 200 + opponentVisuals.animationDuration)
         }
 
-        // Wait for all animations to complete before updating state
         setTimeout(() => {
           setBattleState(battleEngine.getState())
           setPlayerCurrentHp(battleEngine.getState().player.currentHp)
@@ -213,7 +177,7 @@ export default function AdventureBattleScreen({
 
           setSelectedAbility(null)
           setRoundInProgress(false)
-          setFloatingDamages([]) // Clear floating damages
+          setFloatingDamages([])
         }, result.playerAction.targetDied ? playerVisuals.animationDuration + 300 : playerVisuals.animationDuration + opponentVisuals.animationDuration + 500)
       }, playerVisuals.animationDuration)
     }, 800)
@@ -223,13 +187,11 @@ export default function AdventureBattleScreen({
     if (!battleEngine) return
 
     if (!playerWon) {
-      // Player lost
       setAdventureEnded(true)
       setAdventureWon(false)
       return
     }
 
-    // Player won - give XP and coins for this enemy
     const enemyXpReward = Math.floor(adventure.xpReward / adventure.scenes.length)
     const enemyCoinReward = Math.floor(adventure.coinReward / adventure.scenes.length)
 
@@ -238,26 +200,22 @@ export default function AdventureBattleScreen({
       if (user?.id) {
         await addCoinsToUser(user.id, enemyCoinReward)
       }
-
       setTotalXpGained(prev => prev + enemyXpReward)
       setTotalCoinsGained(prev => prev + enemyCoinReward)
     } catch (err) {
       console.error('Error giving rewards:', err)
     }
 
-    // Save HP and move to next enemy or scene
     const newHp = battleEngine.getState().player.currentHp
     setPlayerCurrentHp(newHp)
 
     if (currentEnemyIdx < currentScene.enemies.length - 1) {
-      // Next enemy in same scene
       setCurrentEnemyIdx(currentEnemyIdx + 1)
       setInBattle(false)
       setBattleEngine(null)
       setBattleState(null)
       setBattleLog([])
     } else if (currentSceneIdx < adventure.scenes.length - 1) {
-      // Next scene
       setCurrentSceneIdx(currentSceneIdx + 1)
       setCurrentEnemyIdx(0)
       setInBattle(false)
@@ -265,13 +223,10 @@ export default function AdventureBattleScreen({
       setBattleState(null)
       setBattleLog([])
     } else {
-      // Adventure complete!
       setAdventureEnded(true)
       setAdventureWon(true)
-      // Give final bonus (remaining XP/coins)
       const finalXpBonus = adventure.xpReward - totalXpGained
       const finalCoinBonus = adventure.coinReward - totalCoinsGained
-
       try {
         if (finalXpBonus > 0) {
           await addXpToDino(playerDino.id, finalXpBonus)
@@ -286,8 +241,6 @@ export default function AdventureBattleScreen({
       }
     }
   }
-
-
 
   // ADVENTURE COMPLETE SCREEN
   if (adventureEnded) {
@@ -329,217 +282,54 @@ export default function AdventureBattleScreen({
     )
   }
 
-  // IN BATTLE
+  // IN BATTLE — unified WoW-style arena
   if (inBattle && battleState) {
+    const slots: BattleArenaSlot[] = [0, 1, 2, 3, 4, 5].map((idx) => {
+      const ability = battleState.player.abilities[idx] || null
+      const isLocked = slotService.isSlotLocked(playerDino, idx)
+      const canUse = !isLocked && !!battleEngine?.canUseAbility('player', idx)
+      return {
+        ability,
+        index: idx,
+        isUltimate: idx === 5,
+        isSelected: selectedAbility === idx,
+        isLocked,
+        canUse,
+        cooldown: battleState.player.cooldowns[idx] || 0,
+        maxCooldown: ability?.maxCd || 0,
+        disabled: selectedAbility !== null || !canUse || roundInProgress,
+        lockedLevel: isLocked ? slotService.getSlotRequiredLevel(idx) : undefined,
+      }
+    })
+
     return (
-      <div className="w-full h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden relative">
-        {/* Background effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-        </div>
-
-        {/* ABSOLUTE POSITIONED EFFECTS (No layout impact) */}
-        <AnimatePresence>
-          {activeEffectOverlay && currentVisualEffects && (
-            <BattleEffectOverlay
-              isActive={activeEffectOverlay}
-              visualEffects={currentVisualEffects}
-              onComplete={() => setActiveEffectOverlay(false)}
-            />
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {floatingDamages.map((damage) => (
-            <FloatingDamageNumber
-              key={damage.id}
-              damage={damage.damage}
-              isCritical={damage.isCritical}
-              isHealing={damage.isHealing}
-              x={damage.x}
-              y={damage.y}
-            />
-          ))}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          <TurnIndicator round={battleState.round} isPlayerTurn={battleState.round % 2 === 1} />
-        </AnimatePresence>
-
-        {/* DESKTOP: 3-COLUMN LAYOUT */}
-        <div className="hidden lg:relative lg:flex-1 lg:flex lg:flex-row lg:gap-3 lg:p-3 lg:overflow-hidden">
-          {/* Opponent side */}
-          <div className="w-1/3 flex flex-col gap-2">
-            <div className="hs-battle-frame hs-battle-frame-opponent">
-              <div className="glass-dark neon-border-purple rounded-lg p-3">
-                <p className="text-xs font-bold text-neon-purple mb-1">DÜŞMAN</p>
-                <BattleDinoHUD
-                  dinoName={battleState.opponent.dino.name}
-                  currentHp={battleState.opponent.currentHp}
-                  maxHp={battleState.opponent.dino.maxHp}
-                  effects={battleState.opponent.effects}
-                  isPlayer={false}
-                />
-              </div>
-            </div>
-            <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
-          </div>
-
-          {/* Center arena */}
-          <div className="w-1/3 flex flex-col items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="text-6xl opacity-20">⚔️</div>
-              <p className="text-neon-cyan/40 text-sm font-bold uppercase tracking-wider">Savaş Alanı</p>
-            </div>
-          </div>
-
-          {/* Player side */}
-          <div className="w-1/3 flex flex-col gap-2">
-            <div className="hs-battle-frame hs-battle-frame-player">
-              <div className="glass-dark neon-border-cyan rounded-lg p-3">
-                <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
-                <BattleDinoHUD
-                  dinoName={playerDino.name}
-                  currentHp={playerCurrentHp}
-                  maxHp={playerDino.maxHp}
-                  effects={battleState.player.effects}
-                  isPlayer={true}
-                />
-              </div>
-            </div>
-            <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
-          </div>
-        </div>
-
-        {/* MOBILE: VERTICAL STACKED LAYOUT (lg:hidden) */}
-        <div className="flex flex-col flex-1 gap-3 p-3 overflow-y-auto lg:hidden">
-          {/* OPPONENT */}
-          <div className="flex-shrink-0">
-            <div className="hs-battle-frame hs-battle-frame-opponent">
-              <div className="glass-dark neon-border-purple rounded-lg p-2">
-                <p className="text-xs font-bold text-neon-purple mb-1">DÜŞMAN</p>
-                <BattleDinoHUD
-                  dinoName={battleState.opponent.dino.name}
-                  currentHp={battleState.opponent.currentHp}
-                  maxHp={battleState.opponent.dino.maxHp}
-                  effects={battleState.opponent.effects}
-                  isPlayer={false}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* OPPONENT STATS */}
-          <div className="flex-shrink-0">
-            <BattleStatsCard dino={battleState.opponent.dino} effects={battleState.opponent.effects} isPlayer={false} />
-          </div>
-
-          {/* BATTLE LOG */}
-          <div className="flex-shrink-0 h-32">
-            <EnhancedBattleLog entries={battleLog} maxEntries={6} />
-          </div>
-
-          {/* PLAYER */}
-          <div className="flex-shrink-0">
-            <div className="hs-battle-frame hs-battle-frame-player">
-              <div className="glass-dark neon-border-cyan rounded-lg p-2">
-                <p className="text-xs font-bold text-neon-cyan mb-1">OYUNCU</p>
-                <BattleDinoHUD
-                  dinoName={playerDino.name}
-                  currentHp={playerCurrentHp}
-                  maxHp={playerDino.maxHp}
-                  effects={battleState.player.effects}
-                  isPlayer={true}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* PLAYER STATS */}
-          <div className="flex-shrink-0">
-            <BattleStatsCard dino={battleState.player.dino} effects={battleState.player.effects} isPlayer={true} />
-          </div>
-        </div>
-
-        {/* BOTTOM CONTROL PANEL */}
-        <div className="flex-shrink-0 flex flex-col lg:flex-row gap-3 p-3 bg-gradient-to-t from-slate-900/90 to-transparent border-t border-neon-cyan/10">
-
-          {/* BATTLE LOG (Desktop only) */}
-          <div className="hidden lg:block lg:w-2/5 lg:h-32">
-            <EnhancedBattleLog entries={battleLog} maxEntries={6} />
-          </div>
-
-          {/* ABILITY SELECTION */}
-          <div className="w-full lg:w-3/5">
-            <div className="space-y-2">
-              <p className="text-xs font-bold text-neon-cyan uppercase tracking-widest">⚔️ Yetenek Seç</p>
-
-              {/* Regular Abilities Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                {[0, 1, 2, 3, 4].map((idx) => {
-                  const ability = battleState.player.abilities[idx]
-                  const isLocked = slotService.isSlotLocked(playerDino, idx)
-                  const canUse = !isLocked && battleEngine?.canUseAbility('player', idx)
-                  const isSelected = selectedAbility === idx
-                  const cooldown = battleState.player.cooldowns[idx] || 0
-
-                  return (
-                    <PremiumAbilityButton
-                      key={idx}
-                      ability={ability || null}
-                      index={idx}
-                      atk={battleState.player.atk}
-                      isSelected={isSelected}
-                      isLocked={isLocked}
-                      canUse={canUse}
-                      cooldown={cooldown}
-                      maxCooldown={ability?.maxCd || 0}
-                      disabled={selectedAbility !== null || !canUse || roundInProgress}
-                      onClick={() => selectAbility(idx)}
-                      onInfo={() => openAbilityInfo(battleState.player.abilityIds[idx], idx)}
-                      lockedLevel={isLocked ? slotService.getSlotRequiredLevel(idx) : undefined}
-                    />
-                  )
-                })}
-              </div>
-
-              {/* Ultimate Slot — centered square, matching the Dino Detail layout */}
-              <div className="flex justify-center pt-1">
-                <div className="w-1/3 sm:w-1/4">
-                  <PremiumAbilityButton
-                    ability={battleState.player.abilities[5] || null}
-                    index={5}
-                    atk={battleState.player.atk}
-                    isUltimate={true}
-                    isSelected={selectedAbility === 5}
-                    isLocked={slotService.isSlotLocked(playerDino, 5)}
-                    canUse={battleEngine?.canUseAbility('player', 5) || false}
-                    cooldown={battleState.player.cooldowns[5] || 0}
-                    maxCooldown={battleState.player.abilities[5]?.maxCd || 0}
-                    disabled={selectedAbility !== null || !battleEngine?.canUseAbility('player', 5) || roundInProgress}
-                    onClick={() => selectAbility(5)}
-                    onInfo={() => openAbilityInfo(battleState.player.abilityIds[5], 5)}
-                    lockedLevel={slotService.isSlotLocked(playerDino, 5) ? slotService.getSlotRequiredLevel(5) : undefined}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* MODALS */}
-        <AnimatePresence>
-          {abilityInfoOpen && selectedAbilityInfo && (
-            <AbilityInfoModal
-              abilityId={selectedAbilityInfo.abilityId}
-              dino={playerDino}
-              cooldown={battleState.player.cooldowns[selectedAbilityInfo.idx] || 0}
-              isOpen={abilityInfoOpen}
-              onClose={() => setAbilityInfoOpen(false)}
-            />
-          )}
-        </AnimatePresence>
+      <>
+        <BattleArena
+          player={{
+            name: playerDino.name,
+            level: playerDino.level,
+            currentHp: battleState.player.currentHp,
+            maxHp: playerDino.maxHp,
+            effects: battleState.player.effects,
+          }}
+          opponent={{
+            name: battleState.opponent.dino.name,
+            level: battleState.opponent.dino.level,
+            currentHp: battleState.opponent.currentHp,
+            maxHp: battleState.opponent.dino.maxHp,
+            effects: battleState.opponent.effects,
+          }}
+          playerAtk={battleState.player.atk}
+          round={battleState.round}
+          battleLog={battleLog}
+          slots={slots}
+          onSelectAbility={selectAbility}
+          onEffectClick={openEffectInfo}
+          activeEffectOverlay={activeEffectOverlay}
+          currentVisualEffects={currentVisualEffects}
+          onEffectOverlayComplete={() => setActiveEffectOverlay(false)}
+          floatingDamages={floatingDamages}
+        />
 
         <AnimatePresence>
           {effectInfoOpen && selectedEffectInfo && (
@@ -551,7 +341,7 @@ export default function AdventureBattleScreen({
             />
           )}
         </AnimatePresence>
-      </div>
+      </>
     )
   }
 
@@ -621,9 +411,6 @@ export default function AdventureBattleScreen({
 }
 
 function generateOpponentFromData(playerDino: Dino, enemyData: AdventureEnemy): Dino {
-  // Create opponent with themed abilities if available, otherwise use player abilities
-  // Each enemy has unique themed abilities based on adventure type and enemy name
-
   return {
     id: 'adventure-enemy-' + Date.now(),
     name: enemyData.name,

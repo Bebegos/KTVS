@@ -127,3 +127,19 @@ export const modalAssets = {
   frame: `${BASE}/modal/modal-frame.png`,
   close: `${BASE}/modal/modal-close-button.png`,
 }
+
+// ---------- Battle arena (WoW-style unified battle screen) ----------
+// New art lives under /assests/battle. Components fall back to existing
+// parchment/stone assets when a file is not present yet.
+export const battleAssets = {
+  background: `${BASE}/battle/battle-background.png`,
+  actionBar: {
+    center: `${BASE}/battle/actionbar/actionbar-center.png`,
+    ornamentLeft: `${BASE}/battle/actionbar/actionbar-ornament-left.png`,
+    ornamentRight: `${BASE}/battle/actionbar/actionbar-ornament-right.png`,
+  },
+  unitFramePlayer: `${BASE}/battle/unitframe/unitframe-player.png`,
+  // Optional dedicated enemy frame; if absent the player frame is mirrored.
+  unitFrameEnemy: `${BASE}/battle/unitframe/unitframe-enemy.png`,
+}
+
