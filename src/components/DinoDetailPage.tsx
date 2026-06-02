@@ -9,7 +9,7 @@ import AbilitySlotDisplay from './AbilitySlotDisplay'
 import PremiumButton from './PremiumButton'
 import PremiumCard from './PremiumCard'
 import MedallionIcon from './MedallionIcon'
-import StatDisplay from './StatDisplay'
+import StatCardPremium from './StatCardPremium'
 import { getClassIcon, getSpecIcon } from '../lib/icons'
 import { getEffectNameTR } from '../lib/effect-translations'
 import { hpBarAssets } from '../lib/gameAssets'
@@ -56,7 +56,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
 
         {/* Hero Header Card */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md">
-          <PremiumCard variant="frame" glow="gold">
+          <PremiumCard variant="frame">
             <div className="text-center space-y-1 py-1">
               <h1 className="text-2xl sm:text-3xl font-black text-amber-950 drop-shadow-sm">
                 {dino.name}
@@ -74,7 +74,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
         {/* Level-up reward call to action */}
         {hasPendingRewards && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl">
-            <PremiumCard variant="panel" glow="gold">
+            <PremiumCard variant="panel">
               <div className="p-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl animate-pulse">⚡</span>
@@ -139,18 +139,18 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
               </motion.div>
             )}
 
-            {/* Stats Grid — taller card, each stat in its own personal card */}
+            {/* Stats — each stat its own premium Hearthstone card */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <PremiumCard variant="frame">
-                <div className="space-y-4 py-2">
+                <div className="space-y-4 py-3">
                   <p className="text-xs font-black text-amber-900 uppercase tracking-wide">
                     İstatistikler
                   </p>
                   <div className="space-y-3">
-                    <StatDisplay stat="sta" dino={dino} value={dino.sta || 0} size="lg" showBonus={false} showDetailButton />
-                    <StatDisplay stat="atk" dino={dino} value={dino.atk} size="lg" showDetailButton />
-                    <StatDisplay stat="def" dino={dino} value={dino.def} size="lg" showDetailButton />
-                    <StatDisplay stat="spd" dino={dino} value={dino.spd} size="lg" showDetailButton />
+                    <StatCardPremium stat="sta" dino={dino} value={dino.sta || 0} />
+                    <StatCardPremium stat="atk" dino={dino} value={dino.atk} />
+                    <StatCardPremium stat="def" dino={dino} value={dino.def} />
+                    <StatCardPremium stat="spd" dino={dino} value={dino.spd} />
                   </div>
                 </div>
               </PremiumCard>
@@ -171,7 +171,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                             {dino.xp}/{maxXpForLevel}
                           </p>
                         </div>
-                        {/* Framed bar, locked to the art's 10:1 ratio so it is never distorted */}
+                        {/* WoW-style segmented bar: 10 healthy-fill pieces (each = 10%) */}
                         <div
                           className="relative w-full aspect-[10/1]"
                           style={{
@@ -180,24 +180,27 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                             backgroundRepeat: 'no-repeat',
                           }}
                         >
-                          {/* Fill track aligned to the painted dark channel */}
-                          <div className="absolute inset-y-[26%] left-[4.5%] right-[4.5%] rounded-full overflow-hidden">
-                            <div
-                              className="relative h-full rounded-full transition-all duration-500"
-                              style={{
-                                width: `${xpPercent}%`,
-                                minWidth: xpPercent > 0 ? '6%' : '0%',
-                                background:
-                                  'linear-gradient(180deg, #fde68a 0%, #fbbf24 45%, #d97706 100%)',
-                                boxShadow:
-                                  '0 0 6px rgba(251,191,36,0.7), inset 0 1px 1px rgba(255,255,255,0.6)',
-                              }}
-                            >
-                              {/* Top glossy highlight */}
-                              <div className="absolute inset-x-0 top-0 h-1/2 rounded-full bg-white/30" />
-                              {/* Moving shimmer */}
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse" />
-                            </div>
+                          <div className="absolute inset-y-[26%] left-[4.5%] right-[4.5%] flex gap-[1%]">
+                            {Array.from({ length: 10 }).map((_, i) => {
+                              const segFill = Math.max(0, Math.min(1, xpPercent / 10 - i))
+                              return (
+                                <div
+                                  key={i}
+                                  className="relative flex-1 overflow-hidden rounded-[2px] bg-black/45 shadow-[inset_0_0_2px_rgba(0,0,0,0.6)]"
+                                >
+                                  <div
+                                    className="h-full transition-all duration-500"
+                                    style={{
+                                      width: `${segFill * 100}%`,
+                                      backgroundImage: `url('${hpBarAssets.healthy}')`,
+                                      backgroundSize: '1000% 100%',
+                                      backgroundPosition: `${i * 11.1}% 0`,
+                                      backgroundRepeat: 'no-repeat',
+                                    }}
+                                  />
+                                </div>
+                              )
+                            })}
                           </div>
                         </div>
                       </>
@@ -229,7 +232,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
 
             {/* Abilities Board */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <PremiumCard variant="frame" glow="purple">
+              <PremiumCard variant="frame">
                 <div className="space-y-4">
                   <h2 className="text-lg font-black text-amber-950 flex items-center gap-2">
                     <AbilityTypeIcon kind="ultimate" size="sm" />
