@@ -17,6 +17,8 @@ import AdventureSelectScreen from '../components/AdventureSelectScreen'
 import AdventureBattleScreen from '../components/AdventureBattleScreen'
 import DinoCoinsDisplay from '../components/DinoCoinsDisplay'
 import SiteLogo from '../components/SiteLogo'
+import PremiumButton from '../components/PremiumButton'
+import { homeAssets } from '../lib/gameAssets'
 
 type PageName = 'home' | 'dino-list' | 'dino-detail' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs' | 'adventure-select' | 'adventure-battle'
 
@@ -31,6 +33,7 @@ export default function Home() {
   const [selectedAdventure, setSelectedAdventure] = useState<Adventure | null>(null)
   const [userCoins, setUserCoins] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
     // User değişince (login/logout) dinozorları yeniden yükle
@@ -80,14 +83,36 @@ export default function Home() {
 
   // Ana Menü
   if (page === 'home') {
-    return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto">
-        {/* Arka plan efekti - sıcak meşale ışıltıları */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-gold opacity-10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-72 h-72 bg-gem-attack opacity-10 rounded-full blur-3xl"></div>
-        </div>
+    const menuItems = [
+      { icon: homeAssets.menu.duel, label: 'DÜELLO VS', onClick: () => setPage('duello-vs-select') },
+      {
+        icon: homeAssets.menu.offline,
+        label: 'Masada Oyna',
+        onClick: () => {
+          if (dinos.length > 0) {
+            setSelectedOfflineDino(dinos[0])
+            setPage('offline-battle')
+          } else {
+            setPage('offline-select')
+          }
+        },
+      },
+      { icon: homeAssets.menu.adventure, label: 'Maceralar', onClick: () => setPage('adventure-select') },
+      { icon: homeAssets.menu.mydinos, label: 'Dinozorlarım', onClick: () => setPage('dino-list') },
+      { icon: homeAssets.menu.matchlog, label: 'Maç Günlüğü', onClick: () => setPage('match-log') },
+      { icon: homeAssets.menu.newdino, label: 'Yeni Dinozor', onClick: () => setPage('dino-form') },
+    ]
 
+    return (
+      <div
+        className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-3 relative overflow-y-auto"
+        style={{
+          backgroundImage: `url('${homeAssets.background}')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: '#2a1c0e',
+        }}
+      >
         {/* Üst Bar - akışta, taşmaz; mobilde sarar */}
         <div className="w-full flex items-center justify-between flex-wrap gap-2 z-20">
           <div className="hs-wood-frame px-3 py-1 rounded-lg">
@@ -103,81 +128,58 @@ export default function Home() {
               <p className="text-sm font-bold text-gold-light">👤 {user?.username || user?.email?.split('@')[0]}</p>
             </div>
 
-            {/* Logout Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSignOut}
-              className="hs-button px-3 py-2 rounded-lg text-sm"
-            >
-              🚪 Çıkış
-            </motion.button>
+            {/* Settings (gear) with logout popover */}
+            <div className="relative">
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.94 }}
+                onClick={() => setShowSettings((s) => !s)}
+                title="Ayarlar"
+                className="w-10 h-10"
+              >
+                <img src={homeAssets.menu.settings} alt="Ayarlar" className="w-full h-full object-contain" draggable={false} />
+              </motion.button>
+
+              {showSettings && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute right-0 mt-2 z-30 hs-wood-frame rounded-lg p-2"
+                >
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-black/20 transition-colors w-full"
+                  >
+                    <img src={homeAssets.menu.logout} alt="" className="w-6 h-6 object-contain" draggable={false} />
+                    <span className="text-sm font-bold text-gold-light whitespace-nowrap">Çıkış</span>
+                  </button>
+                </motion.div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Başlık - logo + slogan */}
-        <div className="text-center mb-4 z-10 mt-2">
-          <div className="flex justify-center mb-2">
-            <SiteLogo size={240} />
+        <div className="text-center z-10">
+          <div className="flex justify-center">
+            <SiteLogo size={180} />
           </div>
-          <p className="text-lg hs-text-bronze opacity-90">Dinozor Savaş ve Gelişim Oyunu</p>
+          <p className="text-base hs-text-bronze opacity-90 -mt-2">Dinozor Savaş ve Gelişim Oyunu</p>
         </div>
 
-        {/* Butonlar */}
-        <div className="w-full max-w-sm flex flex-col gap-3 z-10 pb-8">
-          {/* Düello VS - En Üstte */}
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setPage('duello-vs-select')}
-            className="hs-button w-full px-6 py-5 rounded-xl text-xl"
-          >
-            ⚔️ DÜELLO VS
-          </motion.button>
-
-          {/* Masada Oyna - Offline Mode */}
-          <button
-            onClick={() => {
-              if (dinos.length > 0) {
-                setSelectedOfflineDino(dinos[0])
-                setPage('offline-battle')
-              } else {
-                setPage('offline-select')
-              }
-            }}
-            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
-          >
-            🎲 Masada Oyna
-          </button>
-
-          {/* Maceralar - Adventure Mode */}
-          <button
-            onClick={() => setPage('adventure-select')}
-            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
-          >
-            🗺️ Maceralar
-          </button>
-
-          <button
-            onClick={() => setPage('dino-list')}
-            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
-          >
-            🦖 Dinozorlarım
-          </button>
-
-          <button
-            onClick={() => setPage('match-log')}
-            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
-          >
-            📋 Maç Günlüğü
-          </button>
-
-          <button
-            onClick={() => setPage('dino-form')}
-            className="hs-button w-full px-6 py-4 rounded-xl text-lg"
-          >
-            ✨ Yeni Dinozor
-          </button>
+        {/* Menü butonları — premium plaka + madalyon ikon, merkezi disk üzerinde */}
+        <div className="w-full max-w-xs flex flex-col items-center gap-2 z-10 pb-8">
+          {menuItems.map((item) => (
+            <PremiumButton
+              key={item.label}
+              onClick={item.onClick}
+              className="w-full"
+              contentClassName="gap-2 text-sm sm:text-base"
+            >
+              <img src={item.icon} alt="" className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0" draggable={false} />
+              {item.label}
+            </PremiumButton>
+          ))}
         </div>
       </div>
     )

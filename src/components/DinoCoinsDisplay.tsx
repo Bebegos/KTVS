@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { STAT_ICONS } from '../lib/svgIcons'
+import { homeAssets } from '../lib/gameAssets'
 
 interface DinoCoinsDisplayProps {
   coins: number
@@ -12,8 +12,6 @@ export default function DinoCoinsDisplay({
   showAmount = true,
   size = 'md',
 }: DinoCoinsDisplayProps) {
-  const coinIcon = STAT_ICONS.coin
-
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
@@ -32,14 +30,14 @@ export default function DinoCoinsDisplay({
       className="hs-wood-frame flex items-center gap-2 rounded-full pl-1.5 pr-4 py-1 cursor-pointer group relative"
     >
       {/* Coin icon */}
-      {coinIcon && (
-        <motion.div
-          animate={{ rotate: [0, -5, 5, 0] }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className={`${sizeClasses[size]} flex-shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}
-          dangerouslySetInnerHTML={{ __html: coinIcon.svg }}
-        />
-      )}
+      <motion.img
+        src={homeAssets.dinoCoin}
+        alt="DinoCoin"
+        animate={{ rotate: [0, -5, 5, 0] }}
+        transition={{ duration: 3, repeat: Infinity }}
+        className={`${sizeClasses[size]} flex-shrink-0 object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}
+        draggable={false}
+      />
 
       {/* Coin amount */}
       {showAmount && (

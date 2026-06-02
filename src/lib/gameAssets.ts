@@ -143,3 +143,20 @@ export const battleAssets = {
   unitFrameEnemy: `${BASE}/battle/unitframe/unitframe-enemy.png`,
 }
 
+// ---------- Home / main menu ----------
+export const homeAssets = {
+  background: `${BASE}/home/home-background.png`,
+  logo: `${BASE}/home/logo.png`,
+  dinoCoin: `${BASE}/ui/dinocoin.png`,
+  menu: {
+    duel: `${BASE}/home/icons/menu-duel.png`,
+    offline: `${BASE}/home/icons/menu-offline.png`,
+    adventure: `${BASE}/home/icons/menu-adventure.png`,
+    mydinos: `${BASE}/home/icons/menu-mydinos.png`,
+    matchlog: `${BASE}/home/icons/menu-matchlog.png`,
+    newdino: `${BASE}/home/icons/menu-newdino.png`,
+    settings: `${BASE}/home/icons/top-settings.png`,
+    logout: `${BASE}/home/icons/top-logout.png`,
+  },
+}
+
