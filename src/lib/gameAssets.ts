@@ -73,10 +73,16 @@ export const uiAssets = {
 }
 
 // ---------- Status effect icons (small 48px / large 64px) ----------
+// Filename overrides where the art slug differs from the effect kind.
+const effectFileSlug: Record<string, string> = {
+  bleeding: 'bleed',
+}
+
 export function getEffectIconUrl(effect: EffectKind, size: 'sm' | 'lg' = 'sm'): string | null {
   if (effect === 'none') return null
   const folder = size === 'lg' ? 'large' : 'small'
-  return `${BASE}/effects/${folder}/effect-${effect.replace('_', '-')}-${size}.png`
+  const slug = effectFileSlug[effect] ?? effect.replace('_', '-')
+  return `${BASE}/effects/${folder}/effect-${slug}-${size}.png`
 }
 
 // ---------- Ability type icons (replace emoji) ----------
