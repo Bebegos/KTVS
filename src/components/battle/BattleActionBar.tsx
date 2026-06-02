@@ -11,8 +11,8 @@ const tileStyle = {
 
 // One desktop action-bar tile = a single stone plate piece at its native aspect.
 const DESKTOP_TILE = 'relative flex-shrink-0 aspect-[320/256] h-14 sm:h-20 md:h-28 lg:h-36 xl:h-44'
-// Negative margin so adjacent plates interlock at their gold edges.
-const OVERLAP = '-ml-2 sm:-ml-3 lg:-ml-5'
+// Negative margin so adjacent plates interlock tightly at their gold edges.
+const OVERLAP = '-ml-3 sm:-ml-5 lg:-ml-8'
 
 function Ornament({ side }: { side: 'left' | 'right' }) {
   const [failed, setFailed] = useState(false)
@@ -98,15 +98,15 @@ export default function BattleActionBar({
       {/* MOBILE — full-width interlocking plate tiles, ~2 rows */}
       <div className="flex flex-col lg:hidden w-full">
         {[slots.slice(0, 3), slots.slice(3, 6)].map((row, ri) => (
-          <div key={ri} className={`flex w-full ${ri > 0 ? '-mt-2' : ''}`}>
+          <div key={ri} className={`flex w-full ${ri > 0 ? '-mt-5' : ''}`}>
             {row.map((slot, ci) => (
               <div
                 key={slot.index}
-                className={`relative flex-1 min-w-0 aspect-[320/256] ${ci > 0 ? '-ml-3' : ''}`}
+                className={`relative flex-1 min-w-0 aspect-[320/256] ${ci > 0 ? '-ml-5' : ''}`}
                 style={tileStyle}
               >
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-[76%] aspect-square translate-y-[4%]">
+                  <div className="h-[80%] aspect-square translate-y-[4%]">
                     <SlotButton slot={slot} playerAtk={playerAtk} onSelectAbility={onSelectAbility} />
                   </div>
                 </div>

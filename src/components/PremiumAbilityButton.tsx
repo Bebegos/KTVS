@@ -93,9 +93,9 @@ export default function PremiumAbilityButton({
     return abilityButtonAssets.base
   }
 
-  // Square button that matches the Dino Detail slots; capped so it stays compact
-  // in the battle action bar. Container query enables the cqw-scaled content.
-  const rootClass = 'relative w-full aspect-square max-w-[132px] mx-auto'
+  // Square button that fills its container (the action-bar tile sizes it).
+  // Container query enables the cqw-scaled content.
+  const rootClass = 'relative w-full aspect-square'
   const frameStyle = {
     backgroundImage: `url('${getFrameImage()}')`,
     backgroundSize: '100% 100%',

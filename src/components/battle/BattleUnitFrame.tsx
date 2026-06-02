@@ -54,8 +54,8 @@ export default function BattleUnitFrame({
     ? { left: '3%', top: '14%', width: '23%', height: '70%' }
     : { left: '74%', top: '14%', width: '23%', height: '70%' }
   const bars = isPlayer
-    ? { left: '45%', right: '5%', top: '42%', height: '23%' }
-    : { right: '45%', left: '5%', top: '42%', height: '23%' }
+    ? { left: '43%', right: '4%', top: '44%', height: '20%' }
+    : { right: '43%', left: '4%', top: '44%', height: '20%' }
 
   const pct = Math.max(0, Math.min(100, (currentHp / maxHp) * 100))
   const shown = Math.max(0, Math.round(currentHp))
@@ -63,8 +63,8 @@ export default function BattleUnitFrame({
 
   const portrait = (
     <div className="absolute" style={socket}>
-      {/* Main class medallion fills the socket ring */}
-      <div className="absolute inset-[9%]">
+      {/* Main class medallion: a touch smaller, nudged toward the frame center */}
+      <div className="absolute inset-[14%]" style={{ transform: `translateX(${isPlayer ? '10%' : '-10%'})` }}>
         <MedallionIcon id={classId || DEFAULT_PORTRAIT_CLASS} type="class" fill />
       </div>
       {/* Spec + level badges beneath the socket */}
