@@ -39,23 +39,22 @@ export default function StatCardPremium({ stat, dino, value }: StatCardPremiumPr
   return (
     <>
       <motion.button
-        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setDetailOpen(true)}
         className="w-full text-left"
       >
         <PremiumCard variant="panel">
-          <div className="flex items-center gap-3 px-3 py-2.5">
+          <div className="flex items-center gap-3 px-3 py-2.5 justify-center">
             <span
-              className="flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0"
+              className="flex items-center justify-center w-11 h-11 rounded-full flex-shrink-0"
               style={{ background: `${color}1a`, border: `1.5px solid ${color}55` }}
             >
               <StatIcon stat={stat} size="md" />
             </span>
 
-            <span className="font-black text-amber-950 text-sm flex-1">{def.labelTr}</span>
+            <span className="font-black text-amber-950 text-sm">{def.labelTr}</span>
 
-            <div className="text-right leading-none">
+            <div className="text-right leading-none ml-auto">
               <span className="font-black text-lg" style={{ color }}>
                 {value}
               </span>

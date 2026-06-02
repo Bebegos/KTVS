@@ -64,9 +64,6 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
               <p className="text-xs font-black uppercase tracking-widest text-amber-800">
                 Level {dino.level} • {dino.element || 'Normal'}
               </p>
-              <p className="text-[10px] text-amber-700/80 font-bold uppercase tracking-wider pt-1">
-                Dinozorlaştırma Ekranı
-              </p>
             </div>
           </PremiumCard>
         </motion.div>
@@ -105,39 +102,40 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
           </motion.div>
         )}
 
+        {/* Class & Spec on same row as header */}
+        {(dino.class || dino.spec) && (
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md">
+            <PremiumCard variant="frame">
+              <div className="text-center space-y-3 py-1">
+                <p className="text-xs font-black text-amber-900/80 uppercase tracking-wide">
+                  Sınıf & Özelleştirme
+                </p>
+                <div className="flex gap-2 px-2">
+                  {dino.class && (
+                    <div className="flex items-center justify-center gap-2 bg-amber-900/10 border border-amber-900/30 rounded-lg px-3 py-2 flex-1">
+                      <MedallionIcon id={dino.class} type="class" size="md" />
+                      <span className="text-xs font-black text-amber-950">
+                        {getClassIcon(dino.class)?.label}
+                      </span>
+                    </div>
+                  )}
+                  {dino.spec && (
+                    <div className="flex items-center justify-center gap-2 bg-amber-900/10 border border-amber-900/30 rounded-lg px-3 py-2 flex-1">
+                      <MedallionIcon id={dino.spec} type="spec" size="md" />
+                      <span className="text-xs font-black text-amber-950">
+                        {getSpecIcon(dino.spec)?.label}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </PremiumCard>
+          </motion.div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Stats & Info */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Class & Spec */}
-            {(dino.class || dino.spec) && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                <PremiumCard variant="panel">
-                  <div className="p-4 space-y-3">
-                    <p className="text-xs font-black text-amber-900/80 uppercase tracking-wide">
-                      Sınıf & Özelleştirme
-                    </p>
-                    <div className="flex gap-3">
-                      {dino.class && (
-                        <div className="flex items-center gap-2 bg-amber-900/10 border border-amber-900/30 rounded-lg px-3 py-2 flex-1">
-                          <MedallionIcon id={dino.class} type="class" size="sm" />
-                          <span className="text-xs font-black text-amber-950">
-                            {getClassIcon(dino.class)?.label}
-                          </span>
-                        </div>
-                      )}
-                      {dino.spec && (
-                        <div className="flex items-center gap-2 bg-amber-900/10 border border-amber-900/30 rounded-lg px-3 py-2 flex-1">
-                          <MedallionIcon id={dino.spec} type="spec" size="sm" />
-                          <span className="text-xs font-black text-amber-950">
-                            {getSpecIcon(dino.spec)?.label}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </PremiumCard>
-              </motion.div>
-            )}
 
             {/* Stats — each stat its own premium Hearthstone card */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
@@ -172,21 +170,14 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                           </p>
                         </div>
                         {/* WoW-style segmented bar: 10 healthy-fill pieces (each = 10%) */}
-                        <div
-                          className="relative w-full aspect-[10/1]"
-                          style={{
-                            backgroundImage: `url('${hpBarAssets.background}')`,
-                            backgroundSize: '100% 100%',
-                            backgroundRepeat: 'no-repeat',
-                          }}
-                        >
-                          <div className="absolute inset-y-[26%] left-[4.5%] right-[4.5%] flex gap-[1%]">
+                        <div className="relative w-full h-6 bg-amber-950/40 rounded-sm border border-amber-900/30">
+                          <div className="absolute inset-y-1 left-1 right-1 flex gap-1">
                             {Array.from({ length: 10 }).map((_, i) => {
                               const segFill = Math.max(0, Math.min(1, xpPercent / 10 - i))
                               return (
                                 <div
                                   key={i}
-                                  className="relative flex-1 overflow-hidden rounded-[2px] bg-black/45 shadow-[inset_0_0_2px_rgba(0,0,0,0.6)]"
+                                  className="relative flex-1 overflow-hidden rounded-sm bg-amber-950/30 border border-amber-900/40"
                                 >
                                   <div
                                     className="h-full transition-all duration-500"
@@ -299,45 +290,40 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                         return (
                           <div
                             key={idx}
-                            className="bg-amber-900/8 border border-amber-900/25 rounded-lg p-3 space-y-2"
+                            className="bg-amber-900/8 border border-amber-900/25 rounded-lg p-4 space-y-3"
                           >
                             <div className="flex items-center justify-between gap-3">
-                              <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <AbilityIcon iconId={ability.icon} size="sm" />
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <AbilityIcon iconId={ability.icon} size="md" />
                                 <div className="min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-black text-amber-700 uppercase">
-                                      {idx === 5 ? 'ULT' : `Slot ${idx + 1}`}
-                                    </span>
-                                    <p className="font-black text-amber-950 text-sm truncate">
-                                      {ability.name}
-                                    </p>
-                                  </div>
-                                  <p className="text-[11px] text-amber-900/70 leading-snug line-clamp-2">
+                                  <p className="font-black text-amber-950 text-base truncate">
+                                    {ability.name}
+                                  </p>
+                                  <p className="text-sm text-amber-900/75 leading-snug line-clamp-2">
                                     {ability.description}
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="flex flex-col items-center bg-amber-900/15 rounded-lg px-2 py-1 flex-shrink-0">
-                                <AbilityTypeIcon kind={ability.kind} size="sm" />
-                                <p className="font-black text-amber-950 text-sm leading-none mt-0.5">
+                              <div className="flex flex-col items-center bg-amber-900/15 rounded-lg px-3 py-2 flex-shrink-0">
+                                <AbilityTypeIcon kind={ability.kind} size="md" />
+                                <p className="font-black text-amber-950 text-lg leading-none mt-1">
                                   {displayValue}
                                 </p>
-                                <p className="text-[9px] text-amber-800 font-bold">{displayLabel}</p>
+                                <p className="text-[10px] text-amber-800 font-bold">{displayLabel}</p>
                               </div>
                             </div>
 
                             <div className="flex flex-wrap gap-2 items-center">
                               {ability.effects && ability.effects.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
+                                <div className="flex flex-wrap gap-2">
                                   {ability.effects.map((effect) => (
                                     <div
                                       key={effect}
-                                      className="flex items-center gap-1 bg-amber-900/12 border border-amber-900/30 rounded px-2 py-0.5"
+                                      className="flex items-center gap-1.5 bg-amber-900/12 border border-amber-900/30 rounded px-2.5 py-1"
                                     >
-                                      <EffectIcon effect={effect} size="xs" />
-                                      <span className="text-[10px] font-bold text-amber-900">
+                                      <EffectIcon effect={effect} size="sm" />
+                                      <span className="text-xs font-bold text-amber-900">
                                         {getEffectNameTR(effect)}
                                       </span>
                                     </div>
@@ -345,7 +331,7 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                                 </div>
                               )}
                               {ability.cooldown > 0 && (
-                                <span className="text-[10px] font-bold text-amber-800/80">
+                                <span className="text-xs font-bold text-amber-800/80">
                                   Bekleme: {ability.cooldown}t
                                 </span>
                               )}

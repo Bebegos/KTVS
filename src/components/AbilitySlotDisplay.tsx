@@ -55,7 +55,7 @@ export default function AbilitySlotDisplay({
   const firstEffect = ability.effects?.[0]
 
   // Single-line name: shrink font as the name gets longer (cqw), ellipsis if needed.
-  const nameSize = Math.max(5.5, Math.min(11, 142 / Math.max(1, ability.name.length)))
+  const nameSize = Math.max(5, Math.min(9.5, 120 / Math.max(1, ability.name.length)))
 
   return (
     <motion.button
@@ -71,7 +71,7 @@ export default function AbilitySlotDisplay({
       </div>
 
       {/* Ability name — single line, centered on the belt, auto-shrink + ellipsis */}
-      <div className="absolute left-[10%] right-[10%] top-[57%] -translate-y-1/2 text-center">
+      <div className="absolute left-[14%] right-[14%] top-[57%] -translate-y-1/2 text-center">
         <span
           className="block truncate text-amber-950 font-black leading-none"
           style={{ fontSize: `${nameSize}cqw` }}
@@ -86,7 +86,7 @@ export default function AbilitySlotDisplay({
       </div>
 
       {/* Right value box — first effect icon (or ability-type icon as fallback) */}
-      <div className="absolute left-[51%] top-[69%] w-[19%] h-[15%] flex items-center justify-center">
+      <div className="absolute left-[51%] top-[69%] w-[19%] h-[15%] flex items-center justify-center overflow-hidden">
         {firstEffect ? (
           <EffectIcon effect={firstEffect} fill />
         ) : (
