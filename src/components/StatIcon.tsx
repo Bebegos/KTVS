@@ -1,4 +1,5 @@
-import { ReactNode } from 'react'
+import { useState } from 'react'
+import { getStatIconUrl } from '../lib/gameAssets'
 
 type StatType = 'sta' | 'hp' | 'atk' | 'def' | 'spd'
 type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -19,26 +20,27 @@ const statLabels: Record<StatType, string> = {
   spd: 'Speed',
 }
 
-const statColors: Record<StatType, string> = {
-  sta: '#ff6b6b',
-  hp: '#ff6b6b',
-  atk: '#ffd700',
-  def: '#6b9bd1',
-  spd: '#ffdd00',
-}
-
 export default function StatIcon({ stat, size = 'md', className = '', title, inline = false }: StatIconProps) {
-  const iconClass = `hs-icon hs-icon-${stat} hs-icon-${size} ${inline ? 'hs-icon-inline' : ''} ${className}`.trim()
+  const [failed, setFailed] = useState(false)
   const label = title || statLabels[stat]
+  const sizeClass = `hs-icon-${size}`
 
-  return (
-    <div
-      className={iconClass}
-      title={label}
-      role="img"
-      aria-label={label}
-    />
-  )
+  // Premium PNG stat icon, falling back to the legacy CSS/SVG icon if missing.
+  if (!failed) {
+    return (
+      <img
+        src={getStatIconUrl(stat)}
+        alt={label}
+        title={label}
+        onError={() => setFailed(true)}
+        className={`hs-icon ${sizeClass} ${inline ? 'hs-icon-inline' : ''} object-contain ${className}`.trim()}
+        draggable={false}
+      />
+    )
+  }
+
+  const iconClass = `hs-icon hs-icon-${stat} ${sizeClass} ${inline ? 'hs-icon-inline' : ''} ${className}`.trim()
+  return <div className={iconClass} title={label} role="img" aria-label={label} />
 }
 
 // Stat display component combining icon + value

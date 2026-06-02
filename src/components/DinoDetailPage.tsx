@@ -12,7 +12,7 @@ import MedallionIcon from './MedallionIcon'
 import StatCardPremium from './StatCardPremium'
 import { getClassIcon, getSpecIcon } from '../lib/icons'
 import { getEffectNameTR } from '../lib/effect-translations'
-import { hpBarAssets } from '../lib/gameAssets'
+import { hpBarAssets, uiAssets } from '../lib/gameAssets'
 import RewardSpendingModal from './RewardSpendingModal'
 import StatBonusAllocator from './StatBonusAllocator'
 import AbilityDiscoveryModal from './AbilityDiscoveryModal'
@@ -73,29 +73,44 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl">
             <PremiumCard variant="panel">
               <div className="p-5 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl animate-pulse">⚡</span>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={uiAssets.levelUp}
+                    alt=""
+                    className="w-10 h-10 object-contain animate-pulse"
+                    draggable={false}
+                  />
                   <h3 className="text-lg font-black text-amber-900">SEVİYE ÖDÜLLERİ HAZIR!</h3>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <PremiumButton
-                    onClick={() => setShowBonusAllocator(true)}
-                    disabled={statPoints <= 0}
-                    className="w-44"
-                    contentClassName="text-xs"
-                  >
-                    📊 Stat Dağıt{statPoints > 0 ? ` (${statPoints})` : ''}
-                  </PremiumButton>
+                <div className="flex flex-wrap items-center gap-4">
+                  {statPoints > 0 && (
+                    <div className="flex items-center gap-2">
+                      <img src={uiAssets.statPoints} alt="" className="w-8 h-8 object-contain" draggable={false} />
+                      <PremiumButton
+                        onClick={() => setShowBonusAllocator(true)}
+                        disabled={statPoints <= 0}
+                        className="w-40"
+                        contentClassName="text-xs"
+                      >
+                        Stat Dağıt ({statPoints})
+                      </PremiumButton>
+                    </div>
+                  )}
 
-                  <PremiumButton
-                    onClick={() => setShowAbilityDiscovery(true)}
-                    disabled={discoveryCount <= 0}
-                    className="w-44"
-                    contentClassName="text-xs"
-                  >
-                    ✦ Yetenek Aç{discoveryCount > 0 ? ` (${discoveryCount})` : ''} ✦
-                  </PremiumButton>
+                  {discoveryCount > 0 && (
+                    <div className="flex items-center gap-2">
+                      <img src={uiAssets.abilityChest} alt="" className="w-8 h-8 object-contain" draggable={false} />
+                      <PremiumButton
+                        onClick={() => setShowAbilityDiscovery(true)}
+                        disabled={discoveryCount <= 0}
+                        className="w-40"
+                        contentClassName="text-xs"
+                      >
+                        Yetenek Aç ({discoveryCount})
+                      </PremiumButton>
+                    </div>
+                  )}
                 </div>
               </div>
             </PremiumCard>
@@ -164,7 +179,10 @@ export default function DinoDetailPage({ dino: initialDino, onBack, onRefresh }:
                     return (
                       <>
                         <div className="flex justify-between items-center">
-                          <p className="text-xs font-black text-amber-900">✨ DENEYİM</p>
+                          <p className="flex items-center gap-1.5 text-xs font-black text-amber-900">
+                            <img src={uiAssets.experience} alt="" className="w-5 h-5 object-contain" draggable={false} />
+                            DENEYİM
+                          </p>
                           <p className="text-xs font-black text-amber-900">
                             {dino.xp}/{maxXpForLevel}
                           </p>

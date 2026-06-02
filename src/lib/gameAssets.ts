@@ -43,6 +43,35 @@ export const hpBarAssets = {
   danger: `${BASE}/hp-bars/hp-fill-danger.png`,
 }
 
+// ---------- Attack / ability art (premium PNG illustrations) ----------
+/** Full URL for an attack illustration, e.g. 'bite' -> /assests/attacks/attack-bite.png */
+export function getAttackArtUrl(name: string): string {
+  return `${BASE}/attacks/attack-${name}.png`
+}
+
+// ---------- Stat icons (premium PNG) ----------
+type StatArtKey = 'sta' | 'hp' | 'atk' | 'def' | 'spd'
+export function getStatIconUrl(stat: StatArtKey): string {
+  return `${BASE}/stats/stat-${stat}.png`
+}
+
+// ---------- Class & spec medallions (premium PNG) ----------
+const dash = (id: string) => id.replace(/_/g, '-')
+export function getClassMedallionUrl(classId: string): string {
+  return `${BASE}/medallions/class/class-${dash(classId)}.png`
+}
+export function getSpecMedallionUrl(specId: string): string {
+  return `${BASE}/medallions/spec/spec-${dash(specId)}.png`
+}
+
+// ---------- Progression / UI illustrations ----------
+export const uiAssets = {
+  experience: `${BASE}/ui/ui-experience.png`,
+  levelUp: `${BASE}/ui/ui-level-up.png`,
+  statPoints: `${BASE}/ui/ui-stat-points.png`,
+  abilityChest: `${BASE}/ui/ui-ability-chest.png`,
+}
+
 // ---------- Status effect icons (small 48px / large 64px) ----------
 export function getEffectIconUrl(effect: EffectKind, size: 'sm' | 'lg' = 'sm'): string | null {
   if (effect === 'none') return null

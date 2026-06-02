@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { getClassMedallion, getSpecMedallion } from '../lib/classSpecIcons'
+import { getClassMedallionUrl, getSpecMedallionUrl } from '../lib/gameAssets'
 
 interface MedallionIconProps {
   id?: string
@@ -20,13 +22,29 @@ export default function MedallionIcon({
   size = 'md',
   className = '',
 }: MedallionIconProps) {
+  const [imgFailed, setImgFailed] = useState(false)
   const medallion = type === 'class' ? getClassMedallion(id) : getSpecMedallion(id)
 
-  if (!medallion) {
+  if (!id || !medallion) {
     return (
       <div className={`${sizeMap[size]} flex items-center justify-center ${className}`}>
         <span className="text-gold">❓</span>
       </div>
+    )
+  }
+
+  // Premium PNG medallion, falling back to the inline SVG if the file is absent.
+  const url = type === 'class' ? getClassMedallionUrl(id) : getSpecMedallionUrl(id)
+  if (!imgFailed) {
+    return (
+      <img
+        src={url}
+        alt={medallion.name}
+        title={medallion.name}
+        onError={() => setImgFailed(true)}
+        className={`${sizeMap[size]} flex-shrink-0 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] ${className}`}
+        draggable={false}
+      />
     )
   }
 
