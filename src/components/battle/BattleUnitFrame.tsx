@@ -79,7 +79,7 @@ export default function BattleUnitFrame({
   )
 
   return (
-    <div className="w-60 sm:w-80 max-w-[46vw]">
+    <div className="w-60 sm:w-72 md:w-80 lg:w-[26rem] xl:w-[32rem] max-w-[46vw]">
       {/* Frame + seated content */}
       <div className="relative w-full aspect-[640/220]">
         {!imgFailed ? (

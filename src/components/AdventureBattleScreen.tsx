@@ -43,6 +43,7 @@ export default function AdventureBattleScreen({
   // Immersive battle effect system
   const [activeEffectOverlay, setActiveEffectOverlay] = useState(false)
   const [currentVisualEffects, setCurrentVisualEffects] = useState<BattleVisualEffects | null>(null)
+  const [castIconId, setCastIconId] = useState<string | undefined>(undefined)
   const [floatingDamages, setFloatingDamages] = useState<
     Array<{ id: string; damage: number; isCritical: boolean; isHealing: boolean; x: number; y: number }>
   >([])
@@ -127,6 +128,7 @@ export default function AdventureBattleScreen({
       setBattleLog(prev => [result.playerAction.message, ...prev.slice(0, 14)])
 
       setCurrentVisualEffects(playerVisuals)
+      setCastIconId(playerAbility?.icon)
       setActiveEffectOverlay(true)
 
       if (result.playerAction.damage > 0) {
@@ -148,6 +150,7 @@ export default function AdventureBattleScreen({
 
           setTimeout(() => {
             setCurrentVisualEffects(opponentVisuals)
+            setCastIconId(opponentAbility?.icon)
             setActiveEffectOverlay(true)
 
             if (result.opponentAction.damage > 0) {
@@ -329,6 +332,7 @@ export default function AdventureBattleScreen({
           currentVisualEffects={currentVisualEffects}
           onEffectOverlayComplete={() => setActiveEffectOverlay(false)}
           floatingDamages={floatingDamages}
+          castIconId={castIconId}
         />
 
         <AnimatePresence>

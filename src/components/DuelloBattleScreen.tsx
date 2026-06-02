@@ -54,6 +54,7 @@ export default function DuelloBattleScreen({
   // New immersive battle effect system
   const [activeEffectOverlay, setActiveEffectOverlay] = useState(false)
   const [currentVisualEffects, setCurrentVisualEffects] = useState<BattleVisualEffects | null>(null)
+  const [castIconId, setCastIconId] = useState<string | undefined>(undefined)
   const [floatingDamages, setFloatingDamages] = useState<
     Array<{ id: string; damage: number; isCritical: boolean; isHealing: boolean; x: number; y: number }>
   >([])
@@ -224,6 +225,7 @@ export default function DuelloBattleScreen({
 
         // Show player ability effect overlay
         setCurrentVisualEffects(playerVisuals)
+        setCastIconId(playerAbility?.icon)
         setActiveEffectOverlay(true)
 
         // Add floating damage numbers for player
@@ -252,6 +254,7 @@ export default function DuelloBattleScreen({
             if (!result.opponentAction.targetDied) {
               // Show opponent ability effect overlay
               setCurrentVisualEffects(opponentVisuals)
+              setCastIconId(opponentAbility?.icon)
               setActiveEffectOverlay(true)
 
               // Add floating damage numbers for opponent
@@ -486,6 +489,7 @@ export default function DuelloBattleScreen({
         currentVisualEffects={currentVisualEffects}
         onEffectOverlayComplete={() => setActiveEffectOverlay(false)}
         floatingDamages={floatingDamages}
+        castIconId={castIconId}
       />
 
       <AnimatePresence>

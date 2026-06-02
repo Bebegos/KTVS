@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Ability, ActiveEffect, BattleVisualEffects } from '../../game/types'
-import { battleAssets } from '../../lib/gameAssets'
-import PremiumAbilityButton from '../PremiumAbilityButton'
+import { battleAssets, modalAssets } from '../../lib/gameAssets'
+import AbilityIcon from '../AbilityIcon'
 import BattleUnitFrame from './BattleUnitFrame'
+import BattleActionBar from './BattleActionBar'
 import BattleEffectOverlay from '../battle-effects/BattleEffectOverlay'
 import FloatingDamageNumber from '../battle-effects/FloatingDamageNumber'
 import TurnIndicator from '../battle-effects/TurnIndicator'
-import EnhancedBattleLog from '../battle-effects/EnhancedBattleLog'
 
 export interface BattleArenaSlot {
   ability: Ability | null
@@ -59,6 +59,8 @@ interface BattleArenaProps {
   currentVisualEffects: BattleVisualEffects | null
   onEffectOverlayComplete: () => void
   floatingDamages: FloatingDamage[]
+  /** Icon id of the ability currently being cast (zooms in at screen center). */
+  castIconId?: string
 }
 
 /**
@@ -83,8 +85,9 @@ export default function BattleArena({
   currentVisualEffects,
   onEffectOverlayComplete,
   floatingDamages,
+  castIconId,
 }: BattleArenaProps) {
-  // null = default animations card; 'log' = battle log card.
+  // null = nothing shown in the center; 'log' = battle log card.
   const [centerCard, setCenterCard] = useState<null | 'log'>(null)
   const [bgFailed, setBgFailed] = useState(false)
 
@@ -122,6 +125,24 @@ export default function BattleArena({
         <TurnIndicator round={round} isPlayerTurn={round % 2 === 1} />
       </AnimatePresence>
 
+      {/* Center cast animation: the acting ability's icon zooms in */}
+      <AnimatePresence>
+        {activeEffectOverlay && castIconId && (
+          <motion.div
+            key={`cast-${castIconId}-${round}`}
+            className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none"
+            initial={{ scale: 0.25, opacity: 0, rotate: -10 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            exit={{ scale: 1.7, opacity: 0 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+          >
+            <div className="w-36 h-36 sm:w-52 sm:h-52 lg:w-64 lg:h-64 drop-shadow-[0_0_40px_rgba(0,0,0,0.85)]">
+              <AbilityIcon iconId={castIconId} fill />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* TOP HUD: unit frames in the corners, toggles + center card below */}
       <div className="absolute top-0 inset-x-0 z-20 p-2 sm:p-3 pointer-events-none">
         <div className="flex items-start justify-between gap-2">
@@ -150,21 +171,37 @@ export default function BattleArena({
             )}
           </div>
 
-          <div className="w-[min(92vw,30rem)]">
-            {centerCard === 'log' ? (
-              <div className="h-36 rounded-xl overflow-hidden border-2 border-amber-900/50 bg-stone-950/70 backdrop-blur-sm">
-                <EnhancedBattleLog entries={battleLog} maxEntries={7} />
+          {/* Battle log card (themed) — only when toggled on */}
+          {centerCard === 'log' && (
+            <div
+              className="w-[min(92vw,32rem)] p-3 sm:p-4"
+              style={{
+                borderStyle: 'solid',
+                borderWidth: '24px',
+                borderImageSource: `url('${modalAssets.frame}')`,
+                borderImageSlice: '58 fill',
+                borderImageRepeat: 'stretch',
+              }}
+            >
+              <p className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-amber-900 mb-2">
+                📜 Savaş Kaydı
+              </p>
+              <div className="h-32 overflow-y-auto pr-1 space-y-1">
+                {battleLog.length === 0 ? (
+                  <p className="text-amber-900/50 text-sm text-center py-6">Savaş henüz başlamadı…</p>
+                ) : (
+                  battleLog.slice(0, 8).map((msg, idx) => (
+                    <p
+                      key={`${idx}-${msg.slice(0, 8)}`}
+                      className="text-xs font-semibold text-amber-950/90 bg-amber-900/10 border border-amber-900/20 rounded px-2 py-1 break-words"
+                    >
+                      {msg}
+                    </p>
+                  ))
+                )}
               </div>
-            ) : (
-              <div
-                className="h-24 rounded-xl flex flex-col items-center justify-center gap-1 border-2 border-amber-700/40"
-                style={{ background: 'linear-gradient(180deg, rgba(40,28,14,0.55), rgba(20,12,6,0.55))', backdropFilter: 'blur(2px)' }}
-              >
-                <span className="text-3xl opacity-80">⚔️</span>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-200/80">Tur {round}</p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -189,42 +226,7 @@ export default function BattleArena({
           </div>
         )}
 
-        <div className="relative flex items-end justify-center w-full max-w-4xl mx-auto px-1">
-          <ActionBarOrnament side="left" />
-          <div
-            className="relative flex-1 max-w-2xl"
-            style={{
-              backgroundColor: 'rgba(28,20,10,0.6)',
-              backgroundImage: `url('${battleAssets.actionBar.center}')`,
-              backgroundRepeat: 'repeat-x',
-              backgroundPosition: 'center',
-              backgroundSize: 'auto 100%',
-            }}
-          >
-            <div className="flex items-end justify-center gap-1 sm:gap-2 px-6 sm:px-10 py-3 sm:py-4">
-              {slots.map((slot) => (
-                <div key={slot.index} className="flex-1 min-w-0 max-w-[80px] sm:max-w-[104px]">
-                  <PremiumAbilityButton
-                    ability={slot.ability}
-                    index={slot.index}
-                    atk={playerAtk}
-                    isUltimate={slot.isUltimate}
-                    isSelected={slot.isSelected}
-                    isLocked={slot.isLocked}
-                    canUse={slot.canUse}
-                    cooldown={slot.cooldown}
-                    maxCooldown={slot.maxCooldown}
-                    disabled={slot.disabled}
-                    lockedLevel={slot.lockedLevel}
-                    onClick={() => onSelectAbility(slot.index)}
-                    showPreview={false}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-          <ActionBarOrnament side="right" />
-        </div>
+        <BattleActionBar slots={slots} playerAtk={playerAtk} onSelectAbility={onSelectAbility} />
       </div>
     </div>
   )
@@ -246,20 +248,3 @@ function ToggleButton({ active, onClick, title, children }: { active: boolean; o
   )
 }
 
-function ActionBarOrnament({ side }: { side: 'left' | 'right' }) {
-  const [failed, setFailed] = useState(false)
-  if (failed) return null
-  const src = side === 'left' ? battleAssets.actionBar.ornamentLeft : battleAssets.actionBar.ornamentRight
-  // Guardians overlap the plate ends (negative margin) and stand taller than it.
-  const overlap = side === 'left' ? '-mr-5 sm:-mr-7' : '-ml-5 sm:-ml-7'
-  return (
-    <img
-      src={src}
-      alt=""
-      aria-hidden
-      onError={() => setFailed(true)}
-      className={`relative z-10 flex-shrink-0 h-28 sm:h-36 lg:h-40 w-auto object-contain ${overlap}`}
-      draggable={false}
-    />
-  )
-}
