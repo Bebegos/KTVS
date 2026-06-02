@@ -189,20 +189,21 @@ export default function BattleArena({
           </div>
         )}
 
-        <div className="relative flex items-end justify-center">
+        <div className="relative flex items-end justify-center w-full max-w-4xl mx-auto px-1">
           <ActionBarOrnament side="left" />
           <div
-            className="relative flex-1 max-w-3xl"
+            className="relative flex-1 max-w-2xl"
             style={{
-              backgroundColor: 'rgba(28,20,10,0.55)',
+              backgroundColor: 'rgba(28,20,10,0.6)',
               backgroundImage: `url('${battleAssets.actionBar.center}')`,
               backgroundRepeat: 'repeat-x',
+              backgroundPosition: 'center',
               backgroundSize: 'auto 100%',
             }}
           >
-            <div className="flex items-end justify-center gap-1.5 sm:gap-2 px-2 py-2 sm:py-3">
+            <div className="flex items-end justify-center gap-1 sm:gap-2 px-6 sm:px-10 py-3 sm:py-4">
               {slots.map((slot) => (
-                <div key={slot.index} className="flex-1 min-w-0 max-w-[88px] sm:max-w-[112px]">
+                <div key={slot.index} className="flex-1 min-w-0 max-w-[80px] sm:max-w-[104px]">
                   <PremiumAbilityButton
                     ability={slot.ability}
                     index={slot.index}
@@ -249,13 +250,15 @@ function ActionBarOrnament({ side }: { side: 'left' | 'right' }) {
   const [failed, setFailed] = useState(false)
   if (failed) return null
   const src = side === 'left' ? battleAssets.actionBar.ornamentLeft : battleAssets.actionBar.ornamentRight
+  // Guardians overlap the plate ends (negative margin) and stand taller than it.
+  const overlap = side === 'left' ? '-mr-5 sm:-mr-7' : '-ml-5 sm:-ml-7'
   return (
     <img
       src={src}
       alt=""
       aria-hidden
       onError={() => setFailed(true)}
-      className="hidden md:block h-24 lg:h-28 object-contain flex-shrink-0 -mb-1"
+      className={`relative z-10 flex-shrink-0 h-28 sm:h-36 lg:h-40 w-auto object-contain ${overlap}`}
       draggable={false}
     />
   )

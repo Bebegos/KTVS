@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { ActiveEffect } from '../../game/types'
 import HealthBar from '../HealthBar'
 import EffectIcon from '../EffectIcon'
 import { getEffectNameTR } from '../../lib/effect-translations'
+import { battleAssets } from '../../lib/gameAssets'
 
 interface BattleUnitFrameProps {
   side: 'player' | 'enemy'
@@ -14,12 +16,13 @@ interface BattleUnitFrameProps {
 }
 
 /**
- * WoW-style unit frame for the battle arena: an ornate gold-framed portrait with
- * the dino's name and a Hearthstone health bar, plus a row of clickable status
- * effects below it. The player frame faces right; the enemy frame is mirrored.
+ * WoW-style unit frame: the ornate PNG frame (portrait socket + recessed bar
+ * channel) with the dino portrait seated in the socket and a Hearthstone health
+ * bar in the channel, plus clickable status effects below.
  *
- * Built in CSS so it looks themed even before the unit-frame PNG art lands; the
- * art will later overlay this as ornamentation.
+ * The player frame is used as-authored (socket left); the enemy frame is the
+ * same art mirrored (socket right), so content insets flip accordingly. Falls
+ * back to a plain CSS frame if the PNG is missing.
  */
 export default function BattleUnitFrame({
   side,
@@ -30,67 +33,88 @@ export default function BattleUnitFrame({
   effects,
   onEffectClick,
 }: BattleUnitFrameProps) {
+  const [imgFailed, setImgFailed] = useState(false)
+  const [enemyArtFailed, setEnemyArtFailed] = useState(false)
   const isPlayer = side === 'player'
-  const accent = isPlayer ? '#d4af37' : '#b06a3a'
+  const accent = isPlayer ? '#d4af37' : '#c08a4a'
+  // Enemy uses dedicated art if present, otherwise the player art mirrored.
+  const useEnemyArt = side === 'enemy' && !enemyArtFailed
+  const frameSrc = useEnemyArt ? battleAssets.unitFrameEnemy : battleAssets.unitFramePlayer
+  const mirror = side === 'enemy' && enemyArtFailed
+
+  // Painted-zone insets measured from the 640×220 frame art.
+  const socket = isPlayer
+    ? { left: '3%', top: '15%', width: '22%', height: '68%' }
+    : { left: '75%', top: '15%', width: '22%', height: '68%' }
+  const bars = isPlayer
+    ? { left: '46%', right: '5%', top: '28%', height: '46%' }
+    : { right: '46%', left: '5%', top: '28%', height: '46%' }
 
   const portrait = (
-    <div
-      className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center"
-      style={{
-        background: 'radial-gradient(circle at 35% 30%, #f0e0c0 0%, #cbb487 55%, #8a6d3f 100%)',
-        border: `3px solid ${accent}`,
-        boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.4), 0 3px 8px rgba(0,0,0,0.6)',
-      }}
-    >
-      <span className="text-3xl sm:text-4xl drop-shadow">🦖</span>
-      {level != null && (
-        <span
-          className="absolute -bottom-1 -right-1 min-w-[20px] h-5 px-1 rounded-full text-[10px] font-black text-amber-50 flex items-center justify-center"
-          style={{ background: '#3a2a14', border: `1.5px solid ${accent}` }}
-        >
-          {level}
-        </span>
-      )}
+    <div className="absolute flex items-center justify-center" style={socket}>
+      <div className="relative w-full h-full rounded-full flex items-center justify-center">
+        <span className="text-2xl sm:text-3xl drop-shadow">🦖</span>
+        {level != null && (
+          <span
+            className="absolute -bottom-0.5 right-0 min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-black text-amber-50 flex items-center justify-center leading-none"
+            style={{ background: '#2a1d0e', border: `1.5px solid ${accent}` }}
+          >
+            {level}
+          </span>
+        )}
+      </div>
     </div>
   )
 
-  const bars = (
-    <div className={`flex-1 min-w-0 space-y-1 ${isPlayer ? '' : 'text-right'}`}>
-      <p className="font-black text-amber-100 text-sm sm:text-base truncate drop-shadow"
-         style={{ textShadow: '0 1px 3px rgba(0,0,0,0.9)' }}>
+  const barBlock = (
+    <div className="absolute flex flex-col justify-center gap-0.5" style={bars}>
+      <p
+        className={`font-black text-amber-100 text-[11px] sm:text-xs truncate leading-none ${isPlayer ? 'text-left' : 'text-right'}`}
+        style={{ textShadow: '0 1px 2px rgba(0,0,0,0.9)' }}
+      >
         {name}
       </p>
-      <HealthBar current={currentHp} max={maxHp} variant={isPlayer ? 'player' : 'enemy'} />
+      <HealthBar current={currentHp} max={maxHp} variant={isPlayer ? 'player' : 'enemy'} size="sm" />
     </div>
   )
 
   return (
-    <div className="w-64 sm:w-80 max-w-[80vw]">
-      {/* Frame plate */}
-      <div
-        className="rounded-xl p-2.5 sm:p-3"
-        style={{
-          background: 'linear-gradient(180deg, rgba(40,28,14,0.92) 0%, rgba(24,16,8,0.92) 100%)',
-          border: `2px solid ${accent}`,
-          boxShadow: 'inset 0 0 16px rgba(0,0,0,0.6), 0 4px 14px rgba(0,0,0,0.5)',
-        }}
-      >
-        <div className={`flex items-center gap-3 ${isPlayer ? '' : 'flex-row-reverse'}`}>
-          {portrait}
-          {bars}
-        </div>
+    <div className="w-60 sm:w-80 max-w-[46vw]">
+      {/* Frame + seated content */}
+      <div className="relative w-full aspect-[640/220]">
+        {!imgFailed ? (
+          <img
+            src={frameSrc}
+            alt=""
+            aria-hidden
+            onError={() => {
+              if (side === 'enemy' && !enemyArtFailed) setEnemyArtFailed(true)
+              else setImgFailed(true)
+            }}
+            className="absolute inset-0 w-full h-full object-contain"
+            style={mirror ? { transform: 'scaleX(-1)' } : undefined}
+            draggable={false}
+          />
+        ) : (
+          <div
+            className="absolute inset-0 rounded-xl"
+            style={{ background: 'linear-gradient(180deg, rgba(40,28,14,0.92), rgba(24,16,8,0.92))', border: `2px solid ${accent}` }}
+          />
+        )}
+        {portrait}
+        {barBlock}
       </div>
 
       {/* Effects row (clickable) */}
       {effects && effects.length > 0 && (
-        <div className={`flex flex-wrap gap-1.5 mt-1.5 ${isPlayer ? 'justify-start' : 'justify-end'}`}>
+        <div className={`flex flex-wrap gap-1.5 mt-1 ${isPlayer ? 'justify-start pl-1' : 'justify-end pr-1'}`}>
           {effects.map((effect, i) => (
             <button
               key={`${effect.type}-${i}`}
               type="button"
               onClick={() => onEffectClick(effect)}
               title={`${getEffectNameTR(effect.type)} — ${effect.duration} tur`}
-              className="relative w-8 h-8 rounded-md bg-black/40 border border-amber-900/50 flex items-center justify-center hover:scale-110 transition-transform"
+              className="relative w-8 h-8 rounded-md bg-black/45 border border-amber-900/50 flex items-center justify-center hover:scale-110 transition-transform"
             >
               <EffectIcon effect={effect.type} size="sm" />
               {effect.duration > 0 && (
