@@ -319,7 +319,7 @@ export default function AdventureBattleScreen({
             maxHp: battleState.opponent.dino.maxHp,
             effects: battleState.opponent.effects,
           }}
-          playerAtk={battleState.player.atk}
+          playerAtk={battleState.player.dino.atk}
           round={battleState.round}
           battleLog={battleLog}
           slots={slots}

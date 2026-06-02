@@ -50,8 +50,10 @@ interface BattleArenaProps {
   onEffectClick: (effect: ActiveEffect) => void
   /** Optional status line shown above the action bar (e.g. "Rakip beklemede..."). */
   statusText?: string
-  /** Optional abandon/forfeit handler (PVP). */
+  /** Optional abandon/forfeit/exit handler. */
   onAbandon?: () => void
+  /** Optional primary action shown above the bar (e.g. "End Turn" in offline mode). */
+  primaryAction?: { label: string; onClick: () => void; disabled?: boolean }
   // Transient animation layers (owned by the mode controller)
   activeEffectOverlay: boolean
   currentVisualEffects: BattleVisualEffects | null
@@ -76,6 +78,7 @@ export default function BattleArena({
   onEffectClick,
   statusText,
   onAbandon,
+  primaryAction,
   activeEffectOverlay,
   currentVisualEffects,
   onEffectOverlayComplete,
@@ -167,11 +170,22 @@ export default function BattleArena({
 
       {/* BOTTOM ACTION BAR (fixed to screen bottom, WoW-style) */}
       <div className="absolute bottom-0 inset-x-0 z-30">
-        {statusText && (
-          <div className="flex justify-center mb-1.5">
-            <span className="px-4 py-1 rounded-full text-xs font-black text-amber-100 bg-stone-950/80 border border-amber-700/50">
-              {statusText}
-            </span>
+        {(statusText || primaryAction) && (
+          <div className="flex justify-center items-center gap-3 mb-1.5">
+            {statusText && (
+              <span className="px-4 py-1 rounded-full text-xs font-black text-amber-100 bg-stone-950/80 border border-amber-700/50">
+                {statusText}
+              </span>
+            )}
+            {primaryAction && (
+              <button
+                onClick={primaryAction.onClick}
+                disabled={primaryAction.disabled}
+                className="px-5 py-1.5 rounded-lg text-sm font-black text-amber-50 bg-amber-700/90 border border-amber-400/60 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-lg"
+              >
+                {primaryAction.label}
+              </button>
+            )}
           </div>
         )}
 
