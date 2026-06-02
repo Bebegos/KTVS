@@ -5,12 +5,23 @@ import { STAT_DEFINITIONS, StatKey, getStatOrder } from '../lib/stat-system'
 import { discoveryService } from '../lib/services'
 import { updateDino } from '../lib/supabase'
 import StatIcon from './StatIcon'
+import PremiumCard from './PremiumCard'
+import PremiumButton from './PremiumButton'
+import { uiAssets } from '../lib/gameAssets'
 
 interface StatBonusAllocatorProps {
   dino: Dino
   bonusPoints: number
   onComplete: (updatedDino: Dino) => void
   onCancel: () => void
+}
+
+// Parchment-readable accent per stat (matches the Dino Detail stat cards).
+const accent: Record<StatKey, string> = {
+  sta: '#b91c1c',
+  atk: '#c2410c',
+  def: '#1d4ed8',
+  spd: '#a16207',
 }
 
 export default function StatBonusAllocator({
@@ -58,13 +69,11 @@ export default function StatBonusAllocator({
     try {
       const updatedDino = { ...dino }
 
-      // Apply stat bonuses
       if (allocation.sta > 0) updatedDino.sta = (updatedDino.sta || 0) + allocation.sta
       if (allocation.atk > 0) updatedDino.atk += allocation.atk
       if (allocation.def > 0) updatedDino.def += allocation.def
       if (allocation.spd > 0) updatedDino.spd += allocation.spd
 
-      // Spend the stat points but PRESERVE pending ability discoveries.
       const remainingPending = updatedDino.pendingRewards
         ? {
             ...updatedDino.pendingRewards,
@@ -73,7 +82,6 @@ export default function StatBonusAllocator({
         : undefined
       updatedDino.pendingRewards = remainingPending
 
-      // Save to database
       const dbUpdates: any = {
         sta: updatedDino.sta,
         atk: updatedDino.atk,
@@ -91,148 +99,156 @@ export default function StatBonusAllocator({
     }
   }
 
+  const stepBtn =
+    'w-9 h-9 rounded-full bg-amber-900/15 border border-amber-900/40 text-amber-950 font-black text-xl leading-none flex items-center justify-center transition hover:bg-amber-900/25 disabled:opacity-35 disabled:cursor-not-allowed'
+
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-neon-yellow/30 p-6 space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-yellow to-gold-light">
-          SEVİYE ATLADI!
-        </p>
-        <p className="text-sm text-neon-yellow/70">
-          {bonusPoints} stat puanını dağıt
-        </p>
-      </div>
+    <PremiumCard variant="frame">
+      <div className="p-4 sm:p-5 space-y-5">
+        {/* Header */}
+        <div className="flex items-center justify-center gap-3">
+          <img src={uiAssets.levelUp} alt="" className="w-10 h-10 object-contain animate-pulse" draggable={false} />
+          <div className="text-center">
+            <p className="text-2xl font-black text-amber-950 leading-tight">SEVİYE ATLADI!</p>
+            <p className="flex items-center justify-center gap-1.5 text-xs font-bold text-amber-800">
+              <img src={uiAssets.statPoints} alt="" className="w-4 h-4 object-contain" draggable={false} />
+              {bonusPoints} stat puanını dağıt
+            </p>
+          </div>
+        </div>
 
-      {/* Stat Allocators */}
-      <div className="space-y-4">
-        {getStatOrder().map(statKey => {
-          const def = STAT_DEFINITIONS[statKey]
-          const allocated = allocation[statKey]
-          const current = dino[statKey] || 0
+        {/* Stat Allocators */}
+        <div className="space-y-3">
+          {getStatOrder().map(statKey => {
+            const def = STAT_DEFINITIONS[statKey]
+            const color = accent[statKey]
+            const alloc = allocation[statKey]
+            const current = dino[statKey] || 0
+            const pct = (alloc / bonusPoints) * 100
 
-          return (
-            <motion.div
-              key={statKey}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className={`p-4 rounded-xl border-2 ${def.borderColor} bg-gradient-to-r ${def.gradientBg} space-y-3`}
-            >
-              {/* Stat Label */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <StatIcon stat={statKey as any} size="lg" />
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="font-black text-sm text-slate-100">{def.labelTr}</p>
-                      <button
-                        type="button"
-                        onClick={() => setInfoStat(infoStat === statKey ? null : statKey)}
-                        className={`w-5 h-5 rounded-full border text-[11px] font-black leading-none flex items-center justify-center transition ${
-                          infoStat === statKey
-                            ? 'bg-gold-light text-slate-900 border-gold-light'
-                            : 'border-slate-400/50 text-slate-300 hover:border-gold-light hover:text-gold-light'
-                        }`}
-                        title="Bu stat ne işe yarar?"
-                        aria-label={`${def.labelTr} bilgisi`}
-                      >
-                        ?
-                      </button>
+            return (
+              <motion.div
+                key={statKey}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-amber-900/8 border border-amber-900/25 rounded-lg p-3 space-y-3"
+              >
+                {/* Stat Label */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="flex items-center justify-center w-11 h-11 rounded-full flex-shrink-0"
+                      style={{ background: `${color}1a`, border: `1.5px solid ${color}55` }}
+                    >
+                      <StatIcon stat={statKey as any} size="md" />
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-black text-sm text-amber-950">{def.labelTr}</p>
+                        <button
+                          type="button"
+                          onClick={() => setInfoStat(infoStat === statKey ? null : statKey)}
+                          className={`w-5 h-5 rounded-full border text-[11px] font-black leading-none flex items-center justify-center transition ${
+                            infoStat === statKey
+                              ? 'bg-amber-900 text-amber-50 border-amber-900'
+                              : 'border-amber-900/40 text-amber-800 hover:border-amber-900 hover:text-amber-950'
+                          }`}
+                          title="Bu stat ne işe yarar?"
+                          aria-label={`${def.labelTr} bilgisi`}
+                        >
+                          ?
+                        </button>
+                      </div>
+                      <p className="text-xs font-bold" style={{ color }}>
+                        {current} → {current + alloc}
+                      </p>
                     </div>
-                    <p className={`text-xs ${def.textColor}`}>{current} → {current + allocated}</p>
                   </div>
-                </div>
-                <p className="text-3xl font-black text-white bg-gradient-to-r from-slate-700 to-slate-800 px-3 py-2 rounded-lg">
-                  +{allocated}
-                </p>
-              </div>
-
-              {/* Stat info panel (toggle via ? button) */}
-              <AnimatePresence>
-                {infoStat === statKey && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
+                  <p
+                    className="text-2xl font-black px-3 py-1 rounded-lg"
+                    style={{ color, background: `${color}14`, border: `1px solid ${color}33` }}
                   >
-                    <div className="text-xs text-slate-200/90 bg-black/30 border border-slate-500/30 rounded-lg p-3 leading-relaxed">
-                      {def.descriptionTr}
-                      {statKey === 'sta' && (
-                        <span className="block mt-1 text-red-300/90 font-bold">
-                          1 Dayanıklılık ≈ {Math.round((dino.staminaToHpMultiplier || 1) * 10)} HP
-                        </span>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    +{alloc}
+                  </p>
+                </div>
 
-              {/* Slider & Buttons */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleDecrement(statKey)}
-                  disabled={allocated === 0}
-                  className="hs-btn hs-btn-red hs-btn-xs"
-                >
-                  −
-                </button>
+                {/* Stat info panel (toggle via ? button) */}
+                <AnimatePresence>
+                  {infoStat === statKey && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="text-xs font-semibold text-amber-950/90 bg-amber-900/10 border border-amber-900/25 rounded-lg p-3 leading-relaxed">
+                        {def.descriptionTr}
+                        {statKey === 'sta' && (
+                          <span className="block mt-1 font-black" style={{ color: accent.sta }}>
+                            1 Dayanıklılık ≈ {Math.round((dino.staminaToHpMultiplier || 1) * 10)} HP
+                          </span>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                <input
-                  type="range"
-                  min="0"
-                  max={bonusPoints}
-                  value={allocated}
-                  onChange={e => handleAllocationChange(statKey, parseInt(e.target.value))}
-                  className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, var(--gradient-start) 0%, var(--gradient-start) ${
-                      (allocated / bonusPoints) * 100
-                    }%, rgba(100, 116, 139, 0.5) ${(allocated / bonusPoints) * 100}%, rgba(100, 116, 139, 0.5) 100%)`,
-                  }}
-                />
+                {/* Slider & Buttons */}
+                <div className="flex items-center gap-2.5">
+                  <button onClick={() => handleDecrement(statKey)} disabled={alloc === 0} className={stepBtn}>
+                    −
+                  </button>
 
-                <button
-                  onClick={() => handleIncrement(statKey)}
-                  disabled={remaining === 0}
-                  className="hs-btn hs-btn-green hs-btn-xs"
-                >
-                  +
-                </button>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max={bonusPoints}
+                    value={alloc}
+                    onChange={e => handleAllocationChange(statKey, parseInt(e.target.value))}
+                    className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, ${color} 0%, ${color} ${pct}%, rgba(120,80,30,0.25) ${pct}%, rgba(120,80,30,0.25) 100%)`,
+                    }}
+                  />
 
-      {/* Remaining Points */}
-      <div
-        className={`p-4 rounded-xl text-center transition ${
-          remaining === 0
-            ? 'bg-green-500/20 border border-green-500/40'
-            : 'bg-red-500/20 border border-red-500/40'
-        }`}
-      >
-        <p className={`font-black text-2xl ${remaining === 0 ? 'text-green-300' : 'text-red-300'}`}>
-          {remaining === 0 ? 'Tamamlandı!' : `${remaining} puan kaldı`}
-        </p>
-      </div>
+                  <button onClick={() => handleIncrement(statKey)} disabled={remaining === 0} className={stepBtn}>
+                    +
+                  </button>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3">
-        <button
-          onClick={onCancel}
-          className="hs-btn flex-1"
+        {/* Remaining Points */}
+        <div
+          className="rounded-lg text-center py-2.5 border"
+          style={
+            remaining === 0
+              ? { background: '#15803d18', borderColor: '#15803d55' }
+              : { background: '#b91c1c14', borderColor: '#b91c1c44' }
+          }
         >
-          İptal
-        </button>
-        <button
-          onClick={handleConfirm}
-          disabled={allocated !== bonusPoints || saving}
-          className="hs-btn hs-btn-green flex-1"
-        >
-          {saving ? 'Kaydediliyor...' : 'Kaydet'}
-        </button>
+          <p className="font-black text-xl" style={{ color: remaining === 0 ? '#15803d' : '#b91c1c' }}>
+            {remaining === 0 ? 'Tamamlandı!' : `${remaining} puan kaldı`}
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 justify-center">
+          <PremiumButton onClick={onCancel} className="w-40" contentClassName="text-sm">
+            İptal
+          </PremiumButton>
+          <PremiumButton
+            onClick={handleConfirm}
+            disabled={allocated !== bonusPoints || saving}
+            className="w-40"
+            contentClassName="text-sm"
+          >
+            {saving ? 'Kaydediliyor...' : 'Kaydet'}
+          </PremiumButton>
+        </div>
       </div>
-    </div>
+    </PremiumCard>
   )
 }

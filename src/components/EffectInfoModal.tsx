@@ -1,8 +1,9 @@
-import { motion } from 'framer-motion'
 import { ActiveEffect } from '../game/types'
 import { getEffect, getEffectDuration } from '../lib/effects'
-import SvgIcon from './SvgIcon'
-import { getEffectNameTR, getEffectEmoji, isBuffEffect } from '../lib/effect-translations'
+import EffectIcon from './EffectIcon'
+import PremiumModal from './PremiumModal'
+import PremiumButton from './PremiumButton'
+import { getEffectNameTR, isBuffEffect } from '../lib/effect-translations'
 
 interface EffectInfoModalProps {
   effect: ActiveEffect
@@ -21,104 +22,72 @@ export default function EffectInfoModal({ effect, battleCharacterMaxHp = 100, is
   const defaultLevel = effectDef.defaultLevel || 1
   const levelData = effectDef.levels[defaultLevel] || effectDef.levels[1]
 
+  const buff = isBuffEffect(effect.type)
+  const accent = buff ? '#15803d' : '#b91c1c' // green / red, parchment-readable
+
+  // A parchment sub-panel tinted with the effect accent.
+  const panel = 'rounded-lg p-3 border'
+  const panelStyle = { background: `${accent}14`, borderColor: `${accent}40` }
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[300] p-4"
-    >
-      <motion.div
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
-        onClick={e => e.stopPropagation()}
-        className={`rounded-xl p-6 max-w-md w-full border-2 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-lg ${
-          isBuffEffect(effect.type)
-            ? 'border-neon-cyan'
-            : 'border-red-500'
-        }`}
-      >
+    <PremiumModal onClose={onClose} zIndex={300}>
+      <div className="p-4 sm:p-5 space-y-4">
         {/* Header */}
-        <div className="flex items-start gap-3 mb-4">
-          <div className="flex-shrink-0">
-            <SvgIcon
-              id={effect.type}
-              type="effect"
-              size="lg"
-              fallback={getEffectEmoji(effect.type)}
-            />
-          </div>
-          <div className="flex-1">
-            <h2 className={`text-2xl font-black ${
-              isBuffEffect(effect.type)
-                ? 'text-green-400'
-                : 'text-red-400'
-            }`}>
+        <div className="flex items-center gap-3">
+          <span
+            className="flex items-center justify-center w-14 h-14 rounded-full flex-shrink-0"
+            style={{ background: `${accent}1a`, border: `1.5px solid ${accent}55` }}
+          >
+            <EffectIcon effect={effect.type} size="lg" large />
+          </span>
+          <div>
+            <h2 className="text-2xl font-black text-amber-950 leading-tight">
               {getEffectNameTR(effect.type)}
             </h2>
-            <p className={`text-xs font-bold ${
-              isBuffEffect(effect.type)
-                ? 'text-green-300/70'
-                : 'text-red-300/70'
-            }`}>
-              {isBuffEffect(effect.type) ? '⬆️ BUFF' : '⬇️ DEBUFF'}
+            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: accent }}>
+              {buff ? '⬆ Olumlu Etki' : '⬇ Olumsuz Etki'}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="hs-btn hs-btn-xs"
-          >
-            ✕
-          </button>
         </div>
 
-        {/* Duration Info */}
-        <div className={`mb-4 p-3 rounded-lg font-bold ${
-          isBuffEffect(effect.type)
-            ? 'bg-green-500/20 border border-green-500/50 text-green-400'
-            : 'bg-red-500/20 border border-red-500/50 text-red-400'
-        }`}>
-          <p className="text-xs text-white/70 mb-1">Kalan Süre</p>
-          <p className="text-2xl font-black">{effect.duration} / {duration} tur</p>
+        {/* Duration */}
+        <div className={panel} style={panelStyle}>
+          <p className="text-[11px] font-black uppercase tracking-wide text-amber-800/80 mb-1">Süre</p>
+          <p className="text-2xl font-black text-amber-950 leading-none">
+            {effect.duration} <span className="text-base text-amber-800/70">/ {duration} tur</span>
+          </p>
         </div>
 
         {/* Description */}
-        <div className={`mb-4 p-3 rounded-lg border ${
-          isBuffEffect(effect.type)
-            ? 'bg-green-500/10 border-green-500/20'
-            : 'bg-red-500/10 border-red-500/20'
-        }`}>
-          <p className="text-sm text-white/80 leading-relaxed">{effectDef.fullDescription}</p>
+        <div className="bg-amber-900/10 border border-amber-900/25 rounded-lg p-3">
+          <p className="text-sm font-semibold text-amber-950/90 leading-relaxed">
+            {effectDef.fullDescription}
+          </p>
         </div>
 
         {/* Damage Details */}
         {levelData && (levelData.damage !== undefined || levelData.damagePercent !== undefined) && (
-          <div className={`mb-4 p-3 rounded-lg border ${
-            isBuffEffect(effect.type)
-              ? 'bg-blue-500/10 border-blue-500/20'
-              : 'bg-orange-500/10 border-orange-500/20'
-          }`}>
-            <p className="text-xs font-bold mb-2" style={{ color: isBuffEffect(effect.type) ? '#60a5fa' : '#fb923c' }}>
-              ⚡ HASAR DETAYLARI:
+          <div className={panel} style={panelStyle}>
+            <p className="text-[11px] font-black uppercase tracking-wide mb-2" style={{ color: accent }}>
+              ⚡ Hasar Detayları
             </p>
-            <div className="space-y-1 text-xs">
+            <div className="space-y-1 text-sm font-semibold text-amber-950/90">
               {levelData.damage !== undefined && (
                 <div className="flex justify-between">
-                  <span>Sabit Hasar:</span>
-                  <span className="font-bold">{levelData.damage} / tur</span>
+                  <span>Sabit Hasar</span>
+                  <span className="font-black">{levelData.damage} / tur</span>
                 </div>
               )}
               {levelData.damagePercent !== undefined && (
                 <div className="flex justify-between">
-                  <span>Yüzde Hasar:</span>
-                  <span className="font-bold">{levelData.damagePercent}% / tur</span>
+                  <span>Yüzde Hasar</span>
+                  <span className="font-black">{levelData.damagePercent}% / tur</span>
                 </div>
               )}
               {levelData.damagePercent !== undefined && battleCharacterMaxHp && (
-                <div className="flex justify-between text-white/60">
-                  <span>({Math.round((battleCharacterMaxHp * levelData.damagePercent) / 100)} HP / tur)</span>
+                <div className="flex justify-between text-amber-800/70">
+                  <span>Tahmini</span>
+                  <span>{Math.round((battleCharacterMaxHp * levelData.damagePercent) / 100)} HP / tur</span>
                 </div>
               )}
             </div>
@@ -127,85 +96,34 @@ export default function EffectInfoModal({ effect, battleCharacterMaxHp = 100, is
 
         {/* Stat Bonuses */}
         {levelData && levelData.statBonus && (
-          <div className={`mb-4 p-3 rounded-lg border ${
-            isBuffEffect(effect.type)
-              ? 'bg-blue-500/10 border-blue-500/20'
-              : 'bg-orange-500/10 border-orange-500/20'
-          }`}>
-            <p className="text-xs font-bold mb-2" style={{ color: isBuffEffect(effect.type) ? '#60a5fa' : '#fb923c' }}>
-              📊 STAT BONUS:
+          <div className={panel} style={panelStyle}>
+            <p className="text-[11px] font-black uppercase tracking-wide mb-2" style={{ color: accent }}>
+              📊 Stat Etkisi
             </p>
-            <div className="space-y-1 text-xs">
-              {levelData.statBonus.atk !== undefined && (
-                <div className="flex justify-between">
-                  <span>Saldırı:</span>
-                  <span className={`font-bold ${levelData.statBonus.atk > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {levelData.statBonus.atk > 0 ? '+' : ''}{levelData.statBonus.atk}%
-                  </span>
-                </div>
-              )}
-              {levelData.statBonus.def !== undefined && (
-                <div className="flex justify-between">
-                  <span>Savunma:</span>
-                  <span className={`font-bold ${levelData.statBonus.def > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {levelData.statBonus.def > 0 ? '+' : ''}{levelData.statBonus.def}%
-                  </span>
-                </div>
-              )}
-              {levelData.statBonus.spd !== undefined && (
-                <div className="flex justify-between">
-                  <span>Hız:</span>
-                  <span className={`font-bold ${levelData.statBonus.spd > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {levelData.statBonus.spd > 0 ? '+' : ''}{levelData.statBonus.spd}%
-                  </span>
-                </div>
-              )}
+            <div className="space-y-1 text-sm font-semibold text-amber-950/90">
+              {(['atk', 'def', 'spd'] as const).map((k) => {
+                const v = levelData.statBonus?.[k]
+                if (v === undefined) return null
+                const labelTr = k === 'atk' ? 'Saldırı' : k === 'def' ? 'Savunma' : 'Hız'
+                return (
+                  <div key={k} className="flex justify-between">
+                    <span>{labelTr}</span>
+                    <span className="font-black" style={{ color: v > 0 ? '#15803d' : '#b91c1c' }}>
+                      {v > 0 ? '+' : ''}
+                      {v}%
+                    </span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
 
-        {/* Effect Type */}
-        <div className={`mb-4 p-3 rounded-lg border ${
-          isBuffEffect(effect.type)
-            ? 'bg-green-500/10 border-green-500/20'
-            : 'bg-red-500/10 border-red-500/20'
-        }`}>
-          <p className="text-xs font-bold text-neon-cyan/70 mb-2">ETKİ TÜRü:</p>
-          <span className={`inline-block px-3 py-1 rounded text-xs font-bold ${
-            isBuffEffect(effect.type)
-              ? 'bg-green-500/30 text-green-300'
-              : 'bg-red-500/30 text-red-300'
-          }`}>
-            {isBuffEffect(effect.type) ? '✓ Olumlu Etki' : '✗ Olumsuz Etki'}
-          </span>
-        </div>
-
-        {/* Color Info */}
-        <div className={`mb-4 flex gap-2 items-center justify-center p-2 rounded-lg border ${
-          isBuffEffect(effect.type)
-            ? 'bg-green-500/10 border-green-500/20'
-            : 'bg-red-500/10 border-red-500/20'
-        }`}>
-          <div className={`w-6 h-6 rounded border-2 ${
-            isBuffEffect(effect.type)
-              ? 'bg-green-500/30 border-green-500'
-              : 'bg-red-500/30 border-red-500'
-          }`} />
-          <p className="text-xs text-neon-cyan/70 font-bold">
-            {isBuffEffect(effect.type)
-              ? 'Yeşil: Olumlu Efekt'
-              : 'Kırmızı: Olumsuz Efekt'}
-          </p>
-        </div>
-
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className={`hs-btn hs-btn-block ${isBuffEffect(effect.type) ? '' : 'hs-btn-red'}`}
-        >
-          ← Kapat
-        </button>
-      </motion.div>
-    </motion.div>
+        {/* Close */}
+        <PremiumButton onClick={onClose} className="w-full" contentClassName="text-sm">
+          Kapat
+        </PremiumButton>
+      </div>
+    </PremiumModal>
   )
 }
