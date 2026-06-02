@@ -6,8 +6,9 @@ interface PremiumButtonProps {
   children: ReactNode
   onClick?: () => void
   disabled?: boolean
-  /** 'wide' uses the horizontal frame, 'square' uses the 1:1 frame. */
+  /** 'wide' uses the horizontal frame (819x249), 'square' uses the 1:1 frame. */
   shape?: 'wide' | 'square'
+  /** Sizing classes (width for wide, width/height for square). Aspect ratio is locked. */
   className?: string
   /** Extra classes for the inner text/content wrapper. */
   contentClassName?: string
@@ -16,8 +17,10 @@ interface PremiumButtonProps {
 
 /**
  * Hearthstone-style menu button backed by the premium PNG frame art.
- * Swaps the frame image across base / hover / pressed / disabled states
- * and lays children over the parchment center panel.
+ *
+ * The button locks itself to the source PNG's native aspect ratio
+ * (819:249 wide, 1:1 square) so the frame art is NEVER stretched out of
+ * proportion. Size it by setting a width via `className` (e.g. "w-40").
  */
 export default function PremiumButton({
   children,
@@ -41,6 +44,10 @@ export default function PremiumButton({
     ? assets.hover
     : assets.base
 
+  // Content inset keeps text on the parchment center, clear of the ornate frame.
+  const contentInset =
+    shape === 'square' ? 'inset-[18%]' : 'inset-y-[24%] inset-x-[11%]'
+
   return (
     <motion.button
       type={type}
@@ -58,21 +65,19 @@ export default function PremiumButton({
       onTouchEnd={() => setIsPressed(false)}
       className={`relative bg-transparent border-0 p-0 select-none ${
         disabled ? 'cursor-not-allowed' : 'cursor-pointer'
-      } ${shape === 'square' ? 'aspect-square' : ''} ${className}`}
+      } ${shape === 'square' ? 'aspect-square' : 'aspect-[819/249]'} ${className}`}
       style={{
         backgroundImage: `url('${frame}')`,
         backgroundSize: '100% 100%',
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Content sits over the parchment center, inset from the ornate frame. */}
+      {/* Content overlaid on the parchment center, inset from the ornate frame. */}
       <span
-        className={`relative z-10 flex items-center justify-center font-black text-center ${
-          shape === 'square' ? 'px-3 py-3' : 'px-6 py-3'
-        } ${
+        className={`absolute ${contentInset} flex items-center justify-center font-black text-center leading-tight ${
           disabled ? 'text-stone-500/70' : 'text-amber-950'
         } ${contentClassName}`}
-        style={{ textShadow: disabled ? 'none' : '0 1px 1px rgba(255,255,255,0.3)' }}
+        style={{ textShadow: disabled ? 'none' : '0 1px 1px rgba(255,255,255,0.35)' }}
       >
         {children}
       </span>
