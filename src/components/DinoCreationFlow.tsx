@@ -17,6 +17,7 @@ import SvgIcon from './SvgIcon'
 import MedallionIcon from './MedallionIcon'
 import StatDisplay from './StatDisplay'
 import HsCard, { HsCardGrid } from './HsCard'
+import { homeAssets } from '../lib/gameAssets'
 
 interface DinoCreationFlowProps {
   onBack: () => void
@@ -137,23 +138,22 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
   }
 
   return (
-    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-      </div>
+    <div
+      className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative"
+      style={{ backgroundImage: `url('${homeAssets.background}')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#2a1c0e' }}
+    >
+      <div className="absolute inset-0 bg-black/45 pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
-            className="hs-btn"
+            className="px-4 py-2 rounded-lg font-black text-amber-100 bg-stone-900/80 border-2 border-amber-500/60 hover:bg-stone-800 transition-colors"
           >
-            <span>Geri</span>
+            ← Geri
           </button>
-          <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink">
+          <h1 className="text-2xl sm:text-3xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             Yeni Dinozor
           </h1>
           <div className="w-24" /> {/* Spacer */}
@@ -166,10 +166,10 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               key={s}
               className={`w-3 h-3 rounded-full transition ${
                 step === s
-                  ? 'bg-neon-cyan'
+                  ? 'bg-amber-400'
                   : ['class', 'classAbilities', 'spec', 'specAbility', 'stats'].indexOf(step) > idx
-                  ? 'bg-neon-purple'
-                  : 'bg-gray-600'
+                  ? 'bg-amber-700'
+                  : 'bg-stone-600'
               }`}
             />
           ))}
@@ -185,7 +185,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               animate="visible"
               exit="exit"
             >
-              <h2 className="text-2xl font-bold text-neon-cyan mb-6 text-center">
+              <h2 className="text-2xl font-black text-amber-200 mb-6 text-center drop-shadow">
                 Dinozor Sınıfını Seç
               </h2>
 
@@ -223,7 +223,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               exit="exit"
               className="max-w-2xl mx-auto"
             >
-              <h2 className="text-2xl font-bold text-neon-cyan mb-6 text-center">
+              <h2 className="text-2xl font-black text-amber-200 mb-6 text-center drop-shadow">
                 2 Sınıf Yeteneği Seç
               </h2>
 
@@ -279,7 +279,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               exit="exit"
               className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto"
             >
-              <h2 className="col-span-full text-2xl font-bold text-neon-cyan mb-2 text-center">
+              <h2 className="col-span-full text-2xl font-black text-amber-200 mb-2 text-center drop-shadow">
                 Özelleştirme Seç
               </h2>
 
@@ -311,7 +311,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               exit="exit"
               className="max-w-2xl mx-auto"
             >
-              <h2 className="text-2xl font-bold text-neon-purple mb-6 text-center">
+              <h2 className="text-2xl font-black text-amber-200 mb-6 text-center drop-shadow">
                 1 Özel Yetenek Seç
               </h2>
 
@@ -367,7 +367,7 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               exit="exit"
               className="max-w-2xl mx-auto"
             >
-              <h2 className="text-2xl font-bold text-neon-pink mb-6 text-center">
+              <h2 className="text-2xl font-black text-amber-200 mb-6 text-center drop-shadow">
                 Dinozor Adı ve İstatistikleri
               </h2>
 
