@@ -127,20 +127,14 @@ export default function Home() {
 
             {/* User card */}
             <div
-              className="relative inline-flex items-center rounded-full h-10 sm:h-11 pl-10 sm:pl-11 pr-4"
+              className="inline-flex items-center rounded-full h-10 sm:h-11 px-5"
               style={{
                 background: 'linear-gradient(180deg, #efe1c2 0%, #d6c49e 100%)',
                 border: '2px solid #b8860b',
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.45), 0 2px 5px rgba(0,0,0,0.5)',
               }}
             >
-              <span
-                className="absolute -left-1 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base"
-                style={{ background: 'radial-gradient(circle at 35% 30%, #5a4326, #2a1c0e)', border: '2px solid #d4af37', boxShadow: '0 2px 4px rgba(0,0,0,0.6)' }}
-              >
-                👤
-              </span>
-              <p className="text-sm font-black text-amber-950 max-w-[8rem] truncate">
+              <p className="text-sm font-black text-amber-950 max-w-[9rem] truncate">
                 {user?.username || user?.email?.split('@')[0]}
               </p>
             </div>

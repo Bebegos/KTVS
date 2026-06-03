@@ -18,7 +18,7 @@ function useResponsiveCardWidth() {
   useEffect(() => {
     const calc = () => {
       const vw = window.innerWidth
-      setW(vw < 480 ? 168 : vw < 768 ? 200 : vw < 1280 ? 232 : 272)
+      setW(vw < 480 ? 172 : vw < 768 ? 204 : vw < 1280 ? 236 : 276)
     }
     calc()
     window.addEventListener('resize', calc)
@@ -27,7 +27,13 @@ function useResponsiveCardWidth() {
   return w
 }
 
-/** A single 5:7 dino card face (frame art with parchment fallback). */
+/** Shortest signed ring distance of x in (-n/2, n/2]. */
+function wrap(x: number, n: number) {
+  let m = ((x % n) + n) % n
+  if (m > n / 2) m -= n
+  return m
+}
+
 function DinoCardFace({
   dino,
   active,
@@ -68,7 +74,7 @@ function DinoCardFace({
       )}
 
       {active && (
-        <div className="absolute -inset-1 rounded-2xl pointer-events-none" style={{ boxShadow: '0 0 22px 4px rgba(212,175,55,0.6)' }} />
+        <div className="absolute -inset-1 rounded-2xl pointer-events-none" style={{ boxShadow: '0 0 24px 5px rgba(212,175,55,0.6)' }} />
       )}
 
       <div className="absolute inset-0 flex flex-col items-center justify-between px-[12%] py-[11%] text-center pointer-events-none">
@@ -115,9 +121,9 @@ function DinoCardFace({
 }
 
 /**
- * 3D ring carousel: dino cards on a rotating cylinder. Front card is the active
- * pick (highest level first). Turn with arrows, by tapping a side card, or by
- * dragging/swiping. Tap the front card (or "Başla") to choose it.
+ * 3D coverflow carousel: the center card faces the viewer; neighbours recede
+ * and rotate away in 3D. Drag / swipe (or tap a side card) to turn it. Highest
+ * level first. Works the same on mobile (1 centered card) and desktop.
  */
 export default function DinoCarousel({ dinos, onSelect }: DinoCarouselProps) {
   const ordered = useMemo(() => [...dinos].sort((a, b) => b.level - a.level), [dinos])
@@ -125,16 +131,13 @@ export default function DinoCarousel({ dinos, onSelect }: DinoCarouselProps) {
   const cardH = Math.round((cardW * 7) / 5)
 
   const [current, setCurrent] = useState(0)
-  const [dragDeg, setDragDeg] = useState(0)
+  const [dragFrac, setDragFrac] = useState(0)
   const [dragging, setDragging] = useState(false)
   const startX = useRef(0)
   const moved = useRef(false)
 
   const n = ordered.length
-  const theta = n > 0 ? 360 / n : 0
-  const radius = n <= 1 ? 0 : Math.max(Math.round((cardW / 2) / Math.tan(Math.PI / n)), Math.round(cardW * 0.85))
-
-  const go = (dir: 1 | -1) => setCurrent((c) => (c + dir + n) % n)
+  const eff = current + dragFrac
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (n <= 1) return
@@ -147,85 +150,65 @@ export default function DinoCarousel({ dinos, onSelect }: DinoCarouselProps) {
     if (!dragging) return
     const dx = e.clientX - startX.current
     if (Math.abs(dx) > 6) moved.current = true
-    // One card width of drag ≈ one card step.
-    setDragDeg((dx / cardW) * theta)
+    setDragFrac(-dx / (cardW * 0.72)) // drag left → advance
   }
   const endDrag = () => {
     if (!dragging) return
-    const steps = Math.round(dragDeg / theta)
-    if (steps !== 0) setCurrent((c) => (((c - steps) % n) + n) % n)
-    setDragDeg(0)
+    setCurrent((c) => (((Math.round(c + dragFrac) % n) + n) % n))
+    setDragFrac(0)
     setDragging(false)
   }
 
-  const frontDino = ordered[current]
+  const frontDino = ordered[((Math.round(eff) % n) + n) % n]
   if (n === 0) return null
 
   return (
     <div className="w-full flex flex-col items-center gap-4 select-none">
       <div
-        className="relative w-full max-w-3xl"
-        style={{ height: cardH + 60, perspective: '1100px', touchAction: 'pan-y' }}
+        className="relative w-full max-w-3xl overflow-hidden"
+        style={{ height: cardH + 48, perspective: '1000px', touchAction: 'pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         onPointerLeave={endDrag}
       >
-        {n > 1 && (
-          <>
-            <button
-              onClick={() => go(-1)}
-              aria-label="Önceki"
-              className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full flex items-center justify-center text-2xl font-black text-amber-950 bg-amber-100/90 border-2 border-amber-700 shadow-lg hover:bg-amber-50 transition-colors"
-            >
-              ‹
-            </button>
-            <button
-              onClick={() => go(1)}
-              aria-label="Sonraki"
-              className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full flex items-center justify-center text-2xl font-black text-amber-950 bg-amber-100/90 border-2 border-amber-700 shadow-lg hover:bg-amber-50 transition-colors"
-            >
-              ›
-            </button>
-          </>
-        )}
-
-        <div
-          className="absolute left-1/2 top-1/2"
-          style={{
-            transformStyle: 'preserve-3d',
-            transform: `translate(-50%, -50%) translateZ(-${radius}px) rotateY(${-current * theta + dragDeg}deg)`,
-            transition: dragging ? 'none' : 'transform 0.55s cubic-bezier(0.22,0.61,0.36,1)',
-            width: cardW,
-            height: cardH,
-          }}
-        >
-          {ordered.map((dino, i) => (
+        {ordered.map((dino, i) => {
+          const offset = wrap(i - eff, n)
+          const abs = Math.abs(offset)
+          const hidden = abs > 2.4
+          const rotateY = Math.max(-62, Math.min(62, -offset * 48))
+          const tx = offset * cardW * 0.58
+          const tz = -abs * 130
+          const scale = Math.max(0.62, 1 - abs * 0.16)
+          return (
             <div
               key={dino.id}
-              className="absolute left-0 top-0"
+              className="absolute left-1/2 top-1/2"
               style={{
                 width: cardW,
                 height: cardH,
-                transform: `rotateY(${i * theta}deg) translateZ(${radius}px)`,
-                opacity: i === current ? 1 : 0.82,
-                transition: 'opacity 0.4s',
+                transform: `translate(-50%, -50%) translateX(${tx}px) translateZ(${tz}px) rotateY(${rotateY}deg) scale(${scale})`,
+                transformStyle: 'preserve-3d',
+                transition: dragging ? 'none' : 'transform 0.5s cubic-bezier(0.22,0.61,0.36,1), opacity 0.4s',
+                opacity: hidden ? 0 : Math.max(0.18, 1 - abs * 0.33),
+                zIndex: 100 - Math.round(abs * 10),
+                pointerEvents: hidden ? 'none' : 'auto',
               }}
             >
               <DinoCardFace
                 dino={dino}
-                active={i === current}
+                active={abs < 0.5}
                 width={cardW}
                 height={cardH}
                 onClick={() => {
-                  if (moved.current) return // ignore clicks that were drags
-                  i === current ? onSelect(dino) : setCurrent(i)
+                  if (moved.current) return
+                  abs < 0.5 ? onSelect(dino) : setCurrent(i)
                 }}
               />
             </div>
-          ))}
-        </div>
+          )
+        })}
       </div>
 
       <button
