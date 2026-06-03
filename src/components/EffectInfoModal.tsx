@@ -31,7 +31,7 @@ export default function EffectInfoModal({ effect, battleCharacterMaxHp = 100, is
 
   return (
     <PremiumModal onClose={onClose} zIndex={300}>
-      <div className="px-4 sm:px-5 pt-0 pb-4 sm:pb-5 -mt-3 space-y-4">
+      <div className="px-4 sm:px-5 pt-1 pb-7 sm:pb-8 -mt-2 space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
           <span

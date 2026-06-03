@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Dino } from '../game/types'
 import { Adventure, getAdventuresByLevel, getTotalEnemyCount } from '../lib/adventures'
-import DinoCard from './DinoCard'
+import DinoCarousel from './DinoCarousel'
 import PremiumButton from './PremiumButton'
 import PremiumCard from './PremiumCard'
 import { homeAssets } from '../lib/gameAssets'
@@ -43,11 +43,7 @@ export default function AdventureSelectScreen({
           {dinos.length === 0 ? (
             <p className="text-xl font-bold text-amber-100 drop-shadow">Dinozor yok!</p>
           ) : (
-            <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {dinos.map((dino) => (
-                <DinoCard key={dino.id} dino={dino} mode="selection" onClick={() => setSelectedDino(dino)} />
-              ))}
-            </div>
+            <DinoCarousel dinos={dinos} onSelect={setSelectedDino} />
           )}
         </div>
       ) : (

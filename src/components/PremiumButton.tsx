@@ -82,7 +82,7 @@ export default function PremiumButton({
           alt=""
           aria-hidden
           draggable={false}
-          className="absolute left-[12%] top-1/2 -translate-y-1/2 w-[15%] aspect-square object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
+          className="absolute left-[11%] top-1/2 -translate-y-[55%] w-[12.5%] aspect-square object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
         />
       )}
 

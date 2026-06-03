@@ -127,11 +127,20 @@ export default function Home() {
 
             {/* User card */}
             <div
-              className="rounded-full pl-2 pr-4 h-11 flex items-center gap-2"
-              style={{ background: 'linear-gradient(180deg,#3a2a16,#241608)', border: '2px solid #d4af37' }}
+              className="relative inline-flex items-center rounded-full h-10 sm:h-11 pl-10 sm:pl-11 pr-4"
+              style={{
+                background: 'linear-gradient(180deg, #efe1c2 0%, #d6c49e 100%)',
+                border: '2px solid #b8860b',
+                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.45), 0 2px 5px rgba(0,0,0,0.5)',
+              }}
             >
-              <span className="w-7 h-7 rounded-full bg-amber-900/60 border border-amber-400/60 flex items-center justify-center text-sm">👤</span>
-              <p className="text-sm font-black text-amber-200 max-w-[8rem] truncate">
+              <span
+                className="absolute -left-1 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base"
+                style={{ background: 'radial-gradient(circle at 35% 30%, #5a4326, #2a1c0e)', border: '2px solid #d4af37', boxShadow: '0 2px 4px rgba(0,0,0,0.6)' }}
+              >
+                👤
+              </span>
+              <p className="text-sm font-black text-amber-950 max-w-[8rem] truncate">
                 {user?.username || user?.email?.split('@')[0]}
               </p>
             </div>
@@ -143,7 +152,7 @@ export default function Home() {
                 whileTap={{ scale: 0.94 }}
                 onClick={() => setShowSettings((s) => !s)}
                 title="Ayarlar"
-                className="w-12 h-12 lg:w-20 xl:w-24"
+                className="w-14 h-14 lg:w-24 xl:w-28"
               >
                 <img src={homeAssets.menu.settings} alt="Ayarlar" className="w-full h-full object-contain drop-shadow-[0_2px_3px_rgba(0,0,0,0.6)]" draggable={false} />
               </motion.button>
