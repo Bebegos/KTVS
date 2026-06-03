@@ -236,21 +236,21 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     onClick={() => handleSelectClassAbility(ability.id)}
                     className={`p-4 rounded-lg cursor-pointer transition border-2 ${
                       selectedClassAbilities.includes(ability.id)
-                        ? 'bg-slate-800/80 border-neon-cyan shadow-lg shadow-neon-cyan/50'
-                        : 'bg-slate-800/60 border-neon-cyan/40 hover:border-neon-cyan'
+                        ? 'bg-amber-100 border-amber-600 shadow-lg shadow-amber-500/50'
+                        : 'bg-amber-50/90 border-amber-600/40 hover:border-amber-600'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <SvgIcon id={ability.id} type="ability" size="lg" fallback="" />
                       <div className="flex-1 text-left">
-                        <h4 className="font-black text-neon-cyan mb-1">{ability.name}</h4>
-                        <p className="text-sm text-neon-cyan/70 mb-1">{ability.description}</p>
-                        <p className="text-xs text-neon-cyan/50">
+                        <h4 className="font-black text-amber-900 mb-1">{ability.name}</h4>
+                        <p className="text-sm text-amber-900/70 mb-1">{ability.description}</p>
+                        <p className="text-xs text-amber-900/50">
                           Cooldown: {ability.cooldown} tur | Hasar: {Math.round(ability.damageMultiplier * 100)}%
                         </p>
                       </div>
                       {selectedClassAbilities.includes(ability.id) && (
-                        <div className="flex-shrink-0 w-8 h-8 bg-neon-cyan rounded-full flex items-center justify-center">
+                        <div className="flex-shrink-0 w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center">
                           <span className="text-slate-900 font-black">✓</span>
                         </div>
                       )}
@@ -290,11 +290,11 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectSpec(spec.id)}
-                    className="bg-slate-800/60 border border-neon-purple/40 rounded-xl p-6 text-center transition hover:border-neon-purple hover:shadow-neon-purple flex flex-col items-center"
+                    className="bg-amber-50/90 border border-amber-600/40 rounded-xl p-6 text-center transition hover:border-amber-600 hover:shadow-amber-500 flex flex-col items-center"
                   >
                     <MedallionIcon id={spec.id} type="spec" size="xl" className="mb-3" />
-                    <h3 className="text-xl font-black text-neon-purple mb-1">{spec.name}</h3>
-                    <p className="text-sm text-neon-purple/70">{spec.description}</p>
+                    <h3 className="text-xl font-black text-amber-900 mb-1">{spec.name}</h3>
+                    <p className="text-sm text-amber-900/70">{spec.description}</p>
                   </motion.button>
                 )
               })}
@@ -324,21 +324,21 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     onClick={() => handleSelectSpecAbility(ability.id)}
                     className={`p-4 rounded-lg cursor-pointer transition border-2 ${
                       selectedSpecAbility === ability.id
-                        ? 'bg-slate-800/80 border-neon-purple shadow-lg shadow-neon-purple/50'
-                        : 'bg-slate-800/60 border-neon-purple/40 hover:border-neon-purple'
+                        ? 'bg-amber-100 border-amber-600 shadow-lg shadow-amber-500/50'
+                        : 'bg-amber-50/90 border-amber-600/40 hover:border-amber-600'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <SvgIcon id={ability.id} type="ability" size="lg" fallback="" />
                       <div className="flex-1 text-left">
-                        <h4 className="font-black text-neon-purple mb-1">{ability.name}</h4>
-                        <p className="text-sm text-neon-purple/70 mb-1">{ability.description}</p>
-                        <p className="text-xs text-neon-purple/50">
+                        <h4 className="font-black text-amber-900 mb-1">{ability.name}</h4>
+                        <p className="text-sm text-amber-900/70 mb-1">{ability.description}</p>
+                        <p className="text-xs text-amber-900/50">
                           {ability.isPassive ? 'Pasif Yetenek' : `Cooldown: ${ability.cooldown} tur`}
                         </p>
                       </div>
                       {selectedSpecAbility === ability.id && (
-                        <div className="flex-shrink-0 w-8 h-8 bg-neon-purple rounded-full flex items-center justify-center">
+                        <div className="flex-shrink-0 w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center">
                           <span className="text-slate-900 font-black">✓</span>
                         </div>
                       )}
@@ -371,16 +371,16 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 Dinozor Adı ve İstatistikleri
               </h2>
 
-              <div className="bg-slate-800/60 border border-neon-pink/40 rounded-lg p-6 space-y-4">
+              <div className="bg-amber-50/90 border border-amber-600/40 rounded-lg p-6 space-y-4">
                 {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-bold text-neon-pink mb-2">Dinozor Adı *</label>
+                  <label className="block text-sm font-bold text-amber-900 mb-2">Dinozor Adı *</label>
                   <input
                     type="text"
                     value={stats.name}
                     onChange={e => setStats({ ...stats, name: e.target.value })}
                     placeholder="Dinozor adını gir..."
-                    className="w-full px-4 py-2 bg-slate-700 border border-neon-pink/50 rounded-lg text-neon-pink placeholder-neon-pink/50 focus:outline-none focus:border-neon-pink"
+                    className="w-full px-4 py-2 bg-amber-100 border border-amber-600/50 rounded-lg text-amber-900 placeholder-amber-700/50 focus:outline-none focus:border-amber-600"
                   />
                 </div>
 
@@ -483,9 +483,9 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 })()}
 
                 {/* Summary */}
-                <div className="mt-6 p-4 bg-neon-pink/10 border border-neon-pink/30 rounded-lg">
-                  <p className="text-sm font-bold text-neon-pink mb-3">ÖZET</p>
-                  <div className="space-y-1 text-sm text-neon-pink/80">
+                <div className="mt-6 p-4 bg-amber-600/10 border border-amber-600/30 rounded-lg">
+                  <p className="text-sm font-bold text-amber-900 mb-3">ÖZET</p>
+                  <div className="space-y-1 text-sm text-amber-900/80">
                     <p>Sınıf: <span className="font-bold">{CLASS_ABILITIES[selectedClass].name}</span></p>
                     <p>Özelleştirme: <span className="font-bold">{SPEC_ABILITIES[selectedSpec].name}</span></p>
                     <p>Yetenekler: <span className="font-bold">{selectedClassAbilities.length} Sınıf + 1 Özel = 3 Toplam</span></p>
