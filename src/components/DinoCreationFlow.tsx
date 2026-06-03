@@ -15,10 +15,15 @@ import { getClassIcon, getSpecIcon } from '../lib/icons'
 import { calculateStartingStats, getStatDistributionBreakdown } from '../lib/statDistribution'
 import MedallionIcon from './MedallionIcon'
 import AbilityIcon from './AbilityIcon'
-import StatDisplay from './StatDisplay'
+import StatIcon from './StatIcon'
 import PremiumCard from './PremiumCard'
 import PremiumButton from './PremiumButton'
+import { getDinoMaxHp } from '../lib/stat-system'
 import { homeAssets } from '../lib/gameAssets'
+
+const STAT_ACCENT: Record<string, string> = {
+  sta: '#b91c1c', atk: '#c2410c', def: '#1d4ed8', spd: '#a16207',
+}
 
 interface DinoCreationFlowProps {
   onBack: () => void
@@ -401,11 +406,9 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                           <div className="space-y-1 text-xs font-semibold text-amber-900/85">
                             {breakdown.classTheme && (
                               <>
-                                <p>Başlangıç Can: <span className="font-black text-red-700">{breakdown.classTheme.baseHp}</span></p>
                                 <p>Saldırı: +{breakdown.classTheme.classDistribution.atk}</p>
                                 <p>Savunma: +{breakdown.classTheme.classDistribution.def}</p>
                                 <p>Hız: +{breakdown.classTheme.classDistribution.spd}</p>
-                                <p>Level Bonus: <span className="font-black text-red-700">{breakdown.classTheme.hpPerLevelStat}x HP</span>/stat</p>
                               </>
                             )}
                           </div>
@@ -428,59 +431,40 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                         </div>
                       </div>
 
-                      {/* Final Stats Display - Premium StatDisplay Components */}
-                      <div className="mt-6 space-y-3">
-                        {(() => {
-                          const tempDino: Dino = {
-                            id: 'temp',
-                            name: stats.name,
-                            maxHp: finalStats.maxHp,
-                            atk: finalStats.atk,
-                            def: finalStats.def,
-                            spd: finalStats.spd,
-                            sta: finalStats.maxHp,
-                            level: 1,
-                            xp: 0,
-                            abilityIds: [],
-                            familyCode: '',
-                            class: selectedClass,
-                            spec: selectedSpec,
-                            staminaToHpMultiplier: finalStats.hpPerLevelStat,
-                          }
-                          return (
-                            <div className="grid grid-cols-2 gap-3">
-                              <StatDisplay
-                                stat="sta"
-                                dino={tempDino}
-                                value={finalStats.maxHp}
-                                size="md"
-                                showDetailButton={true}
-                              />
-                              <StatDisplay
-                                stat="atk"
-                                dino={tempDino}
-                                value={finalStats.atk}
-                                size="md"
-                                showDetailButton={true}
-                              />
-                              <StatDisplay
-                                stat="def"
-                                dino={tempDino}
-                                value={finalStats.def}
-                                size="md"
-                                showDetailButton={true}
-                              />
-                              <StatDisplay
-                                stat="spd"
-                                dino={tempDino}
-                                value={finalStats.spd}
-                                size="md"
-                                showDetailButton={true}
-                              />
-                            </div>
-                          )
-                        })()}
-                      </div>
+                      {/* Final stats — parchment cards with big stat icons */}
+                      {(() => {
+                        const derivedHp = getDinoMaxHp({ sta: finalStats.maxHp, staminaToHpMultiplier: finalStats.hpPerLevelStat })
+                        const rows = [
+                          { key: 'sta', label: 'Dayanıklılık', value: finalStats.maxHp, hp: derivedHp },
+                          { key: 'atk', label: 'Saldırı', value: finalStats.atk },
+                          { key: 'def', label: 'Savunma', value: finalStats.def },
+                          { key: 'spd', label: 'Hız', value: finalStats.spd },
+                        ] as const
+                        return (
+                          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {rows.map(row => {
+                              const color = STAT_ACCENT[row.key]
+                              return (
+                                <div key={row.key} className="flex items-center gap-3 bg-amber-900/8 border border-amber-900/25 rounded-lg px-4 py-3">
+                                  <span
+                                    className="flex items-center justify-center w-12 h-12 rounded-full flex-shrink-0"
+                                    style={{ background: `${color}1a`, border: `1.5px solid ${color}55` }}
+                                  >
+                                    <StatIcon stat={row.key as any} size="lg" />
+                                  </span>
+                                  <span className="font-black text-amber-950 text-sm flex-1">{row.label}</span>
+                                  <div className="text-right leading-none">
+                                    <span className="font-black text-xl" style={{ color }}>{row.value}</span>
+                                    {'hp' in row && row.hp != null && (
+                                      <span className="block text-[11px] font-bold text-red-700/80 mt-0.5">❤ {row.hp} HP</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )
+                      })()}
                     </>
                   )
                 })()}

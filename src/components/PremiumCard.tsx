@@ -40,11 +40,18 @@ export default function PremiumCard({
             borderStyle: 'solid',
             borderWidth: '26px',
             borderImageSource: `url('${modalAssets.frame}')`,
-            borderImageSlice: '58 fill',
+            // No 'fill': keep only the ornate border; the interior is a uniform
+            // parchment so components sit on a consistent background.
+            borderImageSlice: '58',
             borderImageRepeat: 'stretch',
           }}
         >
-          <div className={`relative h-full ${bodyClassName}`}>{children}</div>
+          <div
+            className={`relative h-full ${bodyClassName}`}
+            style={{ background: 'linear-gradient(180deg, #efe1c2 0%, #ddc89e 100%)' }}
+          >
+            {children}
+          </div>
         </div>
         {glow && <GlowOverlay color={glow} />}
       </div>
