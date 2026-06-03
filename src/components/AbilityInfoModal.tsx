@@ -53,6 +53,9 @@ export default function AbilityInfoModal({ abilityId, dino, cooldown, isOpen, on
           </div>
         </div>
 
+        {/* Gold hairline separator */}
+        <div className="h-px bg-gradient-to-r from-transparent via-amber-700/55 to-transparent" />
+
         {/* Cooldown */}
         {ability.cooldown > 0 && (
           <div

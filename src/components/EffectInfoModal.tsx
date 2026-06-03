@@ -50,6 +50,9 @@ export default function EffectInfoModal({ effect, battleCharacterMaxHp = 100, is
           </div>
         </div>
 
+        {/* Gold hairline separator */}
+        <div className="h-px bg-gradient-to-r from-transparent via-amber-700/55 to-transparent" />
+
         {/* Duration */}
         <div className={panel} style={panelStyle}>
           <p className="text-[11px] font-black uppercase tracking-wide text-amber-800/80 mb-1">Süre</p>

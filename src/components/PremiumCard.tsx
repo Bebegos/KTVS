@@ -48,7 +48,11 @@ export default function PremiumCard({
         >
           <div
             className={`relative h-full ${bodyClassName}`}
-            style={{ background: 'linear-gradient(180deg, #efe1c2 0%, #ddc89e 100%)' }}
+            style={{
+              background: 'linear-gradient(180deg, #efe1c2 0%, #ddc89e 100%)',
+              // Subtle inner gold hairline + warm inset depth to dress the parchment.
+              boxShadow: 'inset 0 0 0 1.5px rgba(176,138,58,0.5), inset 0 1px 12px rgba(90,60,20,0.12)',
+            }}
           >
             {children}
           </div>

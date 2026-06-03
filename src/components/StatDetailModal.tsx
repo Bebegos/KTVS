@@ -70,6 +70,9 @@ export default function StatDetailModal({ stat, dino, isOpen, onClose }: StatDet
           </div>
         </div>
 
+        {/* Gold hairline separator */}
+        <div className="h-px bg-gradient-to-r from-transparent via-amber-700/55 to-transparent" />
+
         {/* Description */}
         <div className="bg-amber-900/10 border border-amber-900/25 rounded-lg p-3">
           <p className="text-sm font-semibold text-amber-950/90 leading-relaxed">{def.descriptionTr}</p>
