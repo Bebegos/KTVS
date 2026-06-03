@@ -143,7 +143,7 @@ export default function Home() {
                 whileTap={{ scale: 0.94 }}
                 onClick={() => setShowSettings((s) => !s)}
                 title="Ayarlar"
-                className="w-12 h-12"
+                className="w-12 h-12 lg:w-20 xl:w-24"
               >
                 <img src={homeAssets.menu.settings} alt="Ayarlar" className="w-full h-full object-contain drop-shadow-[0_2px_3px_rgba(0,0,0,0.6)]" draggable={false} />
               </motion.button>
@@ -168,21 +168,22 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Menu — 3 main buttons centered on the disc, 3 secondary below */}
-        <div className="w-full max-w-[15rem] sm:max-w-[17rem] flex flex-col items-center gap-2 z-10 mt-14">
+        {/* Main buttons — centered on the disc (larger on big screens) */}
+        <div className="w-full max-w-[15rem] sm:max-w-[17rem] lg:max-w-[22rem] xl:max-w-[26rem] flex flex-col items-center gap-2 lg:gap-3 z-10 mt-14">
           {mainItems.map((item) => (
             <PremiumButton
               key={item.label}
               onClick={item.onClick}
               iconSrc={item.icon}
               className="w-full"
-              contentClassName="text-sm sm:text-base"
+              contentClassName="text-sm sm:text-base lg:text-lg"
             >
               {item.label}
             </PremiumButton>
           ))}
 
-          <div className="w-[86%] flex flex-col items-center gap-1.5 mt-1">
+          {/* Secondary — stacked under the main buttons on mobile */}
+          <div className="w-[86%] flex flex-col items-center gap-1.5 mt-1 lg:hidden">
             {secondaryItems.map((item) => (
               <PremiumButton
                 key={item.label}
@@ -195,6 +196,21 @@ export default function Home() {
               </PremiumButton>
             ))}
           </div>
+        </div>
+
+        {/* Secondary — left column on desktop */}
+        <div className="hidden lg:flex flex-col gap-2.5 absolute left-6 xl:left-10 top-1/2 -translate-y-1/2 w-[15rem] xl:w-[17rem] z-10">
+          {secondaryItems.map((item) => (
+            <PremiumButton
+              key={item.label}
+              onClick={item.onClick}
+              iconSrc={item.icon}
+              className="w-full"
+              contentClassName="text-xs xl:text-sm"
+            >
+              {item.label}
+            </PremiumButton>
+          ))}
         </div>
       </div>
     )

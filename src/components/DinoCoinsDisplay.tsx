@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { homeAssets } from '../lib/gameAssets'
+import { homeAssets, menuButtonAssets } from '../lib/gameAssets'
 
 interface DinoCoinsDisplayProps {
   coins: number
@@ -7,43 +7,49 @@ interface DinoCoinsDisplayProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
+/**
+ * DinoCoin display rendered on the premium menu-button plate, with the coin
+ * overlapping the left edge (Hearthstone-style currency card).
+ */
 export default function DinoCoinsDisplay({
   coins,
   showAmount = true,
   size = 'md',
 }: DinoCoinsDisplayProps) {
-  const coinSize = { sm: 'w-9 h-9', md: 'w-12 h-12', lg: 'w-16 h-16' }[size]
-  const pad = { sm: 'h-8 pl-8 pr-3', md: 'h-11 pl-11 pr-5', lg: 'h-14 pl-14 pr-6' }[size]
-  const textSize = { sm: 'text-sm', md: 'text-lg', lg: 'text-2xl' }[size]
+  const heightCls = { sm: 'h-9', md: 'h-12', lg: 'h-16' }[size]
+  const textCls = { sm: 'text-xs', md: 'text-base', lg: 'text-xl' }[size]
 
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className={`relative inline-flex items-center rounded-full cursor-pointer ${pad}`}
-      style={{
-        background: 'linear-gradient(180deg, #3a2a16 0%, #241608 100%)',
-        border: '2px solid #d4af37',
-        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.5)',
-      }}
+      className={`relative inline-flex items-center ${heightCls} cursor-pointer`}
+      style={{ aspectRatio: '819 / 249' }}
     >
-      {/* Coin icon, overlapping the left edge (Hearthstone-style) */}
+      {/* Premium plate background */}
+      <div
+        className="absolute inset-0"
+        style={{ backgroundImage: `url('${menuButtonAssets.base}')`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat' }}
+      />
+
+      {/* Coin, overlapping the left edge */}
       <motion.img
         src={homeAssets.dinoCoin}
         alt="DinoCoin"
         animate={{ rotate: [0, -5, 5, 0] }}
         transition={{ duration: 3, repeat: Infinity }}
-        className={`absolute -left-1.5 top-1/2 -translate-y-1/2 ${coinSize} object-contain drop-shadow-[0_2px_3px_rgba(0,0,0,0.7)]`}
+        className="absolute -left-[10%] top-1/2 -translate-y-1/2 h-[125%] aspect-square object-contain drop-shadow-[0_2px_3px_rgba(0,0,0,0.7)]"
         draggable={false}
       />
 
+      {/* Amount on the parchment center */}
       {showAmount && (
         <motion.span
           key={coins}
-          initial={{ scale: 1.2, y: -5 }}
+          initial={{ scale: 1.2, y: -4 }}
           animate={{ scale: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className={`${textSize} font-black text-amber-200`}
-          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.9)' }}
+          className={`absolute left-[32%] right-[13%] top-1/2 -translate-y-1/2 text-center font-black text-amber-950 ${textCls}`}
+          style={{ textShadow: '0 1px 1px rgba(255,255,255,0.45)' }}
         >
           {coins.toLocaleString()}
         </motion.span>

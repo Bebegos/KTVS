@@ -15,15 +15,10 @@ import { getClassIcon, getSpecIcon } from '../lib/icons'
 import { calculateStartingStats, getStatDistributionBreakdown } from '../lib/statDistribution'
 import MedallionIcon from './MedallionIcon'
 import AbilityIcon from './AbilityIcon'
-import StatIcon from './StatIcon'
+import StatCardPremium from './StatCardPremium'
 import PremiumCard from './PremiumCard'
 import PremiumButton from './PremiumButton'
-import { getDinoMaxHp } from '../lib/stat-system'
 import { homeAssets } from '../lib/gameAssets'
-
-const STAT_ACCENT: Record<string, string> = {
-  sta: '#b91c1c', atk: '#c2410c', def: '#1d4ed8', spd: '#a16207',
-}
 
 interface DinoCreationFlowProps {
   onBack: () => void
@@ -431,37 +426,30 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                         </div>
                       </div>
 
-                      {/* Final stats — parchment cards with big stat icons */}
+                      {/* Final stats — premium cards (tap to open stat detail) */}
                       {(() => {
-                        const derivedHp = getDinoMaxHp({ sta: finalStats.maxHp, staminaToHpMultiplier: finalStats.hpPerLevelStat })
-                        const rows = [
-                          { key: 'sta', label: 'Dayanıklılık', value: finalStats.maxHp, hp: derivedHp },
-                          { key: 'atk', label: 'Saldırı', value: finalStats.atk },
-                          { key: 'def', label: 'Savunma', value: finalStats.def },
-                          { key: 'spd', label: 'Hız', value: finalStats.spd },
-                        ] as const
+                        const tempDino: Dino = {
+                          id: 'temp',
+                          name: stats.name,
+                          maxHp: finalStats.maxHp,
+                          atk: finalStats.atk,
+                          def: finalStats.def,
+                          spd: finalStats.spd,
+                          sta: finalStats.maxHp,
+                          level: 1,
+                          xp: 0,
+                          abilityIds: [],
+                          familyCode: '',
+                          class: selectedClass,
+                          spec: selectedSpec,
+                          staminaToHpMultiplier: finalStats.hpPerLevelStat,
+                        }
                         return (
                           <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {rows.map(row => {
-                              const color = STAT_ACCENT[row.key]
-                              return (
-                                <div key={row.key} className="flex items-center gap-3 bg-amber-900/8 border border-amber-900/25 rounded-lg px-4 py-3">
-                                  <span
-                                    className="flex items-center justify-center w-12 h-12 rounded-full flex-shrink-0"
-                                    style={{ background: `${color}1a`, border: `1.5px solid ${color}55` }}
-                                  >
-                                    <StatIcon stat={row.key as any} size="lg" />
-                                  </span>
-                                  <span className="font-black text-amber-950 text-sm flex-1">{row.label}</span>
-                                  <div className="text-right leading-none">
-                                    <span className="font-black text-xl" style={{ color }}>{row.value}</span>
-                                    {'hp' in row && row.hp != null && (
-                                      <span className="block text-[11px] font-bold text-red-700/80 mt-0.5">❤ {row.hp} HP</span>
-                                    )}
-                                  </div>
-                                </div>
-                              )
-                            })}
+                            <StatCardPremium stat="sta" dino={tempDino} value={finalStats.maxHp} />
+                            <StatCardPremium stat="atk" dino={tempDino} value={finalStats.atk} />
+                            <StatCardPremium stat="def" dino={tempDino} value={finalStats.def} />
+                            <StatCardPremium stat="spd" dino={tempDino} value={finalStats.spd} />
                           </div>
                         )
                       })()}
