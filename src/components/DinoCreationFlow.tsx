@@ -13,10 +13,11 @@ import {
 } from '../lib/abilities'
 import { getClassIcon, getSpecIcon } from '../lib/icons'
 import { calculateStartingStats, getStatDistributionBreakdown } from '../lib/statDistribution'
-import SvgIcon from './SvgIcon'
 import MedallionIcon from './MedallionIcon'
+import AbilityIcon from './AbilityIcon'
 import StatDisplay from './StatDisplay'
-import HsCard, { HsCardGrid } from './HsCard'
+import PremiumCard from './PremiumCard'
+import PremiumButton from './PremiumButton'
 import { homeAssets } from '../lib/gameAssets'
 
 interface DinoCreationFlowProps {
@@ -147,16 +148,11 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
       <div className="relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={onBack}
-            className="px-4 py-2 rounded-lg font-black text-amber-100 bg-stone-900/80 border-2 border-amber-500/60 hover:bg-stone-800 transition-colors"
-          >
-            ← Geri
-          </button>
+          <PremiumButton onClick={onBack} className="w-28" contentClassName="text-sm">← Geri</PremiumButton>
           <h1 className="text-2xl sm:text-3xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             Yeni Dinozor
           </h1>
-          <div className="w-24" /> {/* Spacer */}
+          <div className="w-28" /> {/* Spacer */}
         </div>
 
         {/* Step indicator */}
@@ -189,27 +185,30 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 Dinozor Sınıfını Seç
               </h2>
 
-              <HsCardGrid className="max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
                 {classes.map(classAbs => {
+                  const selected = selectedClass === classAbs.id
                   return (
-                    <HsCard
+                    <motion.button
                       key={classAbs.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleSelectClass(classAbs.id)}
-                      selected={selectedClass === classAbs.id}
+                      className="text-left"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="flex-shrink-0">
-                          <MedallionIcon id={classAbs.id} type="class" size="xl" />
+                      <PremiumCard variant="frame" glow={selected ? 'gold' : undefined}>
+                        <div className="flex items-center gap-4 p-2">
+                          <MedallionIcon id={classAbs.id} type="class" size="xl" className="flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg font-black text-amber-950 mb-1">{classAbs.name}</h3>
+                            <p className="text-sm text-amber-900/80">{classAbs.description}</p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-black text-amber-900 mb-1">{classAbs.name}</h3>
-                          <p className="text-sm text-amber-800">{classAbs.description}</p>
-                        </div>
-                      </div>
-                    </HsCard>
+                      </PremiumCard>
+                    </motion.button>
                   )
                 })}
-              </HsCardGrid>
+              </div>
             </motion.div>
           )}
 
@@ -228,44 +227,43 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               </h2>
 
               <div className="space-y-3 mb-6">
-                {classAbilities.map(ability => (
-                  <motion.div
-                    key={ability.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleSelectClassAbility(ability.id)}
-                    className={`p-4 rounded-lg cursor-pointer transition border-2 ${
-                      selectedClassAbilities.includes(ability.id)
-                        ? 'bg-amber-100 border-amber-600 shadow-lg shadow-amber-500/50'
-                        : 'bg-amber-50/90 border-amber-600/40 hover:border-amber-600'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <SvgIcon id={ability.id} type="ability" size="lg" fallback="" />
-                      <div className="flex-1 text-left">
-                        <h4 className="font-black text-amber-900 mb-1">{ability.name}</h4>
-                        <p className="text-sm text-amber-900/70 mb-1">{ability.description}</p>
-                        <p className="text-xs text-amber-900/50">
-                          Cooldown: {ability.cooldown} tur | Hasar: {Math.round(ability.damageMultiplier * 100)}%
-                        </p>
-                      </div>
-                      {selectedClassAbilities.includes(ability.id) && (
-                        <div className="flex-shrink-0 w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center">
-                          <span className="text-slate-900 font-black">✓</span>
+                {classAbilities.map(ability => {
+                  const selected = selectedClassAbilities.includes(ability.id)
+                  return (
+                    <motion.button
+                      key={ability.id}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => handleSelectClassAbility(ability.id)}
+                      className="w-full text-left"
+                    >
+                      <PremiumCard variant="panel" glow={selected ? 'gold' : undefined}>
+                        <div className="flex items-center gap-3 p-3">
+                          <span className="flex items-center justify-center w-12 h-12 rounded-lg bg-amber-900/10 border border-amber-700/40 flex-shrink-0">
+                            <AbilityIcon iconId={ability.icon} size="md" />
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-black text-amber-950 mb-0.5">{ability.name}</h4>
+                            <p className="text-sm text-amber-900/80 leading-snug">{ability.description}</p>
+                            <p className="text-xs text-amber-800/70 mt-0.5">
+                              Bekleme: {ability.cooldown} tur • Hasar: {Math.round(ability.damageMultiplier * 100)}%
+                            </p>
+                          </div>
+                          {selected && (
+                            <span className="flex-shrink-0 w-8 h-8 bg-amber-600 border-2 border-amber-300 rounded-full flex items-center justify-center text-amber-50 font-black">✓</span>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
+                      </PremiumCard>
+                    </motion.button>
+                  )
+                })}
               </div>
 
-              <button
-                onClick={handleProceedToSpec}
-                disabled={selectedClassAbilities.length !== 2}
-                className="hs-btn hs-btn-block"
-              >
-                <span>Devam Et</span>
-              </button>
+              <div className="flex justify-center">
+                <PremiumButton onClick={handleProceedToSpec} disabled={selectedClassAbilities.length !== 2} className="w-full max-w-xs" contentClassName="text-base">
+                  Devam Et
+                </PremiumButton>
+              </div>
             </motion.div>
           )}
 
@@ -284,17 +282,21 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               </h2>
 
               {specs.map(spec => {
+                const selected = selectedSpec === spec.id
                 return (
                   <motion.button
                     key={spec.id}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => handleSelectSpec(spec.id)}
-                    className="bg-amber-50/90 border border-amber-600/40 rounded-xl p-6 text-center transition hover:border-amber-600 hover:shadow-amber-500 flex flex-col items-center"
                   >
-                    <MedallionIcon id={spec.id} type="spec" size="xl" className="mb-3" />
-                    <h3 className="text-xl font-black text-amber-900 mb-1">{spec.name}</h3>
-                    <p className="text-sm text-amber-900/70">{spec.description}</p>
+                    <PremiumCard variant="frame" glow={selected ? 'gold' : undefined}>
+                      <div className="flex flex-col items-center text-center p-2">
+                        <MedallionIcon id={spec.id} type="spec" size="xl" className="mb-2" />
+                        <h3 className="text-lg font-black text-amber-950 mb-1">{spec.name}</h3>
+                        <p className="text-sm text-amber-900/80">{spec.description}</p>
+                      </div>
+                    </PremiumCard>
                   </motion.button>
                 )
               })}
@@ -316,44 +318,43 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
               </h2>
 
               <div className="space-y-3 mb-6">
-                {specAbilities.map(ability => (
-                  <motion.div
-                    key={ability.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleSelectSpecAbility(ability.id)}
-                    className={`p-4 rounded-lg cursor-pointer transition border-2 ${
-                      selectedSpecAbility === ability.id
-                        ? 'bg-amber-100 border-amber-600 shadow-lg shadow-amber-500/50'
-                        : 'bg-amber-50/90 border-amber-600/40 hover:border-amber-600'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <SvgIcon id={ability.id} type="ability" size="lg" fallback="" />
-                      <div className="flex-1 text-left">
-                        <h4 className="font-black text-amber-900 mb-1">{ability.name}</h4>
-                        <p className="text-sm text-amber-900/70 mb-1">{ability.description}</p>
-                        <p className="text-xs text-amber-900/50">
-                          {ability.isPassive ? 'Pasif Yetenek' : `Cooldown: ${ability.cooldown} tur`}
-                        </p>
-                      </div>
-                      {selectedSpecAbility === ability.id && (
-                        <div className="flex-shrink-0 w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center">
-                          <span className="text-slate-900 font-black">✓</span>
+                {specAbilities.map(ability => {
+                  const selected = selectedSpecAbility === ability.id
+                  return (
+                    <motion.button
+                      key={ability.id}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => handleSelectSpecAbility(ability.id)}
+                      className="w-full text-left"
+                    >
+                      <PremiumCard variant="panel" glow={selected ? 'gold' : undefined}>
+                        <div className="flex items-center gap-3 p-3">
+                          <span className="flex items-center justify-center w-12 h-12 rounded-lg bg-amber-900/10 border border-amber-700/40 flex-shrink-0">
+                            <AbilityIcon iconId={ability.icon} size="md" />
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-black text-amber-950 mb-0.5">{ability.name}</h4>
+                            <p className="text-sm text-amber-900/80 leading-snug">{ability.description}</p>
+                            <p className="text-xs text-amber-800/70 mt-0.5">
+                              {ability.isPassive ? 'Pasif Yetenek' : `Bekleme: ${ability.cooldown} tur`}
+                            </p>
+                          </div>
+                          {selected && (
+                            <span className="flex-shrink-0 w-8 h-8 bg-amber-600 border-2 border-amber-300 rounded-full flex items-center justify-center text-amber-50 font-black">✓</span>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
+                      </PremiumCard>
+                    </motion.button>
+                  )
+                })}
               </div>
 
-              <button
-                onClick={handleProceedToStats}
-                disabled={!selectedSpecAbility}
-                className="hs-btn hs-btn-purple hs-btn-block"
-              >
-                <span>Devam Et</span>
-              </button>
+              <div className="flex justify-center">
+                <PremiumButton onClick={handleProceedToStats} disabled={!selectedSpecAbility} className="w-full max-w-xs" contentClassName="text-base">
+                  Devam Et
+                </PremiumButton>
+              </div>
             </motion.div>
           )}
 
@@ -371,16 +372,18 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 Dinozor Adı ve İstatistikleri
               </h2>
 
-              <div className="bg-amber-50/90 border border-amber-600/40 rounded-lg p-6 space-y-4">
+              <PremiumCard variant="frame">
+                <div className="p-2 space-y-4">
                 {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-bold text-amber-900 mb-2">Dinozor Adı *</label>
+                  <label className="block text-sm font-black text-amber-900 mb-2">Dinozor Adı *</label>
                   <input
                     type="text"
                     value={stats.name}
                     onChange={e => setStats({ ...stats, name: e.target.value })}
                     placeholder="Dinozor adını gir..."
-                    className="w-full px-4 py-2 bg-amber-100 border border-amber-600/50 rounded-lg text-amber-900 placeholder-amber-700/50 focus:outline-none focus:border-amber-600"
+                    className="w-full px-4 py-2.5 rounded-lg font-bold text-amber-950 placeholder-amber-800/40 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    style={{ background: 'linear-gradient(180deg, #efe0c0 0%, #d8c49e 100%)', border: '2px solid #a9853f' }}
                   />
                 </div>
 
@@ -393,28 +396,28 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                     <>
                       {/* Stat Distribution Explanation */}
                       <div className="mt-6 space-y-3">
-                        <div className="p-3 bg-gradient-to-r from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-lg">
-                          <p className="text-xs font-bold text-blue-400 mb-2">SINIFINDAN GELEN STATLAR</p>
-                          <div className="space-y-1 text-xs text-white/80">
+                        <div className="p-3 bg-amber-900/8 border border-amber-900/25 rounded-lg">
+                          <p className="text-xs font-black uppercase tracking-wide text-amber-800/80 mb-2">Sınıfından Gelen Statlar</p>
+                          <div className="space-y-1 text-xs font-semibold text-amber-900/85">
                             {breakdown.classTheme && (
                               <>
-                                <p>Başlangıç Can: <span className="font-bold text-red-400">{breakdown.classTheme.baseHp}</span></p>
+                                <p>Başlangıç Can: <span className="font-black text-red-700">{breakdown.classTheme.baseHp}</span></p>
                                 <p>Saldırı: +{breakdown.classTheme.classDistribution.atk}</p>
                                 <p>Savunma: +{breakdown.classTheme.classDistribution.def}</p>
                                 <p>Hız: +{breakdown.classTheme.classDistribution.spd}</p>
-                                <p>Level Bonus: <span className="font-bold text-red-400">{breakdown.classTheme.hpPerLevelStat}x HP</span>/stat</p>
+                                <p>Level Bonus: <span className="font-black text-red-700">{breakdown.classTheme.hpPerLevelStat}x HP</span>/stat</p>
                               </>
                             )}
                           </div>
                         </div>
 
-                        <div className="p-3 bg-gradient-to-r from-purple-500/10 to-purple-500/5 border border-purple-500/30 rounded-lg">
-                          <p className="text-xs font-bold text-purple-400 mb-2">ÖZELLESTIRMESINDEN GELEN BONUSLAR</p>
-                          <div className="space-y-1 text-xs text-white/80">
+                        <div className="p-3 bg-amber-900/8 border border-amber-900/25 rounded-lg">
+                          <p className="text-xs font-black uppercase tracking-wide text-amber-800/80 mb-2">Özelleştirmesinden Gelen Bonuslar</p>
+                          <div className="space-y-1 text-xs font-semibold text-amber-900/85">
                             {breakdown.specTheme && (
                               <>
                                 {breakdown.specTheme.hpBonus && (
-                                  <p>Can Bonusu: <span className="font-bold text-red-400">+{breakdown.specTheme.hpBonus}</span></p>
+                                  <p>Can Bonusu: <span className="font-black text-red-700">+{breakdown.specTheme.hpBonus}</span></p>
                                 )}
                                 <p>Saldırı: +{breakdown.specTheme.specDistribution.atk}</p>
                                 <p>Savunma: +{breakdown.specTheme.specDistribution.def}</p>
@@ -483,24 +486,23 @@ export default function DinoCreationFlow({ onBack, onRefresh }: DinoCreationFlow
                 })()}
 
                 {/* Summary */}
-                <div className="mt-6 p-4 bg-amber-600/10 border border-amber-600/30 rounded-lg">
-                  <p className="text-sm font-bold text-amber-900 mb-3">ÖZET</p>
-                  <div className="space-y-1 text-sm text-amber-900/80">
-                    <p>Sınıf: <span className="font-bold">{CLASS_ABILITIES[selectedClass].name}</span></p>
-                    <p>Özelleştirme: <span className="font-bold">{SPEC_ABILITIES[selectedSpec].name}</span></p>
-                    <p>Yetenekler: <span className="font-bold">{selectedClassAbilities.length} Sınıf + 1 Özel = 3 Toplam</span></p>
+                <div className="mt-2 p-4 bg-amber-900/10 border border-amber-900/25 rounded-lg">
+                  <p className="text-sm font-black uppercase tracking-wide text-amber-800/80 mb-2">Özet</p>
+                  <div className="space-y-1 text-sm font-semibold text-amber-900/85">
+                    <p>Sınıf: <span className="font-black text-amber-950">{CLASS_ABILITIES[selectedClass].name}</span></p>
+                    <p>Özelleştirme: <span className="font-black text-amber-950">{SPEC_ABILITIES[selectedSpec].name}</span></p>
+                    <p>Yetenekler: <span className="font-black text-amber-950">{selectedClassAbilities.length} Sınıf + 1 Özel = 3 Toplam</span></p>
                   </div>
                 </div>
 
                 {/* Create Button */}
-                <button
-                  onClick={handleCreateDino}
-                  disabled={loading || !stats.name.trim()}
-                  className="hs-btn hs-btn-green w-full px-6 py-4 text-lg mt-4"
-                >
-                  <span>{loading ? 'Dinozor Oluşturuluyor...' : 'Dinozor Oluştur'}</span>
-                </button>
-              </div>
+                <div className="flex justify-center pt-1">
+                  <PremiumButton onClick={handleCreateDino} disabled={loading || !stats.name.trim()} className="w-full max-w-sm" contentClassName="text-base">
+                    {loading ? 'Oluşturuluyor...' : 'Dinozor Oluştur'}
+                  </PremiumButton>
+                </div>
+                </div>
+              </PremiumCard>
             </motion.div>
           )}
         </AnimatePresence>
