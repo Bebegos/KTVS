@@ -8,7 +8,17 @@ import { useAuth } from '../lib/auth-context'
 import { slotService, battleVisualService } from '../lib/services'
 import HealthBar from './HealthBar'
 import EffectInfoModal from './EffectInfoModal'
+import PremiumCard from './PremiumCard'
+import PremiumButton from './PremiumButton'
+import { homeAssets } from '../lib/gameAssets'
 import BattleArena, { BattleArenaSlot } from './battle/BattleArena'
+
+const PAGE_BG = {
+  backgroundImage: `url('${homeAssets.background}')`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundColor: '#2a1c0e',
+} as const
 
 interface AdventureBattleScreenProps {
   playerDino: Dino
@@ -248,38 +258,30 @@ export default function AdventureBattleScreen({
   // ADVENTURE COMPLETE SCREEN
   if (adventureEnded) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="glass-dark neon-border-cyan rounded-2xl p-12 text-center max-w-md"
-        >
-          <div className="text-9xl mb-6">{adventureWon ? '🎉' : '💀'}</div>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-y-auto" style={PAGE_BG}>
+        <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative z-10 w-full max-w-md">
+          <PremiumCard variant="frame">
+            <div className="p-5 text-center space-y-4">
+              <div className="text-8xl">{adventureWon ? '🎉' : '💀'}</div>
+              <h1 className="text-3xl font-black text-amber-950">
+                {adventureWon ? 'MACERA TAMAMLANDI!' : 'MACERAYI KAYBETTİN!'}
+              </h1>
 
-          <h1 className="text-5xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
-            {adventureWon ? 'MACERAYı TAMAMLA!' : 'MACERAYı KAYBETTİN!'}
-          </h1>
+              {adventureWon ? (
+                <div className="space-y-2 bg-amber-900/10 border border-amber-900/25 rounded-lg p-4">
+                  <p className="text-lg font-black text-green-800">✅ {totalXpGained} XP Kazandı</p>
+                  <p className="text-lg font-black text-amber-800">✨ {totalCoinsGained} DinoCoin Kazandı</p>
+                </div>
+              ) : (
+                <p className="text-base font-bold text-red-800">😔 Maceradan Başarısız Oldun</p>
+              )}
 
-          {adventureWon && (
-            <div className="mb-6 space-y-3">
-              <div className="glass-dark neon-border-cyan rounded-lg p-4 space-y-2">
-                <p className="text-xl font-bold text-green-400">✅ {totalXpGained} XP Kazandı</p>
-                <p className="text-xl font-bold text-yellow-400">✨ {totalCoinsGained} DinoCoin Kazandı</p>
-              </div>
-              <p className="text-lg font-bold text-neon-cyan">🎉 Macera Tamamlandı!</p>
+              <PremiumButton onClick={() => onComplete(adventureWon, totalXpGained)} className="w-full" contentClassName="text-sm">
+                {adventureWon ? 'Sonraki Macera' : 'Geri Dön'}
+              </PremiumButton>
             </div>
-          )}
-
-          {!adventureWon && (
-            <p className="text-lg font-bold text-red-400 mb-6">😔 Maceradan Başarısız Oldun</p>
-          )}
-
-          <button
-            onClick={() => onComplete(adventureWon, totalXpGained)}
-            className="hs-btn hs-btn-block"
-          >
-            <span>{adventureWon ? 'Sonraki Macera' : 'Geri Dön'}</span>
-          </button>
+          </PremiumCard>
         </motion.div>
       </div>
     )
@@ -355,63 +357,53 @@ export default function AdventureBattleScreen({
 
   // STORY VIEW
   return (
-    <div className="w-full min-h-screen flex flex-col p-4 gap-6 relative overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-      </div>
+    <div className="w-full min-h-screen flex flex-col p-4 gap-4 relative overflow-y-auto" style={PAGE_BG}>
+      <div className="absolute inset-0 bg-black/35 pointer-events-none" />
 
-      {/* Back button */}
-      <button
-        onClick={onBack}
-        className="hs-btn absolute top-4 left-4 z-10"
-      >
-        <span>Geri</span>
-      </button>
+      <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col gap-4">
+        <PremiumButton onClick={onBack} className="w-28" contentClassName="text-sm">← Geri</PremiumButton>
 
-      <div className="flex flex-col items-center gap-6 z-10 mt-8 max-w-2xl mx-auto">
         {/* Adventure header */}
-        <div className="w-full glass-dark neon-border-purple rounded-lg p-6 text-center">
-          <h1 className="text-3xl font-black text-neon-purple mb-2">{adventure.name}</h1>
-          <p className="text-neon-purple/70">Sahne {currentSceneIdx + 1}/{adventure.scenes.length}</p>
-        </div>
+        <PremiumCard variant="frame">
+          <div className="p-4 text-center">
+            <h1 className="text-2xl sm:text-3xl font-black text-amber-950">{adventure.name}</h1>
+            <p className="text-sm font-bold text-amber-800">Sahne {currentSceneIdx + 1}/{adventure.scenes.length}</p>
+          </div>
+        </PremiumCard>
 
         {/* Illustration */}
-        <div className="text-8xl animate-bounce">{currentScene.illustration}</div>
+        <div className="text-7xl text-center animate-bounce">{currentScene.illustration}</div>
 
         {/* Story */}
-        <div className="glass-dark neon-border-cyan rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-black text-neon-cyan mb-4">{currentScene.title}</h2>
-          <p className="text-neon-cyan/80 leading-relaxed text-lg mb-6">{currentScene.story}</p>
+        <PremiumCard variant="frame">
+          <div className="p-4 sm:p-5 text-center space-y-3">
+            <h2 className="text-xl font-black text-amber-950">{currentScene.title}</h2>
+            <p className="text-amber-900/90 leading-relaxed">{currentScene.story}</p>
 
-          {/* Enemy preview */}
-          {currentEnemyData && (
-            <div className="mt-6 pt-6 border-t border-neon-cyan/30">
-              <p className="text-xs font-bold text-neon-cyan/70 mb-3">KARŞILAŞACAĞIN DÜŞMAN:</p>
-              <div className="glass border border-red-500/30 rounded-lg p-4">
-                <p className="text-2xl font-black text-red-400">{currentEnemyData.name}</p>
-                <p className="text-sm text-red-400/70 mt-2">Seviye {currentEnemyData.level}</p>
+            {currentEnemyData && (
+              <div className="mt-3 pt-3 border-t border-amber-900/25">
+                <p className="text-xs font-black text-amber-800/80 uppercase tracking-wide mb-2">Karşılaşacağın Düşman</p>
+                <div className="bg-red-900/10 border border-red-800/30 rounded-lg p-3">
+                  <p className="text-xl font-black text-red-800">{currentEnemyData.name}</p>
+                  <p className="text-sm text-red-700/80">Seviye {currentEnemyData.level}</p>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </PremiumCard>
 
         {/* Player status */}
-        <div className="w-full glass-dark neon-border-cyan rounded-lg p-4">
-          <p className="text-xs font-bold text-neon-cyan mb-2">SENİN DURUMUN</p>
-          <HealthBar current={playerCurrentHp} max={playerDino.maxHp} variant="player" />
-        </div>
+        <PremiumCard variant="panel">
+          <div className="p-4">
+            <p className="text-xs font-black text-amber-900 uppercase tracking-wide mb-2">Senin Durumun</p>
+            <HealthBar current={playerCurrentHp} max={playerDino.maxHp} variant="player" />
+          </div>
+        </PremiumCard>
 
-        {/* Action buttons */}
-        <div className="w-full space-y-3">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={startBattle}
-            className="hs-btn hs-btn-lg hs-btn-block"
-          >
-            <span>{currentScene.actionText || 'İlerle'}</span>
-          </motion.button>
+        <div className="flex justify-center">
+          <PremiumButton onClick={startBattle} className="w-full max-w-xs" contentClassName="text-base">
+            {currentScene.actionText || 'İlerle'}
+          </PremiumButton>
         </div>
       </div>
     </div>
