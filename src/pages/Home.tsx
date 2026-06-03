@@ -372,37 +372,23 @@ function DuelloVsSelectDino({
   onBack: () => void
 }) {
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto">
-      {/* Arka plan blur */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
+    <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto" style={{ backgroundImage: `url('${homeAssets.background}')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#2a1c0e' }}>
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
+      <div className="absolute top-4 left-4 z-20">
+        <PremiumButton onClick={onBack} className="w-28" contentClassName="text-sm">← Geri</PremiumButton>
       </div>
 
-      <button
-        onClick={onBack}
-        className="hs-btn absolute top-4 left-4 z-10"
-      >
-        <span>Geri</span>
-      </button>
-
-      <div className="text-center mb-8 relative z-10 mt-8 md:mt-0">
-        <div className="text-8xl mb-4 float-animation">⚔️</div>
-        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-cyan mb-2">
-          Düello VS
-        </h1>
-        <p className="text-lg text-neon-purple/80">Dinozorunu seç</p>
+      <div className="text-center mb-2 relative z-10 mt-16 md:mt-6">
+        <div className="text-6xl mb-2 float-animation">⚔️</div>
+        <h1 className="text-4xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Düello VS</h1>
+        <p className="text-base font-bold text-amber-300/90 drop-shadow">Dinozorunu seç</p>
       </div>
 
       {dinos.length === 0 ? (
         <div className="text-center relative z-10">
-          <p className="text-xl text-neon-cyan mb-4">Dinozor yok!</p>
-          <button
-            onClick={onBack}
-            className="hs-btn hs-btn-purple hs-btn-lg"
-          >
-            <span>Geri Dön</span>
-          </button>
+          <p className="text-xl font-bold text-amber-100 mb-4 drop-shadow">Dinozor yok!</p>
+          <PremiumButton onClick={onBack} className="w-40 mx-auto" contentClassName="text-sm">Geri Dön</PremiumButton>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl relative z-10 pb-8">
@@ -430,37 +416,23 @@ function OfflineSelectDino({
   onBack: () => void
 }) {
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto">
-      {/* Arka plan blur */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+    <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-4 relative overflow-y-auto" style={{ backgroundImage: `url('${homeAssets.background}')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#2a1c0e' }}>
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
+      <div className="absolute top-4 left-4 z-20">
+        <PremiumButton onClick={onBack} className="w-28" contentClassName="text-sm">← Geri</PremiumButton>
       </div>
 
-      <button
-        onClick={onBack}
-        className="hs-btn absolute top-4 left-4 z-10"
-      >
-        <span>Geri</span>
-      </button>
-
-      <div className="text-center mb-8 relative z-10 mt-8 md:mt-0">
-        <div className="text-8xl mb-4 float-animation">🎲</div>
-        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple mb-2">
-          Masada Oyna
-        </h1>
-        <p className="text-lg text-neon-cyan/80">Dinozorunu seç</p>
+      <div className="text-center mb-2 relative z-10 mt-16 md:mt-6">
+        <div className="text-6xl mb-2 float-animation">🎲</div>
+        <h1 className="text-4xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Masada Oyna</h1>
+        <p className="text-base font-bold text-amber-300/90 drop-shadow">Dinozorunu seç</p>
       </div>
 
       {dinos.length === 0 ? (
         <div className="text-center relative z-10">
-          <p className="text-xl text-neon-cyan mb-4">Dinozor yok!</p>
-          <button
-            onClick={onBack}
-            className="hs-btn hs-btn-purple hs-btn-lg"
-          >
-            <span>Geri Dön</span>
-          </button>
+          <p className="text-xl font-bold text-amber-100 mb-4 drop-shadow">Dinozor yok!</p>
+          <PremiumButton onClick={onBack} className="w-40 mx-auto" contentClassName="text-sm">Geri Dön</PremiumButton>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl relative z-10 pb-8">
