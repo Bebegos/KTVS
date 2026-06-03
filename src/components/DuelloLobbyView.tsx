@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { Dino } from '../game/types'
 import DinoBattlePreviewCard from './DinoBattlePreviewCard'
+import PremiumButton from './PremiumButton'
+import { homeAssets } from '../lib/gameAssets'
 
 interface DuelloLobbyViewProps {
   playerDino: Dino
@@ -20,31 +22,23 @@ export default function DuelloLobbyView({
   onBack,
 }: DuelloLobbyViewProps) {
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 gap-8 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-      </div>
+    <div
+      className="w-full min-h-screen flex flex-col items-center justify-center p-4 gap-6 relative overflow-hidden"
+      style={{ backgroundImage: `url('${homeAssets.background}')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#2a1c0e' }}
+    >
+      <div className="absolute inset-0 bg-black/45 pointer-events-none" />
 
       {/* Back Button */}
       {onBack && (
-        <button
-          onClick={onBack}
-          className="hs-btn absolute top-4 left-4 z-10"
-        >
-          <span>Geri</span>
-        </button>
+        <div className="absolute top-4 left-4 z-20">
+          <PremiumButton onClick={onBack} className="w-28" contentClassName="text-sm">← Geri</PremiumButton>
+        </div>
       )}
 
       {/* Header */}
       <div className="text-center relative z-10">
-        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-cyan mb-2">
-          ⚔️ DÜELLO VS
-        </h1>
-        <p className="text-lg text-neon-purple/80">
-          {waiting ? 'Rakip bekleniyor...' : 'Hazırsın!'}
-        </p>
+        <h1 className="text-4xl sm:text-5xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-1">⚔️ DÜELLO VS</h1>
+        <p className="text-base font-bold text-amber-300/90 drop-shadow">{waiting ? 'Rakip bekleniyor...' : 'Hazırsın!'}</p>
       </div>
 
       {/* Battle Preview Cards */}
@@ -101,8 +95,8 @@ export default function DuelloLobbyView({
               >
                 ⏳
               </motion.div>
-              <p className="text-2xl font-bold text-neon-purple mb-4">Rakip Bekleniyor</p>
-              <p className="text-sm text-neon-purple/70">Oturum: {sessionId}</p>
+              <p className="text-2xl font-black text-amber-100 mb-2 drop-shadow">Rakip Bekleniyor</p>
+              <p className="text-sm font-bold text-amber-200/70">Oturum: {sessionId}</p>
             </div>
           </motion.div>
         )}
@@ -110,15 +104,9 @@ export default function DuelloLobbyView({
 
       {/* Action Buttons */}
       {opponentDino && onStartBattle && (
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          onClick={onStartBattle}
-          className="hs-btn hs-btn-lg hs-btn-green relative z-10"
-        >
-          <span>Savaşa Başla!</span>
-        </motion.button>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="relative z-10">
+          <PremiumButton onClick={onStartBattle} className="w-56" contentClassName="text-base">Savaşa Başla!</PremiumButton>
+        </motion.div>
       )}
     </div>
   )

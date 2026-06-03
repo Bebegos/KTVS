@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Dino } from '../game/types'
 import DinoCard from './DinoCard'
+import PremiumButton from './PremiumButton'
+import { homeAssets } from '../lib/gameAssets'
 
 interface PvPOpponent {
   id: string
@@ -42,30 +44,21 @@ export default function PvPOpponentSelectScreen({
   }, [filterLevel, availableOpponents, playerDino.level])
 
   return (
-    <div className="w-full min-h-screen flex flex-col p-4 gap-6 relative overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
+    <div
+      className="w-full min-h-screen flex flex-col p-4 gap-6 relative overflow-y-auto"
+      style={{ backgroundImage: `url('${homeAssets.background}')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#2a1c0e' }}
+    >
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
+      <div className="absolute top-4 left-4 z-20">
+        <PremiumButton onClick={onBack} className="w-28" contentClassName="text-sm">← Geri</PremiumButton>
       </div>
 
-      {/* Back button */}
-      <button
-        onClick={onBack}
-        className="hs-btn absolute top-4 left-4 z-10"
-      >
-        <span>Geri</span>
-      </button>
-
-      <div className="relative z-10 mt-8">
+      <div className="relative z-10 mt-16">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">
-            PvP Eşleştirme
-          </h1>
-          <p className="text-lg text-neon-cyan/80 mt-2">
-            {playerDino.name} ile rakip bul
-          </p>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl sm:text-4xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">PvP Eşleştirme</h1>
+          <p className="text-base font-bold text-amber-300/90 mt-1 drop-shadow">{playerDino.name} ile rakip bul</p>
         </div>
 
         {/* Difficulty Filters */}
@@ -79,13 +72,14 @@ export default function PvPOpponentSelectScreen({
             <button
               key={filter.value}
               onClick={() => setFilterLevel(filter.value as any)}
-              className={`px-4 py-2 rounded-lg font-bold text-sm transition ${
+              className="px-4 py-2 rounded-lg font-black text-sm transition-colors"
+              style={
                 filterLevel === filter.value
-                  ? 'hs-btn hs-btn-cyan'
-                  : 'glass-dark border border-neon-cyan/30 text-neon-cyan/70 hover:text-neon-cyan'
-              }`}
+                  ? { background: 'linear-gradient(180deg,#b8860b,#8a6310)', border: '2px solid #d4af37', color: '#fff7e6' }
+                  : { background: 'rgba(20,12,6,0.6)', border: '2px solid rgba(212,175,55,0.4)', color: '#e8d6a8' }
+              }
             >
-              <span>{filter.label}</span>
+              {filter.label}
             </button>
           ))}
         </div>
@@ -103,8 +97,8 @@ export default function PvPOpponentSelectScreen({
           </div>
         ) : filteredOpponents.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-2xl text-neon-cyan">Rakip bulunamadı</p>
-            <p className="text-sm text-neon-cyan/70 mt-2">Daha sonra tekrar dene</p>
+            <p className="text-2xl font-black text-amber-100 drop-shadow">Rakip bulunamadı</p>
+            <p className="text-sm font-bold text-amber-200/80 mt-2">Daha sonra tekrar dene</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
