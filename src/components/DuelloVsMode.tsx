@@ -8,6 +8,16 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
 import DuelloBattleScreen from './DuelloBattleScreen'
 import DuelloLobbyView from './DuelloLobbyView'
+import PremiumButton from './PremiumButton'
+import PremiumCard from './PremiumCard'
+import { homeAssets } from '../lib/gameAssets'
+
+const PAGE_BG = {
+  backgroundImage: `url('${homeAssets.background}')`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundColor: '#2a1c0e',
+} as const
 
 interface DuelloVsModeProps {
   selectedDino: Dino
@@ -252,7 +262,8 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   // Options Screen
   if (screen === 'options') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto" style={PAGE_BG}>
+        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
         {/* Arka plan */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
@@ -261,41 +272,37 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
         <button
           onClick={onBack}
-          className="hs-btn absolute top-4 left-4 z-10"
+          className="absolute top-4 left-4 z-20 px-4 py-2 rounded-lg font-black text-amber-100 bg-stone-900/80 border-2 border-amber-500/60 hover:bg-stone-800 transition-colors"
         >
           Geri
         </button>
 
         <div className="text-center mb-8 relative z-10">
-          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-pink mb-2">
-            Düello Vs
-          </h1>
-          <p className="text-lg text-neon-cyan/80">Seçiminizi yapın</p>
+          <h1 className="text-4xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-1">Düello VS</h1>
+          <p className="text-base font-bold text-amber-300/90 drop-shadow">Seçiminizi yapın</p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6 relative z-10 max-w-2xl">
+        <div className="flex flex-col md:flex-row gap-5 relative z-10 max-w-2xl w-full">
           {/* Davet Et (Host) */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={startHosting}
-            className="flex-1 p-8 glass-dark neon-border-cyan rounded-2xl text-center hover:shadow-neon-cyan transition"
-          >
-            <div className="text-5xl mb-4">📧</div>
-            <h2 className="text-2xl font-black text-neon-cyan mb-2">DAVET ET</h2>
-            <p className="text-sm text-neon-cyan/70">Link paylaş ve bekle</p>
+          <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={startHosting} className="flex-1 text-center">
+            <PremiumCard variant="frame">
+              <div className="p-6">
+                <div className="text-5xl mb-3">📧</div>
+                <h2 className="text-2xl font-black text-amber-950 mb-1">DAVET ET</h2>
+                <p className="text-sm font-bold text-amber-800/80">Link paylaş ve bekle</p>
+              </div>
+            </PremiumCard>
           </motion.button>
 
           {/* Katıl (Join) */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setScreen('join')}
-            className="flex-1 p-8 glass-dark neon-border-purple rounded-2xl text-center hover:shadow-neon-purple transition"
-          >
-            <div className="text-5xl mb-4">🔗</div>
-            <h2 className="text-2xl font-black text-neon-purple mb-2">KATIL</h2>
-            <p className="text-sm text-neon-purple/70">Kod gir veya QR tara</p>
+          <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => setScreen('join')} className="flex-1 text-center">
+            <PremiumCard variant="frame">
+              <div className="p-6">
+                <div className="text-5xl mb-3">🔗</div>
+                <h2 className="text-2xl font-black text-amber-950 mb-1">KATIL</h2>
+                <p className="text-sm font-bold text-amber-800/80">Kod gir veya QR tara</p>
+              </div>
+            </PremiumCard>
           </motion.button>
         </div>
       </div>
@@ -305,7 +312,8 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   // Host Screen (Davet Et)
   if (screen === 'host') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto" style={PAGE_BG}>
+        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
         {/* Arka plan */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
@@ -313,13 +321,13 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
 
         <button
           onClick={() => setScreen('options')}
-          className="hs-btn absolute top-4 left-4 z-10"
+          className="absolute top-4 left-4 z-20 px-4 py-2 rounded-lg font-black text-amber-100 bg-stone-900/80 border-2 border-amber-500/60 hover:bg-stone-800 transition-colors"
         >
           ← Geri
         </button>
 
         <div className="flex flex-col items-center gap-8 relative z-10 max-w-md w-full pb-8 mt-8 md:mt-0">
-          <h1 className="text-4xl font-black text-neon-cyan text-center">Davet Linki</h1>
+          <h1 className="text-4xl font-black text-amber-200 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Davet Linki</h1>
 
           {/* Dinozor Info */}
           <div className="glass-dark neon-border-cyan rounded-xl p-6 w-full text-center">
@@ -368,7 +376,8 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
   // Join Screen (Katıl)
   if (screen === 'join') {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto">
+      <div className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 relative overflow-y-auto" style={PAGE_BG}>
+        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
         {/* Arka plan */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
@@ -379,13 +388,13 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
             setScreen('options')
             stopScanner()
           }}
-          className="hs-btn absolute top-4 left-4 z-10"
+          className="absolute top-4 left-4 z-20 px-4 py-2 rounded-lg font-black text-amber-100 bg-stone-900/80 border-2 border-amber-500/60 hover:bg-stone-800 transition-colors"
         >
           ← Geri
         </button>
 
         <div className="flex flex-col items-center gap-8 relative z-10 max-w-md w-full pb-8 mt-8 md:mt-0">
-          <h1 className="text-4xl font-black text-neon-purple text-center">Katıl</h1>
+          <h1 className="text-4xl font-black text-amber-200 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Katıl</h1>
 
           {/* Dinozor Info */}
           <div className="glass-dark neon-border-purple rounded-xl p-6 w-full text-center">
