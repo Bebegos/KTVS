@@ -101,8 +101,8 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
 
         {/* Abilities */}
         {dino.abilityIds.length > 0 && (
-          <div className="mt-4 p-6 rounded-2xl border border-neon-cyan/30 space-y-4 bg-slate-900/60 backdrop-blur-md">
-            <h2 className="text-lg font-bold text-neon-cyan">⚡ Yetenek Detayları</h2>
+          <div className="mt-4 p-5 rounded-2xl border-2 border-amber-900/40 space-y-4" style={{ background: 'linear-gradient(180deg, rgba(232,220,192,0.97) 0%, rgba(214,196,158,0.97) 100%)' }}>
+            <h2 className="text-lg font-black text-amber-950">⚡ Yetenek Detayları</h2>
             <div className="space-y-3">
               {dino.abilityIds.map((abilityId, idx) => {
                 if (!abilityId) return null
@@ -110,28 +110,24 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
                 if (!ability) return null
 
                 return (
-                  <div
-                    key={idx}
-                    className="bg-gradient-to-r from-neon-purple/10 to-neon-purple/5 border border-neon-purple/30 rounded-lg p-3 space-y-2"
-                  >
+                  <div key={idx} className="bg-amber-900/8 border border-amber-900/25 rounded-lg p-3 space-y-2">
                     <div className="flex items-start gap-3">
                       <AbilityIcon iconId={ability.icon} size="md" />
                       <div className="flex-1">
-                        <p className="font-bold text-neon-purple text-sm">{ability.name}</p>
-                        <p className="text-xs text-neon-purple/70">{ability.description}</p>
+                        <p className="font-black text-amber-950 text-sm">{ability.name}</p>
+                        <p className="text-xs text-amber-900/75">{ability.description}</p>
                       </div>
                     </div>
 
-                    {/* Ability details */}
-                    <div className="text-xs text-neon-purple/70 space-y-1 ml-11">
+                    <div className="text-xs text-amber-900/80 space-y-1 ml-11">
                       <div className="flex justify-between">
                         <span>Hasar Çarpanı:</span>
-                        <span className="font-bold">×{ability.damageMultiplier || 1}</span>
+                        <span className="font-black">×{ability.damageMultiplier || 1}</span>
                       </div>
                       {ability.cooldown > 0 && (
                         <div className="flex justify-between">
-                          <span>Cooldown:</span>
-                          <span className="font-bold">{ability.cooldown} tur</span>
+                          <span>Bekleme:</span>
+                          <span className="font-black">{ability.cooldown} tur</span>
                         </div>
                       )}
                       {ability.effects && ability.effects.length > 0 && (
@@ -139,13 +135,7 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
                           <span>Efektler:</span>
                           <div className="flex gap-1">
                             {ability.effects.map((effectId: any, idx2: number) => (
-                              <SvgIcon
-                                key={idx2}
-                                id={effectId}
-                                type="effect"
-                                size="xs"
-                                fallback={getEffectEmoji(effectId)}
-                              />
+                              <SvgIcon key={idx2} id={effectId} type="effect" size="xs" fallback={getEffectEmoji(effectId)} />
                             ))}
                           </div>
                         </div>
@@ -159,20 +149,14 @@ export default function DinoDetailModal({ dino, isOpen, onClose, onEdit, onSpend
         )}
 
         {/* Action Buttons */}
-        <div className="mt-4 p-6 flex gap-3 justify-end rounded-2xl bg-slate-900/60 backdrop-blur-md border border-neon-cyan/20">
+        <div className="mt-4 p-4 flex gap-3 justify-end rounded-2xl border-2 border-amber-900/40" style={{ background: 'linear-gradient(180deg, rgba(232,220,192,0.97) 0%, rgba(214,196,158,0.97) 100%)' }}>
           {onEdit && (
-            <button
-              onClick={onEdit}
-              className="hs-btn hs-btn-purple"
-            >
-              <span>✏️ Düzenle</span>
+            <button onClick={onEdit} className="px-5 py-2 rounded-lg font-black text-amber-50 bg-amber-700/90 border-2 border-amber-400/60 hover:bg-amber-600 transition-colors">
+              ✏️ Düzenle
             </button>
           )}
-          <button
-            onClick={onClose}
-            className="hs-btn"
-          >
-            <span>← Kapat</span>
+          <button onClick={onClose} className="px-5 py-2 rounded-lg font-black text-amber-950 bg-amber-900/15 border-2 border-amber-900/40 hover:bg-amber-900/25 transition-colors">
+            ← Kapat
           </button>
         </div>
       </motion.div>
