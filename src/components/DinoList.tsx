@@ -5,6 +5,8 @@ import { Dino } from '../game/types'
 import { deleteDino, getDinos } from '../lib/supabase'
 import DinoDetailModal from './DinoDetailModal'
 import DinoCard from './DinoCard'
+import PremiumButton from './PremiumButton'
+import { homeAssets } from '../lib/gameAssets'
 
 interface DinoListProps {
   dinos: Dino[]
@@ -49,26 +51,22 @@ export default function DinoList({ dinos, onBack, onRefresh, onEdit, onViewDetai
   }
 
   return (
-    <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative">
-      {/* Arka plan efekti */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-96 h-96 bg-neon-cyan opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-neon-purple opacity-5 rounded-full blur-3xl"></div>
-      </div>
+    <div
+      className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto relative"
+      style={{ backgroundImage: `url('${homeAssets.background}')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#2a1c0e' }}
+    >
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
 
       <div className="relative z-10">
-        <button
-          onClick={onBack}
-          className="hs-btn"
-        >
-          <span>Geri</span>
-        </button>
+        <PremiumButton onClick={onBack} className="w-28" contentClassName="text-sm">← Geri</PremiumButton>
 
-        <h1 className="text-4xl font-black text-center mt-4 text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">Dinozorlarım</h1>
+        <h1 className="text-3xl sm:text-4xl font-black text-center mt-4 text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          Dinozorlarım
+        </h1>
 
         {dinos.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-center mt-8">
-            <p className="text-2xl text-neon-cyan">Henüz dinozor yok. Yeni bir tane oluştur!</p>
+            <p className="text-xl font-bold text-amber-100 drop-shadow">Henüz dinozor yok. Yeni bir tane oluştur!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4 mt-6">
