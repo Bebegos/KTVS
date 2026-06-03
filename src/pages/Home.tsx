@@ -6,7 +6,6 @@ import { Dino } from '../game/types'
 import { APP_VERSION } from '../config/version'
 import { Adventure } from '../lib/adventures'
 import DinoList from '../components/DinoList'
-import DinoCard from '../components/DinoCard'
 import DinoCreationFlow from '../components/DinoCreationFlow'
 import DinoDetailPage from '../components/DinoDetailPage'
 import BattleTableModeV2 from '../components/BattleTableModeV2'
@@ -16,6 +15,7 @@ import AdventureSelectScreen from '../components/AdventureSelectScreen'
 import AdventureBattleScreen from '../components/AdventureBattleScreen'
 import DinoCoinsDisplay from '../components/DinoCoinsDisplay'
 import PremiumButton from '../components/PremiumButton'
+import DinoCarousel from '../components/DinoCarousel'
 import { homeAssets } from '../lib/gameAssets'
 
 type PageName = 'home' | 'dino-list' | 'dino-detail' | 'match-log' | 'dino-form' | 'offline-select' | 'offline-battle' | 'duello-vs-select' | 'duello-vs' | 'adventure-select' | 'adventure-battle'
@@ -415,15 +415,8 @@ function DuelloVsSelectDino({
           <PremiumButton onClick={onBack} className="w-40 mx-auto" contentClassName="text-sm">Geri Dön</PremiumButton>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl relative z-10 pb-8">
-          {dinos.map(dino => (
-            <DinoCard
-              key={dino.id}
-              dino={dino}
-              mode="selection"
-              onClick={() => onSelect(dino)}
-            />
-          ))}
+        <div className="w-full relative z-10 pb-8">
+          <DinoCarousel dinos={dinos} onSelect={onSelect} />
         </div>
       )}
     </div>
@@ -459,15 +452,8 @@ function OfflineSelectDino({
           <PremiumButton onClick={onBack} className="w-40 mx-auto" contentClassName="text-sm">Geri Dön</PremiumButton>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl relative z-10 pb-8">
-          {dinos.map(dino => (
-            <DinoCard
-              key={dino.id}
-              dino={dino}
-              mode="selection"
-              onClick={() => onSelect(dino)}
-            />
-          ))}
+        <div className="w-full relative z-10 pb-8">
+          <DinoCarousel dinos={dinos} onSelect={onSelect} />
         </div>
       )}
     </div>

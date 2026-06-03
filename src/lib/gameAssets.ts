@@ -160,3 +160,9 @@ export const homeAssets = {
   },
 }
 
+// ---------- Dino cards (5:7 trading-card art for the 3D carousel) ----------
+export const cardAssets = {
+  dinoFrame: `${BASE}/cards/dino-card-frame.png`,
+  dinoBack: `${BASE}/cards/dino-card-back.png`,
+}
+
