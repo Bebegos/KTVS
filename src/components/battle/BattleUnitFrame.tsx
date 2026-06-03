@@ -125,7 +125,7 @@ export default function BattleUnitFrame({
   )
 
   return (
-    <div className="w-60 sm:w-72 md:w-80 lg:w-[26rem] xl:w-[32rem] max-w-[46vw]">
+    <div className="w-48 sm:w-64 md:w-80 lg:w-[26rem] xl:w-[32rem] max-w-[44vw]">
       {/* Name plate (premium asset) floating just above the bar channel */}
       <div className={`relative z-10 flex ${isPlayer ? 'justify-end' : 'justify-start'} -mb-[3%] px-[4%]`}>
         <div

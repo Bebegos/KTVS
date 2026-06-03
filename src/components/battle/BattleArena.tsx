@@ -243,7 +243,7 @@ function SquareIconButton({
       title={title}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className={`relative w-11 h-11 sm:w-12 sm:h-12 bg-transparent border-0 p-0 transition-transform hover:scale-105 active:scale-95 ${
+      className={`relative w-9 h-9 sm:w-12 sm:h-12 bg-transparent border-0 p-0 transition-transform hover:scale-105 active:scale-95 ${
         active ? 'drop-shadow-[0_0_10px_rgba(212,175,55,0.7)]' : ''
       }`}
       style={{

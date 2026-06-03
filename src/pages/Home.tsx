@@ -170,27 +170,27 @@ export default function Home() {
         </div>
 
         {/* Menu — 3 main buttons centered on the disc, 3 secondary below */}
-        <div className="w-full max-w-sm flex flex-col items-center gap-2.5 z-10 mt-16">
+        <div className="w-full max-w-[15rem] sm:max-w-[17rem] flex flex-col items-center gap-2 z-10 mt-14">
           {mainItems.map((item) => (
             <PremiumButton
               key={item.label}
               onClick={item.onClick}
               iconSrc={item.icon}
               className="w-full"
-              contentClassName="text-base sm:text-lg"
+              contentClassName="text-sm sm:text-base"
             >
               {item.label}
             </PremiumButton>
           ))}
 
-          <div className="w-[88%] flex flex-col items-center gap-2 mt-1">
+          <div className="w-[86%] flex flex-col items-center gap-1.5 mt-1">
             {secondaryItems.map((item) => (
               <PremiumButton
                 key={item.label}
                 onClick={item.onClick}
                 iconSrc={item.icon}
                 className="w-full"
-                contentClassName="text-xs sm:text-sm"
+                contentClassName="text-[11px] sm:text-xs"
               >
                 {item.label}
               </PremiumButton>
