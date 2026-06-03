@@ -19,6 +19,10 @@ const PAGE_BG = {
   backgroundColor: '#2a1c0e',
 } as const
 
+const PARCHMENT = {
+  background: 'linear-gradient(180deg, rgba(232,220,192,0.97) 0%, rgba(214,196,158,0.97) 100%)',
+} as const
+
 interface DuelloVsModeProps {
   selectedDino: Dino
   onBack: () => void
@@ -330,42 +334,39 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           <h1 className="text-4xl font-black text-amber-200 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Davet Linki</h1>
 
           {/* Dinozor Info */}
-          <div className="glass-dark neon-border-cyan rounded-xl p-6 w-full text-center">
-            <p className="text-3xl mb-2">🦖</p>
-            <h2 className="text-2xl font-black text-neon-cyan mb-1">{selectedDino.name}</h2>
-            <p className="text-sm text-neon-cyan/80">Lvl {selectedDino.level}</p>
+          <div className="rounded-xl p-5 w-full text-center border-2 border-amber-900/40" style={PARCHMENT}>
+            <p className="text-3xl mb-1">🦖</p>
+            <h2 className="text-2xl font-black text-amber-950">{selectedDino.name}</h2>
+            <p className="text-sm font-bold text-amber-800">Lvl {selectedDino.level}</p>
           </div>
 
           {/* QR Code */}
-          <div className="glass-dark neon-border-purple rounded-xl p-6 bg-white">
+          <div className="rounded-xl p-4 bg-white border-4 border-amber-700">
             <QRCodeSVG value={inviteUrl} size={256} />
           </div>
 
           {/* URL Display */}
-          <div className="glass-dark neon-border-cyan rounded-xl p-4 w-full">
-            <p className="text-xs font-bold text-neon-cyan mb-2">KATılIM LİNKİ:</p>
-            <p className="text-xs text-neon-cyan/70 break-all mb-3">{inviteUrl}</p>
-            <button
-              onClick={copyToClipboard}
-              className="hs-btn hs-btn-block"
-            >
+          <div className="rounded-xl p-4 w-full border-2 border-amber-900/40" style={PARCHMENT}>
+            <p className="text-xs font-black uppercase tracking-wide text-amber-800/80 mb-2">Katılım Linki</p>
+            <p className="text-xs text-amber-900/80 break-all mb-3">{inviteUrl}</p>
+            <button onClick={copyToClipboard} className="w-full px-4 py-2 rounded-lg font-black text-amber-50 bg-amber-700/90 border-2 border-amber-400/60 hover:bg-amber-600 transition-colors">
               📋 Kopyala
             </button>
           </div>
 
           {/* Session ID */}
-          <div className="glass-dark neon-border-purple rounded-xl p-4 w-full text-center">
-            <p className="text-xs font-bold text-neon-purple mb-2">KOD:</p>
-            <p className="text-3xl font-black text-neon-purple tracking-widest">{sessionId}</p>
+          <div className="rounded-xl p-4 w-full text-center border-2 border-amber-900/40" style={PARCHMENT}>
+            <p className="text-xs font-black uppercase tracking-wide text-amber-800/80 mb-1">Kod</p>
+            <p className="text-3xl font-black text-amber-950 tracking-widest">{sessionId}</p>
           </div>
 
           {/* Waiting */}
-          <div className="glass-dark border border-neon-cyan/30 rounded-xl p-4 w-full text-center">
-            <p className="text-sm text-neon-cyan mb-3">Arkadaş katılmasını bekliyor...</p>
+          <div className="rounded-xl p-4 w-full text-center border-2 border-amber-900/40" style={PARCHMENT}>
+            <p className="text-sm font-bold text-amber-900 mb-3">Arkadaş katılmasını bekliyor...</p>
             <div className="flex gap-2 justify-center">
-              <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse delay-100"></div>
-              <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse delay-200"></div>
+              <div className="w-2 h-2 bg-amber-700 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-amber-700 rounded-full animate-pulse delay-100"></div>
+              <div className="w-2 h-2 bg-amber-700 rounded-full animate-pulse delay-200"></div>
             </div>
           </div>
         </div>
@@ -397,46 +398,42 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
           <h1 className="text-4xl font-black text-amber-200 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Katıl</h1>
 
           {/* Dinozor Info */}
-          <div className="glass-dark neon-border-purple rounded-xl p-6 w-full text-center">
-            <p className="text-3xl mb-2">🦖</p>
-            <h2 className="text-2xl font-black text-neon-purple mb-1">{selectedDino.name}</h2>
-            <p className="text-sm text-neon-purple/80">Lvl {selectedDino.level}</p>
+          <div className="rounded-xl p-5 w-full text-center border-2 border-amber-900/40" style={PARCHMENT}>
+            <p className="text-3xl mb-1">🦖</p>
+            <h2 className="text-2xl font-black text-amber-950">{selectedDino.name}</h2>
+            <p className="text-sm font-bold text-amber-800">Lvl {selectedDino.level}</p>
           </div>
 
           {!scannerActive ? (
             <>
               {/* Code Input */}
-              <div className="glass-dark neon-border-purple rounded-xl p-4 w-full">
-                <label className="block text-xs font-bold text-neon-purple mb-2">KOD GIRIN:</label>
+              <div className="rounded-xl p-4 w-full border-2 border-amber-900/40" style={PARCHMENT}>
+                <label className="block text-xs font-black uppercase tracking-wide text-amber-800/80 mb-2">Kod Girin</label>
                 <input
                   type="text"
                   value={joinCode}
                   onChange={e => setJoinCode(e.target.value.toUpperCase())}
                   placeholder="Örn: ABC123XYZ"
                   maxLength={9}
-                  className="w-full px-4 py-3 bg-slate-800 border border-neon-purple rounded-lg text-2xl font-black text-center text-neon-purple placeholder-neon-purple/40 focus:outline-none focus:border-neon-purple focus:shadow-neon-purple transition"
+                  className="w-full px-4 py-3 rounded-lg text-2xl font-black text-center text-amber-950 placeholder-amber-800/40 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  style={{ background: 'linear-gradient(180deg, #efe0c0 0%, #d8c49e 100%)', border: '2px solid #a9853f' }}
                 />
               </div>
 
               {/* Or */}
               <div className="flex items-center w-full gap-4">
-                <div className="flex-1 h-px bg-neon-purple/30"></div>
-                <span className="text-neon-purple/70 text-sm font-bold">VEYA</span>
-                <div className="flex-1 h-px bg-neon-purple/30"></div>
+                <div className="flex-1 h-px bg-amber-200/40"></div>
+                <span className="text-amber-200/80 text-sm font-black drop-shadow">VEYA</span>
+                <div className="flex-1 h-px bg-amber-200/40"></div>
               </div>
 
               {/* QR Scanner Button */}
-              <button
-                onClick={startScanner}
-                className="hs-btn hs-btn-purple hs-btn-lg hs-btn-block"
-              >
-                📱 QR KOD TARA
-              </button>
+              <PremiumButton onClick={startScanner} className="w-full" contentClassName="text-sm">📱 QR KOD TARA</PremiumButton>
             </>
           ) : (
             <>
               {/* Camera View */}
-              <div className="w-full bg-black rounded-xl overflow-hidden border-2 border-neon-purple relative">
+              <div className="w-full bg-black rounded-xl overflow-hidden border-4 border-amber-700 relative">
                 <video
                   ref={videoRef}
                   playsInline
@@ -447,23 +444,14 @@ export default function DuelloVsMode({ selectedDino, onBack }: DuelloVsModeProps
               <canvas ref={canvasRef} className="hidden" />
 
               {/* Stop Scanner Button */}
-              <button
-                onClick={stopScanner}
-                className="hs-btn hs-btn-lg hs-btn-block"
-              >
-                ✋ DURDUR
-              </button>
+              <PremiumButton onClick={stopScanner} className="w-full" contentClassName="text-sm">✋ DURDUR</PremiumButton>
             </>
           )}
 
           {/* Join Button */}
-          <button
-            onClick={joinSession}
-            disabled={joinCode.length !== 9}
-            className="hs-btn hs-btn-lg hs-btn-block"
-          >
+          <PremiumButton onClick={joinSession} disabled={joinCode.length !== 9} className="w-full" contentClassName="text-base">
             ✅ KATIL
-          </button>
+          </PremiumButton>
         </div>
       </div>
     )
