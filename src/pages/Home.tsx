@@ -16,7 +16,6 @@ import MatchLog from '../components/MatchLog'
 import AdventureSelectScreen from '../components/AdventureSelectScreen'
 import AdventureBattleScreen from '../components/AdventureBattleScreen'
 import DinoCoinsDisplay from '../components/DinoCoinsDisplay'
-import SiteLogo from '../components/SiteLogo'
 import PremiumButton from '../components/PremiumButton'
 import { homeAssets } from '../lib/gameAssets'
 
@@ -83,11 +82,11 @@ export default function Home() {
 
   // Ana Menü
   if (page === 'home') {
-    const menuItems = [
+    const mainItems = [
       { icon: homeAssets.menu.duel, label: 'DÜELLO VS', onClick: () => setPage('duello-vs-select') },
       {
         icon: homeAssets.menu.offline,
-        label: 'Masada Oyna',
+        label: 'MASADA OYNA',
         onClick: () => {
           if (dinos.length > 0) {
             setSelectedOfflineDino(dinos[0])
@@ -97,7 +96,9 @@ export default function Home() {
           }
         },
       },
-      { icon: homeAssets.menu.adventure, label: 'Maceralar', onClick: () => setPage('adventure-select') },
+      { icon: homeAssets.menu.adventure, label: 'MACERALAR', onClick: () => setPage('adventure-select') },
+    ]
+    const secondaryItems = [
       { icon: homeAssets.menu.mydinos, label: 'Dinozorlarım', onClick: () => setPage('dino-list') },
       { icon: homeAssets.menu.matchlog, label: 'Maç Günlüğü', onClick: () => setPage('match-log') },
       { icon: homeAssets.menu.newdino, label: 'Yeni Dinozor', onClick: () => setPage('dino-form') },
@@ -105,7 +106,7 @@ export default function Home() {
 
     return (
       <div
-        className="w-full min-h-screen flex flex-col items-center justify-start md:justify-center p-4 gap-3 relative overflow-y-auto"
+        className="w-full min-h-screen flex flex-col items-center justify-center p-4 relative overflow-y-auto"
         style={{
           backgroundImage: `url('${homeAssets.background}')`,
           backgroundSize: 'cover',
@@ -113,19 +114,27 @@ export default function Home() {
           backgroundColor: '#2a1c0e',
         }}
       >
-        {/* Üst Bar - akışta, taşmaz; mobilde sarar */}
-        <div className="w-full flex items-center justify-between flex-wrap gap-2 z-20">
-          <div className="hs-wood-frame px-3 py-1 rounded-lg">
-            <p className="text-xs font-bold text-gold-light">v{APP_VERSION}</p>
+        {/* Top bar — pinned to the top of the screen */}
+        <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between gap-2 px-3 py-2 flex-wrap">
+          <div
+            className="rounded-full px-3 h-8 flex items-center"
+            style={{ background: 'linear-gradient(180deg,#3a2a16,#241608)', border: '2px solid #d4af37' }}
+          >
+            <p className="text-xs font-bold text-amber-200">v{APP_VERSION}</p>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap justify-end">
-            {/* DinoCoin Display */}
-            <DinoCoinsDisplay coins={userCoins} size="sm" />
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            <DinoCoinsDisplay coins={userCoins} size="md" />
 
-            {/* User Info */}
-            <div className="hs-wood-frame px-3 py-2 rounded-lg">
-              <p className="text-sm font-bold text-gold-light">👤 {user?.username || user?.email?.split('@')[0]}</p>
+            {/* User card */}
+            <div
+              className="rounded-full pl-2 pr-4 h-11 flex items-center gap-2"
+              style={{ background: 'linear-gradient(180deg,#3a2a16,#241608)', border: '2px solid #d4af37' }}
+            >
+              <span className="w-7 h-7 rounded-full bg-amber-900/60 border border-amber-400/60 flex items-center justify-center text-sm">👤</span>
+              <p className="text-sm font-black text-amber-200 max-w-[8rem] truncate">
+                {user?.username || user?.email?.split('@')[0]}
+              </p>
             </div>
 
             {/* Settings (gear) with logout popover */}
@@ -135,23 +144,24 @@ export default function Home() {
                 whileTap={{ scale: 0.94 }}
                 onClick={() => setShowSettings((s) => !s)}
                 title="Ayarlar"
-                className="w-10 h-10"
+                className="w-12 h-12"
               >
-                <img src={homeAssets.menu.settings} alt="Ayarlar" className="w-full h-full object-contain" draggable={false} />
+                <img src={homeAssets.menu.settings} alt="Ayarlar" className="w-full h-full object-contain drop-shadow-[0_2px_3px_rgba(0,0,0,0.6)]" draggable={false} />
               </motion.button>
 
               {showSettings && (
                 <motion.div
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute right-0 mt-2 z-30 hs-wood-frame rounded-lg p-2"
+                  className="absolute right-0 mt-2 z-30 rounded-lg p-2"
+                  style={{ background: 'linear-gradient(180deg,#3a2a16,#241608)', border: '2px solid #d4af37' }}
                 >
                   <button
                     onClick={handleSignOut}
-                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-black/20 transition-colors w-full"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-black/30 transition-colors w-full"
                   >
-                    <img src={homeAssets.menu.logout} alt="" className="w-6 h-6 object-contain" draggable={false} />
-                    <span className="text-sm font-bold text-gold-light whitespace-nowrap">Çıkış</span>
+                    <img src={homeAssets.menu.logout} alt="" className="w-7 h-7 object-contain" draggable={false} />
+                    <span className="text-sm font-bold text-amber-200 whitespace-nowrap">Çıkış</span>
                   </button>
                 </motion.div>
               )}
@@ -159,27 +169,33 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Başlık - logo + slogan */}
-        <div className="text-center z-10">
-          <div className="flex justify-center">
-            <SiteLogo size={180} />
-          </div>
-          <p className="text-base hs-text-bronze opacity-90 -mt-2">Dinozor Savaş ve Gelişim Oyunu</p>
-        </div>
-
-        {/* Menü butonları — premium plaka + madalyon ikon, merkezi disk üzerinde */}
-        <div className="w-full max-w-xs flex flex-col items-center gap-2 z-10 pb-8">
-          {menuItems.map((item) => (
+        {/* Menu — 3 main buttons centered on the disc, 3 secondary below */}
+        <div className="w-full max-w-sm flex flex-col items-center gap-2.5 z-10 mt-16">
+          {mainItems.map((item) => (
             <PremiumButton
               key={item.label}
               onClick={item.onClick}
+              iconSrc={item.icon}
               className="w-full"
-              contentClassName="gap-2 text-sm sm:text-base"
+              contentClassName="text-base sm:text-lg"
             >
-              <img src={item.icon} alt="" className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0" draggable={false} />
               {item.label}
             </PremiumButton>
           ))}
+
+          <div className="w-[88%] flex flex-col items-center gap-2 mt-1">
+            {secondaryItems.map((item) => (
+              <PremiumButton
+                key={item.label}
+                onClick={item.onClick}
+                iconSrc={item.icon}
+                className="w-full"
+                contentClassName="text-xs sm:text-sm"
+              >
+                {item.label}
+              </PremiumButton>
+            ))}
+          </div>
         </div>
       </div>
     )

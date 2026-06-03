@@ -12,6 +12,8 @@ interface PremiumButtonProps {
   className?: string
   /** Extra classes for the inner text/content wrapper. */
   contentClassName?: string
+  /** Optional icon image shown at a fixed position on the left of the plate. */
+  iconSrc?: string
   type?: 'button' | 'submit'
 }
 
@@ -29,6 +31,7 @@ export default function PremiumButton({
   shape = 'wide',
   className = '',
   contentClassName = '',
+  iconSrc,
   type = 'button',
 }: PremiumButtonProps) {
   const [isPressed, setIsPressed] = useState(false)
@@ -72,6 +75,17 @@ export default function PremiumButton({
         backgroundRepeat: 'no-repeat',
       }}
     >
+      {/* Optional left icon at a fixed position (so it aligns across buttons) */}
+      {iconSrc && shape === 'wide' && (
+        <img
+          src={iconSrc}
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="absolute left-[6%] top-1/2 -translate-y-1/2 w-[15%] aspect-square object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
+        />
+      )}
+
       {/* Content overlaid on the parchment center, inset from the ornate frame. */}
       <span
         className={`absolute ${contentInset} flex items-center justify-center font-black text-center leading-tight ${
